@@ -43,6 +43,7 @@ import externalMarketPrices from "./externalMarketPrices";
 import packsOpener from "./packsOpener";
 import bidAll from "./bidAll";
 import myPacks from "./myPacks";
+import sbcRatingCalculator from "./sbcRatingCalculator";
 import limbo from "./limbo";
 
 const plugins = [
@@ -88,6 +89,7 @@ const plugins = [
     bidAll,
     myPacks,
     externalMarketPrices,
+    sbcRatingCalculator,
     limbo,
     snipe,
     keyListener,

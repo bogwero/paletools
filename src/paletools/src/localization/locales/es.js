@@ -8,6 +8,8 @@ export default {
     "market.itemBuy.success": "¡Compra realizada correctamente! - {COINS}",
     "confirm": "¿Estas seguro de querer continuar?",
     "loading": "Cargando",
+    "from": "Desde",
+    "to": "Hasta",
     
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modo grilla",
@@ -293,8 +295,18 @@ export default {
     'plugins.experimental.settings.fastClubSearch': 'Búsqueda del club rápida',
     /// #endif
 
+    /// #if process.env.SBC_RATING_CALCULATOR
+    "plugins.sbcRatingCalculator.settings.title": "Calculadora de Medias",
+    "plugins.sbcRatingCalculator.buttons.openDialog": "Calcular Medias Restantes",
+    "plugins.sbcRatingCalculator.table.rating": "Media", 
+    "plugins.sbcRatingCalculator.table.count": "Cant.",
+    "plugins.sbcRatingCalculator.buttons.calculate": "Calcular",
+    "plugins.sbcRatingCalculator.dialog.title": "Calculadora de Medias",
+    "plugins.sbcRatingCalculator.dialog.ranges.title": "Rango de medias a probar",
+    /// #endif
+
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
-    "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas entiendo que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
+    "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas aceptando que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
 
     "plugins.eaBugFixer.settings.title": "Arreglar cagadas de EA"
 };

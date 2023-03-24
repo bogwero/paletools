@@ -45,5 +45,6 @@ module.exports = {
     BID_ALL: false,
     PACKS_OPENER: false,
     LIMBO: false,
-    MY_PACKS: true
+    MY_PACKS: true,
+    SBC_RATING_CALCULATOR: false
 };

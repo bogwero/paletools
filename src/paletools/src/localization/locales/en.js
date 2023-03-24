@@ -8,6 +8,8 @@ export default {
     "market.itemBuy.success": "Item bought succesfully! - {COINS}",
     "confirm": "Are you sure you want to proceed?",
     "loading": "Loading",
+    "from": "From",
+    "to": "To",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Grid Mode",
@@ -294,6 +296,16 @@ export default {
     /// #if process.env.EXPERIMENTAL
     'plugins.experimental.settings.title': "Experimental Stuff - Use at your own risk",
     'plugins.experimental.settings.fastClubSearch': 'Fast club search',
+    /// #endif
+
+    /// #if process.env.SBC_RATING_CALCULATOR
+    "plugins.sbcRatingCalculator.settings.title": "Ratings Calculator",
+    "plugins.sbcRatingCalculator.buttons.openDialog": "Calculate Missing Ratings",
+    "plugins.sbcRatingCalculator.table.rating": "Rating", 
+    "plugins.sbcRatingCalculator.table.count": "Count",
+    "plugins.sbcRatingCalculator.buttons.calculate": "Calculate",
+    "plugins.sbcRatingCalculator.dialog.title": "Ratings Calculator",
+    "plugins.sbcRatingCalculator.dialog.ranges.title": "Ratings to try",
     /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - USAGE WARNING",

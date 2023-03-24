@@ -65,7 +65,7 @@ export async function fillSbc(sbcChallenge, playersToUse, onClubBatchLoadedCallb
         }
     }
 
-    processAlternativePositions(getPlayerAlternativePositions );
+    processAlternativePositions(getPlayerAlternativePositions);
     processAlternativePositions(getPlayerSecondaryAlternativePositions);
 
     // position players of pending open positions in the starting 11
@@ -90,4 +90,72 @@ export async function fillSbc(sbcChallenge, playersToUse, onClubBatchLoadedCallb
     services.SBC.saveChallenge(sbcChallenge);
     repositories.Item.unassigned.expiryTimestamp = 0;
     repositories.Item.transfer.expiryTimestamp = 0;
+}
+
+
+/*
+Original code comes from here
+
+https://raw.githubusercontent.com/mabenj/SbcCruncher/master/src/workers/solver-helper.ts
+
+*/
+
+export class SolverHelper {
+    static getMultisubsetsCount(setLength, n) {
+        return (
+            this.factorial(setLength + n - 1) /
+            (this.factorial(setLength - 1) * this.factorial(n))
+        );
+    }
+
+    static factorial(num) {
+        let rval = 1;
+        for (let i = 2; i <= num; i++) {
+            rval = rval * i;
+        }
+        return rval;
+    }
+
+    // https://www.reddit.com/r/FIFA/comments/5osq7k/new_overall_rating_figured_out/
+    static getRating(ratings, squadSize) {
+        const sum = ratings.reduce((acc, curr) => acc + curr, 0);
+        const avg = sum / ratings.length;
+        const excess = ratings.reduce((acc, curr) => {
+            if (curr <= avg) {
+                return acc;
+            }
+            return acc + curr - avg;
+        }, 0);
+        const rating = Math.round(sum + excess) / squadSize;
+        return Math.floor(rating);
+    }
+
+    /**
+     * Calculates all the multisubsets of length n of a set
+     * @param set set
+     * @param n multisubset length
+     * @returns Iterable of multisubsets
+     */
+    static getMultisubsets(set, multisubsetLength) {
+        return multisubsetsImpl(set, multisubsetLength);
+    }
+}
+
+function* multisubsetsImpl(set, n) {
+    if (n === 0) {
+        yield [];
+    } else if (set.length > 0) {
+        const [x, rest] = [set[0], set.slice(1)];
+        for (let i = 0; i < n; i++) {
+            yield* prependNTimes(x, multisubsetsImpl(rest, i), n - i);
+        }
+        yield* multisubsetsImpl(rest, n);
+    }
+}
+
+function* prependNTimes(a, xss, n) {
+    const as = Array.from({ length: n }).fill(a);
+    for (let xs of xss) {
+        yield [...as, ...xs];
+    }
 }

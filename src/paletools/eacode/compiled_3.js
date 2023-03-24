@@ -1,411 +1,3 @@
-function UTMarketSearchResultsViewController() {
-    UTViewController.call(this),
-    this._chemCalculator = new UTSquadChemCalculatorUtils(repositories.Chemistry),
-    this._itemListViewDelegate = null,
-    Object.defineProperty(this, "_itemListViewDelegate", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._paginationViewModel = null,
-    Object.defineProperty(this, "_paginationViewModel", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._searchCriteria = null,
-    Object.defineProperty(this, "_searchCriteria", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._squadContext = null,
-    Object.defineProperty(this, "_squadContext", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._stadiumViewmodel = null,
-    Object.defineProperty(this, "_stadiumViewmodel", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._compareItem = null,
-    Object.defineProperty(this, "_compareItem", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._selectedItem = null,
-    Object.defineProperty(this, "_selectedItem", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._pinnedListItem = null,
-    Object.defineProperty(this, "_pinnedListItem", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this._arbitraryInterval = 0,
-    Object.defineProperty(this, "_arbitraryInterval", {
-        writable: !0,
-        enumerable: !1
-    }),
-    this.onDataChange = new EAObservable,
-    Object.defineProperty(this, "onDataChange", {
-        writable: !1,
-        enumerable: !0
-    })
-}
-function UTMarketSearchResultsSplitViewController() {
-    UTSplitViewController.call(this),
-    this._listController = new UTMarketSearchResultsViewController,
-    this._itemDetailController = new controllers.navigation.ItemDetails
-}
-JSUtils.inherits(UTMarketSearchResultsViewController, UTViewController),
-UTMarketSearchResultsViewController.prototype.init = function init() {
-    if (services.Module.set(3288334336),
-    !this.initialized) {
-        this.superclass(),
-        this._paginationViewModel = new UTTransferMarketPaginationViewModel,
-        this._paginationViewModel.init(),
-        this._paginationViewModel.addAuctionUpdateObserver(this, this._eViewmodelDataUpdated),
-        this._searchCriteria && (this._searchCriteria.count = this._paginationViewModel.getNumItemsPerPage() + 1);
-        var e = this.getView();
-        e.addTarget(this, this._eRowSelected, enums.UIListEvent.ROW_SELECT),
-        e.addTarget(this, this._eNextPage, enums.UIPaginationEvent.NEXT),
-        e.addTarget(this, this._ePrevPage, enums.UIPaginationEvent.PREVIOUS)
-    }
-}
-,
-UTMarketSearchResultsViewController.prototype.initWithSearchCriteria = function initWithSearchCriteria(e) {
-    this.initialized || (DebugUtils.Assert(e instanceof UTSearchCriteriaDTO, "Initialization expected a search criteria DTO."),
-    this._searchCriteria = e,
-    this.init())
-}
-,
-UTMarketSearchResultsViewController.prototype.setSquadContext = function setSquadContext(e) {
-    this.initialized || (DebugUtils.Assert(e instanceof UTSquadMarketSearchViewModel, "Initialization expected a squad market search VM."),
-    this._squadContext = e,
-    this._squadContext && this.setPinnedItem(this._squadContext.getCurrentSlot().getItem()))
-}
-,
-UTMarketSearchResultsViewController.prototype.setStadiumViewModel = function setStadiumViewModel(e) {
-    this._stadiumViewmodel = e
-}
-,
-UTMarketSearchResultsViewController.prototype.dealloc = function dealloc() {
-    this.superclass(),
-    this.onDataChange.dealloc(),
-    this._searchCriteria = null,
-    this._squadContext = null,
-    this._stadiumViewmodel = null,
-    this._compareItem = null,
-    this._selectedItem = null,
-    this._chemCalculator.dealloc(),
-    JSUtils.isValid(this._pinnedListItem) && (this._pinnedListItem.dealloc(),
-    this._pinnedListItem = null),
-    this._itemListViewDelegate && (this._itemListViewDelegate = null),
-    this._paginationViewModel && (this._paginationViewModel.dealloc(),
-    this._paginationViewModel = null),
-    getDefaultDispatcher().removeObserver(AppNotification.UI_ITEM_STATE_CHANGE, this)
-}
-,
-UTMarketSearchResultsViewController.prototype._getViewInstanceFromData = function _getViewInstanceFromData() {
-    return new UTMarketSearchView
-}
-,
-UTMarketSearchResultsViewController.prototype._getTelemetryId = function _getTelemetryId() {
-    return "Transfer Market Results - List View"
-}
-,
-UTMarketSearchResultsViewController.prototype.getNavigationTitle = function getNavigationTitle() {
-    return services.Localization.localize("navbar.label.searchresults")
-}
-,
-UTMarketSearchResultsViewController.prototype.viewDidAppear = function viewDidAppear() {
-    services.Module.set(3489660928),
-    this.superclass(),
-    getDefaultDispatcher().addObserver(AppNotification.UI_ITEM_STATE_CHANGE, this, this._nInfoStateChanged),
-    this._requestItems(this._paginationViewModel.getCurrentPageIndex()),
-    this._compareItem && !this._pinnedListItem && this._generatePinnedItemView(),
-    this._squadContext && this._compareItem !== this._squadContext.getCurrentSlot().item && (this._compareItem = this._squadContext.getCurrentSlot().item,
-    this._pinnedListItem.setItem(this._compareItem)),
-    this._pinnedListItem && this._pinnedListItem.viewDidAppear(),
-    this._arbitraryInterval = setInterval(this._arbitraryViewUpdate.bind(this), 5e3),
-    TelemetryManager.trackPage(TelemetryManager.Sections.AUCTIONS, "Transfer Market Search Results")
-}
-,
-UTMarketSearchResultsViewController.prototype.viewWillDisappear = function viewWillDisappear() {
-    services.Module.set(3758096384),
-    this.superclass(),
-    getDefaultDispatcher().removeObserver(AppNotification.UI_ITEM_STATE_CHANGE, this),
-    this._paginationViewModel.stopAuctionUpdates(),
-    this._paginationViewModel.removeAuctionUpdateObserver(this),
-    clearInterval(this._arbitraryInterval)
-}
-,
-UTMarketSearchResultsViewController.prototype.setItemListViewDelegate = function setItemListViewDelegate(e) {
-    this._itemListViewDelegate = e
-}
-,
-UTMarketSearchResultsViewController.prototype.setPinnedItem = function setPinnedItem(e) {
-    this._compareItem = e,
-    this.hasLoaded && !this._pinnedListItem && this._generatePinnedItemView()
-}
-,
-UTMarketSearchResultsViewController.prototype.setSelectedItem = function setSelectedItem(e) {
-    this._selectedItem = e
-}
-,
-UTMarketSearchResultsViewController.prototype.getSelectedItem = function getSelectedItem() {
-    return this._paginationViewModel.getCurrentItem()
-}
-,
-UTMarketSearchResultsViewController.prototype._generatePinnedItemView = function _generatePinnedItemView() {
-    if (this._pinnedListItem = new UTPinnedItemViewController,
-    this._pinnedListItem.initWithItem(this._compareItem),
-    this._squadContext && !this._compareItem.isManager()) {
-        var e = this._squadContext.getCurrentSlot();
-        if (e.index < UTSquadEntity.FIELD_PLAYERS) {
-            var t = new UTSquadSlotChemistryPointsView;
-            t.isItemView(),
-            t.render(e.chemistry, 0, e.inPreferredPosition),
-            t.setState(UTSquadSlotChemistryPointsView.State.NEUTRAL);
-            var i = this._pinnedListItem.getView();
-            i.setChemistryPointsComponent(t),
-            i.renderChemistryBreakdown(e.chemistry, e.nationChemistryPoints, e.leagueChemistryPoints, e.clubChemistryPoints)
-        }
-    }
-    this.addChildViewController(this._pinnedListItem),
-    this.getView().appendPinnedItemView(this._pinnedListItem.getView())
-}
-,
-UTMarketSearchResultsViewController.prototype._requestItems = function _requestItems(_) {
-    services.Module.set(3355443200),
-    this._paginationViewModel.stopAuctionUpdates(),
-    services.Item.searchTransferMarket(this._searchCriteria, _).observe(this, function _onRequestItemsComplete(e, t) {
-        if (e.unobserve(this),
-        !t.success)
-            return NetworkErrorManager.checkCriticalStatus(t.status) ? void NetworkErrorManager.handleStatus(t.status) : (services.Notification.queue([services.Localization.localize("popup.error.searcherror"), UINotificationType.NEGATIVE]),
-            void this.getNavigationController().popViewController());
-        if (0 < this._searchCriteria.offset && 0 === t.data.items.length)
-            this._requestItems(_ - 1);
-        else {
-            var i = this._paginationViewModel.getNumItemsPerPage()
-              , o = t.data.items.slice();
-            if (this.onDataChange.notify({
-                items: o
-            }),
-            o.length > i && (o = o.slice(0, i)),
-            this._paginationViewModel.setPageItems(o),
-            this._paginationViewModel.setPageIndex(_),
-            this._selectedItem && 0 < o.length) {
-                var n = this._paginationViewModel.getIndexByItemId(this._selectedItem.id);
-                0 < n && this._paginationViewModel.setIndex(n),
-                this._selectedItem = null
-            }
-            var r = this.getView()
-              , s = null;
-            if (!this._stadiumViewmodel || this._searchCriteria.type !== SearchType.VANITY && this._searchCriteria.type !== SearchType.CLUB_INFO && this._searchCriteria.type !== SearchType.BALL || (s = this._stadiumViewmodel.getStadiumProgression(this._searchCriteria.subtypes)),
-            this._squadContext && this._squadContext.getSquad() && (this._squadContext.getCurrentSlot().index < UTSquadEntity.FIELD_PLAYERS || this._squadContext.getCurrentSlot().item.isManager()) && this._compareItem) {
-                var l = []
-                  , c = []
-                  , d = []
-                  , u = []
-                  , h = this._squadContext.getSquad()
-                  , p = this._squadContext.getCurrentSlot();
-                this._paginationViewModel.getCurrentPageItems().forEach(function(t) {
-                    var e = h.getPlayers().map(function(e) {
-                        return e.index === p.index ? t : e.item
-                    }, this)
-                      , i = p.item.isManager() ? t : h.getManager().item
-                      , o = h.getFormation()
-                      , n = 0;
-                    if (o) {
-                        var r = this._chemCalculator.calculate(o, e, i);
-                        if (n = r.chemistry,
-                        !t.isManager()) {
-                            var s = r.getSlotChemistry(p.index).points;
-                            d.push(s),
-                            u.push(s - this._squadContext.getCurrentSlot().chemistry)
-                        }
-                    } else if (!t.isManager()) {
-                        var a = this._squadContext.getCurrentSlot().chemistry;
-                        d.push(0),
-                        u.push(0 - a)
-                    }
-                    l.push(n),
-                    c.push(n - h.getChemistry())
-                }, this),
-                r.setItemsWithChemDiff(this._paginationViewModel.getCurrentPageItems(), l, c, d, u)
-            } else
-                r.setItems(this._paginationViewModel.getCurrentPageItems(), s);
-            if (r.setPaginationState(1 < _, t.data.items.length > i),
-            JSUtils.isValid(this._compareItem) && !this._squadContext) {
-                var a = JSUtils.find(o, function(e) {
-                    return e.getAuctionData().tradeId === this._compareItem.getAuctionData().tradeId
-                }
-                .bind(this));
-                JSUtils.isValid(a) ? this._pinnedListItem.setItem(a) : this._paginationViewModel.setPinnedItem(this._compareItem)
-            } else
-                !isPhone() && 0 < o.length && r.selectListRow(this._paginationViewModel.getCurrentItem().id)
-        }
-        this._paginationViewModel.startAuctionUpdates()
-    })
-}
-,
-UTMarketSearchResultsViewController.prototype.getIterator = function getIterator() {
-    return this._paginationViewModel.getIterator()
-}
-,
-UTMarketSearchResultsViewController.prototype.removeItemsById = function removeItemsById(e) {
-    if (0 < this._paginationViewModel.getItemCount()) {
-        var t = this.getView();
-        t.removeItemsById(e),
-        t.selectListRow(this._paginationViewModel.getCurrentItem().id)
-    } else
-        this.refreshList()
-}
-,
-UTMarketSearchResultsViewController.prototype.refreshList = function refreshList() {
-    var e = this.getView();
-    if (this._compareItem && -1 === this._paginationViewModel.getIndexByItemId(this._compareItem.id))
-        return void this.getNavigationController().popViewController();
-    e.setItems(this._paginationViewModel.getCurrentPageItems()),
-    JSUtils.isValid(this._pinnedListItem) ? this._pinnedListItem.refresh() : e.selectListRow(this._paginationViewModel.getCurrentItem().id)
-}
-,
-UTMarketSearchResultsViewController.prototype._ePrevPage = function _ePrevPage() {
-    this._requestItems(this._paginationViewModel.getPrevPageIndex())
-}
-,
-UTMarketSearchResultsViewController.prototype._eNextPage = function _eNextPage() {
-    this._requestItems(this._paginationViewModel.getNextPageIndex())
-}
-,
-UTMarketSearchResultsViewController.prototype._eRowSelected = function _eRowSelected(e, t, i) {
-    var o = i.item || null
-      , n = JSUtils.isValid(o) ? this._paginationViewModel.getIndexByItemId(o.id) : 0;
-    if (o) {
-        var r = o.getAuctionData();
-        if (!services.Configuration.checkFeatureEnabled(UTServerSettingsRepository.KEY.TRADING_ENABLED) && (r.isActiveTrade() || r.isClosedTrade()))
-            return void utils.PopupManager.showAlert(utils.PopupManager.Alerts.TRADING_DISABLED);
-        var s = n !== this._paginationViewModel.getIndex();
-        if (s && this._paginationViewModel.setIndex(n),
-        JSUtils.isValid(this._itemListViewDelegate))
-            s && this._itemListViewDelegate.selectListRow(this, n, o);
-        else {
-            var a = this.getNavigationController();
-            if (a) {
-                var l = new controllers.items.ItemDetails;
-                this._squadContext && l.setSquadContext(this._squadContext),
-                l.initWithIterator(this._paginationViewModel.getIterator()),
-                l.enablePriceComparison(!JSUtils.isValid(this._pinnedListItem)),
-                a.pushViewController(l, !0)
-            }
-        }
-    }
-}
-,
-UTMarketSearchResultsViewController.prototype._eViewmodelDataUpdated = function _eViewmodelDataUpdated() {
-    this.getView().onTimedUpdate()
-}
-,
-UTMarketSearchResultsViewController.prototype._arbitraryViewUpdate = function _arbitraryViewUpdate() {
-    this.getView().onTimedUpdate()
-}
-,
-UTMarketSearchResultsViewController.prototype._nInfoStateChanged = function _nInfoStateChanged() {
-    TelemetryManager.trackEvent(TelemetryManager.Sections.AUCTIONS, TelemetryManager.Categories.BUTTON_PRESS, "Item Info Switch Button - Transfer Market Search Results")
-}
-,
-JSUtils.inherits(UTMarketSearchResultsSplitViewController, UTSplitViewController),
-UTMarketSearchResultsSplitViewController.prototype.init = function init() {
-    if (!this.initialized) {
-        this.superclass(),
-        this._listController.init(),
-        this._listController.setItemListViewDelegate(this),
-        this._listController.onDataChange.observe(this, this._eListDataChanged);
-        var e = this._listController.getView();
-        e.addTarget(this, this._ePageChange, enums.UIPaginationEvent.NEXT),
-        e.addTarget(this, this._ePageChange, enums.UIPaginationEvent.PREVIOUS),
-        this._itemDetailController.initWithIterator(this._listController.getIterator()),
-        this._itemDetailController.enableSwiping(!1),
-        this.addChildViewController(this._listController),
-        this.addChildViewController(this._itemDetailController);
-        var t = getDefaultDispatcher();
-        t.addObserver(AppNotification.ITEM_DISCARD, this, this._nItemDiscarded),
-        t.addObserver(AppNotification.ITEM_LIST, this, this._nItemListed),
-        t.addObserver(AppNotification.ITEM_MOVE, this, this._nItemMoved)
-    }
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.initWithSearchCriteria = function initWithSearchCriteria(e) {
-    this.initialized || (this._listController.initWithSearchCriteria(e),
-    this.init())
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.dealloc = function dealloc() {
-    this._itemDetailController.dealloc(),
-    this._itemDetailController = null,
-    this._listController.dealloc(),
-    this._listController = null;
-    var e = getDefaultDispatcher();
-    e.removeObserver(AppNotification.ITEM_DISCARD, this),
-    e.removeObserver(AppNotification.ITEM_LIST, this),
-    e.removeObserver(AppNotification.ITEM_MOVE, this),
-    this.superclass()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.getNavigationTitle = function getNavigationTitle() {
-    return this._listController.getNavigationTitle()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.viewDidAppear = function viewDidAppear() {
-    this.superclass(),
-    this._setLeftController(this._listController),
-    this._itemDetailController.setNavigationStyle(UTNavigationBarView.Style.SECONDARY)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setStadiumViewModel = function setStadiumViewModel(e) {
-    this._listController.setStadiumViewModel(e),
-    this._itemDetailController.setStadiumViewModel(e)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setPinnedItem = function setPinnedItem(e) {
-    this._listController && this._listController.setPinnedItem(e)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setSelectedItem = function setSelectedItem(e) {
-    this._listController.setSelectedItem(e)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.getSelectedItem = function getSelectedItem() {
-    return this._listController.getSelectedItem()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.selectListRow = function selectListRow(e, t, i) {
-    e === this._listController && (this._listController.getView().selectListRow(i.id),
-    this._itemDetailController.setIndex(t))
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._eListDataChanged = function _eListDataChanged(e, t) {
-    t.items && (0 < t.items.length ? (this._setRightController(this._itemDetailController),
-    this._itemDetailController.setIndex(this._listController.getIterator().getIndex())) : this.hideRightController())
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._ePageChange = function _ePageChange() {
-    this._itemDetailController.onPageChange()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemDiscarded = function _nItemDiscarded(e, t, i) {
-    this._listController.removeItemsById(i.itemIds || [])
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemListed = function _nItemListed(e, t, i) {
-    this._listController.removeItemsById(i.itemIds || [])
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemMoved = function _nItemMoved(e, t, i) {
-    this._listController.removeItemsById(i.itemIds || [])
-}
-;
 var __extends = this && this.__extends || function() {
     var i = function(e, t) {
         return (i = Object.setPrototypeOf || {
@@ -428,113 +20,7 @@ var __extends = this && this.__extends || function() {
         new __)
     }
 }()
-  , UTBucketedItemSearchViewModel = function(t) {
-    function UTBucketedItemSearchViewModel() {
-        var e = t.call(this) || this;
-        return e.searchBucket = SearchBucket.PLAYER,
-        e.showCategoryTab = !0,
-        e
-    }
-    return __extends(UTBucketedItemSearchViewModel, t),
-    UTBucketedItemSearchViewModel.prototype.resetSearch = function() {
-        t.prototype.resetSearch.call(this),
-        this.updateSearchType()
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.mapCategoryToCategoryGroup = function(e) {
-        switch (e) {
-        case SearchCategory.BADGE:
-        case SearchCategory.BALL:
-        case SearchCategory.KIT:
-        case SearchCategory.VANITY_AUDIO_ANTHEM_MUSIC:
-        case SearchCategory.VANITY_AUDIO_CLUB_NICKNAME:
-        case SearchCategory.VANITY_AUDIO_CROWD_CHANT:
-        case SearchCategory.VANITY_AUDIO_GOAL_SCORE:
-        case SearchCategory.VANITY_PLAYER_CELEBRATION:
-            return SearchCategoryGroup.CLUB;
-        case SearchCategory.VANITY_STADIUM_BASE_PITCH_PROP:
-            return SearchCategoryGroup.TROPHIES;
-        case SearchCategory.VANITY_TIFO_BASE:
-        case SearchCategory.VANITY_TIFO_BIG:
-        case SearchCategory.VANITY_TIFO_MOVING:
-        case SearchCategory.VANITY_CROWD_CARDS:
-        case SearchCategory.VANITY_POLE_BANNER:
-        case SearchCategory.VANITY_TINTED_BANNER:
-            return SearchCategoryGroup.STANDS;
-        case SearchCategory.STADIUM:
-        case SearchCategory.VANITY_STADIUM_BASE_SEAT_COLOR:
-        case SearchCategory.VANITY_STADIUM_BASE_STRUCTURE_COLOR:
-        case SearchCategory.VANITY_STADIUM_THEME:
-        case SearchCategory.VANITY_VIP_AREA:
-            return SearchCategoryGroup.STADIUM;
-        case SearchCategory.VANITY_PYROTECHNICS_CONFETTI_CANNON:
-        case SearchCategory.VANITY_PYROTECHNICS_FIREWORKS_CANNON:
-        case SearchCategory.VANITY_PYROTECHNICS_FLAME_CANNON:
-        case SearchCategory.VANITY_PYROTECHNICS_SPARKLER_CANNON:
-        case SearchCategory.VANITY_STADIUM_BASE_PITCH_GOAL_PACKAGE:
-        case SearchCategory.VANITY_STADIUM_BASE_PITCH_LINE_COLOR:
-        case SearchCategory.VANITY_STADIUM_BASE_PITCH_MOW_PATTERN:
-            return SearchCategoryGroup.PITCH;
-        default:
-            return SearchCategoryGroup.NONE
-        }
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.updateSearchCriteria = function(e) {
-        t.prototype.updateSearchCriteria.call(this, e),
-        this.searchBucket = this.getBucketFromType(e.type),
-        this.searchCategoryGroup = this.mapCategoryToCategoryGroup(e.category)
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.updateSearchType = function() {
-        this.searchBucket === SearchBucket.PLAYER ? (this.searchCriteria.type = SearchType.PLAYER,
-        this.defaultSearchCriteria.type = SearchType.PLAYER) : this.searchBucket === SearchBucket.STAFF ? (this.searchCriteria.type = SearchType.STAFF,
-        this.searchCriteria.category = SearchCategory.MANAGER,
-        this.defaultSearchCriteria.type = SearchType.STAFF,
-        this.defaultSearchCriteria.category = SearchCategory.MANAGER) : this.searchBucket === SearchBucket.CLUB ? (this.searchCriteria.type = SearchType.CLUB_INFO,
-        this.defaultSearchCriteria.type = SearchType.CLUB_INFO) : this.searchBucket === SearchBucket.CONSUMABLE && (this.searchCriteria.type = SearchType.CONSUMABLES_TRAINING,
-        this.defaultSearchCriteria.type = SearchType.CONSUMABLES_TRAINING)
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.setSearchBucket = function(e) {
-        this.searchBucket === SearchBucket.CLUB && e !== SearchBucket.CLUB ? this.searchCategoryGroup = SearchCategoryGroup.NONE : this.searchBucket !== SearchBucket.CLUB && e === SearchBucket.CLUB && (this.searchCategoryGroup = SearchCategoryGroup.CLUB),
-        this.searchBucket = e,
-        this.updateSearchType()
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.setCategoryTabVisible = function(e) {
-        this.showCategoryTab = e
-    }
-    ,
-    UTBucketedItemSearchViewModel.prototype.getCategoryTabVisible = function() {
-        return this.showCategoryTab
-    }
-    ,
-    UTBucketedItemSearchViewModel
-}(UTItemSearchViewModel)
-  , UTTextInputControl = (__extends = this && this.__extends || function() {
-    var i = function(e, t) {
-        return (i = Object.setPrototypeOf || {
-            __proto__: []
-        }instanceof Array && function(e, t) {
-            e.__proto__ = t
-        }
-        || function(e, t) {
-            for (var i in t)
-                Object.prototype.hasOwnProperty.call(t, i) && (e[i] = t[i])
-        }
-        )(e, t)
-    };
-    return function(e, t) {
-        function __() {
-            this.constructor = e
-        }
-        i(e, t),
-        e.prototype = null === t ? Object.create(t) : (__.prototype = t.prototype,
-        new __)
-    }
-}(),
-function(t) {
+  , UTTextInputControl = function(t) {
     function UTTextInputControl() {
         var e = t.call(this) || this;
         return e.blurTimeout = 0,
@@ -639,7 +125,7 @@ function(t) {
     }
     ,
     UTTextInputControl
-}(UTControl));
+}(UTControl);
 UTTextInputControl.prototype._generate = function _generate() {
     if (!this._generated) {
         var e = document.createElement("input");
@@ -1055,7 +541,7 @@ var UTItemSearchView = function(i) {
     }
     ,
     UTItemSearchView.prototype.generateFilterIconTable = function(e, t, i) {
-        function Pc(e, t, i) {
+        function Ya(e, t, i) {
             var o = null != e ? e : new EAHashTable;
             return e || t.forEach(function(e) {
                 return o.set(e.value, n.generateFilterImage(i, e.id, e.value))
@@ -1064,16 +550,16 @@ var UTItemSearchView = function(i) {
         }
         var n = this;
         if (t === enums.UISearchFilters.LEVEL || t === enums.UISearchFilters.TYPE) {
-            var o = Pc(this.bucketFilterIconTables.get(i + "-" + t), e, t);
+            var o = Ya(this.bucketFilterIconTables.get(i + "-" + t), e, t);
             return this.bucketFilterIconTables.set(i + "-" + t, o),
             o
         }
         if (i === SearchBucket.PLAYER || t !== enums.UISearchFilters.RARITY && t !== enums.UISearchFilters.VANITY_CATEGORY) {
-            o = Pc(this.filterIconTables.get(t), e, t);
+            o = Ya(this.filterIconTables.get(t), e, t);
             return this.filterIconTables.set(t, o),
             o
         }
-        return Pc(null, e, t)
+        return Ya(null, e, t)
     }
     ,
     UTItemSearchView.prototype.setFilterValue = function(e, t) {
@@ -3886,16 +3372,16 @@ var UTDefaultActionPanelView = function(t) {
         this._comparePriceButton.setDisplay(!UTItemEntity.isStoryMode(e.definitionId) && e.isValid() && _ && !T);
         var m = e.getAuctionData()
           , g = e.lastSalePrice
-          , w = m.startingBid
-          , v = m.currentBid
+          , v = m.startingBid
+          , w = m.currentBid
           , y = e.isConsumable() && t && !t.isDream() && e.isValid();
         this._applyConsumableButton.setDisplay(y || e.pile === ItemPile.CLUB && (e.isPlayer() || e.isManager())),
         o ? this._sendToSquadButton.setText(services.Localization.localize("infopanel.button.sendtosquad")) : t.isSBC() ? this._sendToSquadButton.setText(services.Localization.localize("infopanel.button.sendtosbc")) : this._sendToSquadButton.setText(services.Localization.localize("infopanel.button.sendtocurrentsquad")),
         this._sendToSquadButton.setDisplay(t && !t.isSBC() && !l && !d && (e.isPlayer() || e.isManager()) && !t.containsItem(e, !0));
         var C = !0;
-        m && 0 < v && e.isValid() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.congratulations"),
-        this.__valueInfo.textContent = services.Localization.localizeNumber(v)) : m.isExpired() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.lastListedPrice"),
-        this.__valueInfo.textContent = services.Localization.localizeNumber(w)) : 0 < g && e.isValid() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.prevBoughtPrice"),
+        m && 0 < w && e.isValid() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.congratulations"),
+        this.__valueInfo.textContent = services.Localization.localizeNumber(w)) : m.isExpired() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.lastListedPrice"),
+        this.__valueInfo.textContent = services.Localization.localizeNumber(v)) : 0 < g && e.isValid() ? (this.__textInfo.textContent = services.Localization.localize("infopanel.label.prevBoughtPrice"),
         this.__valueInfo.textContent = services.Localization.localizeNumber(g)) : C = !1,
         DOMKit.toggleDisplayStyle(this.__auctionInfo, C);
         var S = e.isManager() ? "infopanel.label.managerInActiveSquad" : "infopanel.label.inActiveSquad"
@@ -4148,7 +3634,7 @@ var UTDuplicateLoanActionPanelView = function(t) {
     ,
     UTDuplicateLoanActionPanelView.prototype.render = function(e) {
         DebugUtils.Assert(e.isDuplicateLoanPlayer(), "[UTDuplicateLoanActionPanelView] Invalid item data, expected a duplicate loan player.");
-        function Bp(e) {
+        function Jn(e) {
             return t.localize("panel.label.game" + (1 < e ? "s" : ""), [e.toString()])
         }
         var t = services.Localization
@@ -4156,11 +3642,11 @@ var UTDuplicateLoanActionPanelView = function(t) {
           , o = e.duplicateItemLoans
           , n = o + i;
         this.__itemInfo1Label.textContent = t.localize("panel.label.currentContract"),
-        this.__itemInfo1Value.textContent = Bp(o),
+        this.__itemInfo1Value.textContent = Jn(o),
         this.__itemInfo2Label.textContent = t.localize("panel.label.addContract"),
-        this.__itemInfo2Value.textContent = Bp(i),
+        this.__itemInfo2Value.textContent = Jn(i),
         this.__itemInfo3Label.textContent = t.localize("panel.label.newContract"),
-        this.__itemInfo3Value.textContent = Bp(n),
+        this.__itemInfo3Value.textContent = Jn(n),
         this.__infoText1.textContent = t.localize("panel.text.loanDuplicatePlayer1"),
         this.__infoText2.textContent = t.localize("panel.text.loanDuplicatePlayer2"),
         this._actionButton.setInteractionState(e.isDuplicateLoanPlayer())
@@ -4822,7 +4308,7 @@ controllers.items.ItemDetails.prototype._onCombineLoans = function _onCombineLoa
 ,
 controllers.items.ItemDetails.prototype._onDiscard = function _onDiscard() {
     var e = this._viewmodel.current();
-    if (e.isConsumable()) {
+    if (e.isConsumable() && 1 < e.stackCount) {
         var t = new UTQuickSellPopupViewController(e.stackCount,e.untradeableCount,e.discardValue);
         t.onConfirm.observe(this, this._onDiscardConfirmConsumable),
         gPopupClickShield.setActivePopup(t)
@@ -5279,7 +4765,7 @@ var UTClubSearchResultsViewController = function(s) {
             this.selectedSubType && t.setIndexById(this.selectedSubType),
             t.addTarget(this, this.onDropDownChanged, EventType.CHANGE)
         }
-        function Ju() {
+        function Ss() {
             var e, t;
             i.setupHeader(),
             i.selectedItem && (null === (e = i.clubViewModel) || void 0 === e ? void 0 : e.canShowPage()) ? (i.validateCurrentItems(),
@@ -5297,8 +4783,8 @@ var UTClubSearchResultsViewController = function(s) {
         this.searchCriteria.type === SearchType.PLAYER || this.searchCriteria.type === SearchType.STAFF ? services.Squad.requestSquadByType("active").observe(this, function(e, t) {
             e.unobserve(i),
             t.success && t.data && t.data.squad && i.setActiveSquadData(t.data.squad),
-            Ju.call(i)
-        }) : Ju.call(this),
+            Ss.call(i)
+        }) : Ss.call(this),
         o.onSearch.observe(this, this.onSearch),
         o.addTarget(this, this.onTableCellSelected, enums.UIListEvent.ROW_SELECT),
         o.addTarget(this, this.onTableCellActionSelected, enums.UIListEvent.ROW_ACTION),
@@ -5932,10 +5418,10 @@ var UTTileView = function(i) {
     UTTileView.prototype.setContent = function(e) {
         var t = this;
         DOMKit.empty(this.__tileContent);
-        function Sx(e) {
+        function _v(e) {
             e instanceof HTMLElement ? t.__tileContent.appendChild(e) : e instanceof UTView ? t.__tileContent.appendChild(e.getRootElement()) : t.__tileContent.textContent = e.toString()
         }
-        Array.isArray(e) ? e.forEach(Sx, this) : e && Sx.call(this, e)
+        Array.isArray(e) ? e.forEach(_v, this) : e && _v.call(this, e)
     }
     ,
     UTTileView.prototype.appendContent = function(e) {
@@ -6178,7 +5664,7 @@ var UTConsumablesHubView = function(t) {
     }
     ,
     UTConsumablesHubView.prototype.render = function(e) {
-        function Qy(e, t) {
+        function Zw(e, t) {
             var i = services.Localization
               , o = new UTLabelView;
             o.setAngle(UTLabelView.Angle.BOTTOM_RIGHT);
@@ -6189,11 +5675,11 @@ var UTConsumablesHubView = function(t) {
             e.setContent(o)
         }
         services.Localization;
-        Qy(this._contractsTile, e.contracts),
-        Qy(this._healingTile, e.healing),
-        Qy(this._managerLeagueTile, e.managerLeagueModifier),
-        Qy(this._chemistryTile, e.playStyle),
-        Qy(this._positioningTile, e.position)
+        Zw(this._contractsTile, e.contracts),
+        Zw(this._healingTile, e.healing),
+        Zw(this._managerLeagueTile, e.managerLeagueModifier),
+        Zw(this._chemistryTile, e.playStyle),
+        Zw(this._positioningTile, e.position)
     }
     ,
     UTConsumablesHubView.prototype.getContractsTile = function() {
@@ -7750,21 +7236,21 @@ function(t) {
     }
     ,
     UTImageListView.prototype.buildPlaceholderUrl = function() {
-        function mF(e, t) {
+        function vD(e, t) {
             return e.replace(/\d+\.png/, t + ".png")
         }
         var e = this._listImage.path;
         switch (this.itemType) {
         case ItemType.BADGE:
-            return 0 < e.length ? mF(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getBadgeImageUri(UTItemEntity.DEFAULT_ASSET_ID, enums.UIThemeVariation.DARK);
+            return 0 < e.length ? vD(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getBadgeImageUri(UTItemEntity.DEFAULT_ASSET_ID, enums.UIThemeVariation.DARK);
         case ItemType.BALL:
-            return 0 < e.length ? mF(e, UTItemEntity.DEFAULT_BALL_ASSET_ID) : AssetLocationUtils.getBallImageUri(UTItemEntity.DEFAULT_BALL_ASSET_ID);
+            return 0 < e.length ? vD(e, UTItemEntity.DEFAULT_BALL_ASSET_ID) : AssetLocationUtils.getBallImageUri(UTItemEntity.DEFAULT_BALL_ASSET_ID);
         case ItemType.KIT:
-            return 0 < e.length ? mF(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getKitImageUri(KitType.HOME, UTItemEntity.DEFAULT_ASSET_ID);
+            return 0 < e.length ? vD(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getKitImageUri(KitType.HOME, UTItemEntity.DEFAULT_ASSET_ID);
         case ItemType.STADIUM:
-            return 0 < e.length ? mF(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getStadiumImageUri(UTItemEntity.DEFAULT_ASSET_ID);
+            return 0 < e.length ? vD(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getStadiumImageUri(UTItemEntity.DEFAULT_ASSET_ID);
         case ItemType.VANITY:
-            return 0 < e.length ? mF(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getVanityImageUri(ItemSubType.NONE, UTItemEntity.DEFAULT_ASSET_ID);
+            return 0 < e.length ? vD(e, UTItemEntity.DEFAULT_ASSET_ID) : AssetLocationUtils.getVanityImageUri(ItemSubType.NONE, UTItemEntity.DEFAULT_ASSET_ID);
         default:
             return DebugUtils.Assert(this.itemType === ItemType.NONE, "Unsupported item type: " + this.itemType),
             e
@@ -9378,16 +8864,16 @@ var UTLeaderboardsEntryView = function(e) {
         DOMKit.removeClass(this.__platform, JSUtils.getObjectValues(UTLeaderboardsEntryView.PlatformType).join(" "));
         var r = t ? UTLeaderboardsEntryView.PlatformType.GENERICPC : UTLeaderboardsEntryView.PlatformType.EA
           , s = ((o = {})[GamePlatform.PC] = r,
-        o[GamePlatform.STADIA] = UTLeaderboardsEntryView.PlatformType.GENERICCLOUDGAMING,
         o[GamePlatform.PSN] = UTLeaderboardsEntryView.PlatformType.GENERICCONSOLE,
         o[GamePlatform.XBL] = UTLeaderboardsEntryView.PlatformType.GENERICCONSOLE,
         o[GamePlatform.SWI] = UTLeaderboardsEntryView.PlatformType.GENERICCONSOLE,
+        o[""] = UTLeaderboardsEntryView.PlatformType.GENERICCLOUDGAMING,
         o)
           , a = ((n = {})[GamePlatform.PC] = r,
-        n[GamePlatform.STADIA] = UTLeaderboardsEntryView.PlatformType.STADIA,
         n[GamePlatform.PSN] = UTLeaderboardsEntryView.PlatformType.PLAYSTATION,
         n[GamePlatform.XBL] = UTLeaderboardsEntryView.PlatformType.XBOX,
         n[GamePlatform.SWI] = UTLeaderboardsEntryView.PlatformType.GENERICCONSOLE,
+        n[""] = UTLeaderboardsEntryView.PlatformType.GENERICCLOUDGAMING,
         n)
           , l = services.Authentication.getUtasSession()
           , c = l.user ? l.user.getSelectedPersona() : null
@@ -9402,7 +8888,6 @@ var UTLeaderboardsEntryView = function(e) {
         GENERICCONSOLE: "genericConsole",
         GENERICPC: "genericPC",
         PLAYSTATION: "playstation",
-        STADIA: "stadia",
         STEAM: "steam",
         XBOX: "xbox"
     }),
@@ -10036,11 +9521,11 @@ function(r) {
             this.filtersModal.onFilterSubmit.observe(this, this._onFilterSubmit);
             var i = this.getView();
             i.getTabMenu().addTarget(this, this.eTabSelected, EventType.TAP);
-            function cP() {
+            function lN() {
                 return e.presentViewController(e.filtersModal)
             }
-            i.getFilterButton().addTarget(this, cP, EventType.TAP),
-            i.getFloatingFilterButton().addTarget(this, cP, EventType.TAP)
+            i.getFilterButton().addTarget(this, lN, EventType.TAP),
+            i.getFloatingFilterButton().addTarget(this, lN, EventType.TAP)
         }
     }
     ,
@@ -11517,7 +11002,7 @@ var UTObjectiveCategoryViewController = function(o) {
     UTObjectiveCategoryViewController.prototype.onSCMPInfoPopupClosed = function(e, t, i) {
         var n = this;
         e.unobserve(this);
-        function yV(e, t) {
+        function HT(e, t) {
             var i;
             e.unobserve(n);
             var o = n.objectivesViewModel.getCurrentCategory();
@@ -11536,7 +11021,7 @@ var UTObjectiveCategoryViewController = function(o) {
                 o.setDescription(r.localize(0 < t.data.rewards.length ? "objective.rewards.claimAlldescription" : "objective.rewards.autoclaimed")),
                 o.setButtonText(r.localize("objective.rewards.claim")),
                 gPopupClickShield.setActivePopup(i),
-                n.objectivesViewModel.requestCategories().observe(n, yV)
+                n.objectivesViewModel.requestCategories().observe(n, HT)
             }
         })
     }
@@ -12351,7 +11836,7 @@ var TierViewState, UTObjectiveGroupViewController = function(o) {
             var e = this.objectivesViewModel.getCampaign()
               , t = this.objectivesViewModel.getCurrentGroup();
             !t || t.isMilestone() || t.hasExpired() || this.getView().updateGroupProgressionTimeRemaining(t.getTimeRemaining());
-            function f$(e) {
+            function oY(e) {
                 i.intervalController.stop();
                 var t = new UTSeasonalCampaignPopupViewController(e);
                 t.onExit.observe(i, i.onSCMPInfoPopupClosed),
@@ -12359,9 +11844,9 @@ var TierViewState, UTObjectiveGroupViewController = function(o) {
                 gPopupClickShield.setActivePopup(t)
             }
             if (e && e.hasEnded() && (e.hasNextCampaignStarted() || e.isLastCampaign()))
-                f$(e.hasUnclaimedRewards() || this.objectivesViewModel.hasUnclaimedGroupRewards() ? "season-rewards" : "season-campaign");
+                oY(e.hasUnclaimedRewards() || this.objectivesViewModel.hasUnclaimedGroupRewards() ? "season-rewards" : "season-campaign");
             else
-                this.objectivesViewModel.hasUnclaimedExpiredGroups() && f$("group-rewards")
+                this.objectivesViewModel.hasUnclaimedExpiredGroups() && oY("group-rewards")
         }
     }
     ,
@@ -15819,7 +15304,7 @@ var UTObjectivesHubViewController = function(o) {
     }
     ,
     UTObjectivesHubViewController.prototype.loadData = function() {
-        function Wea(e, t) {
+        function dda(e, t) {
             var i;
             e.unobserve(n),
             t.success ? (n.setupFilterTabs(),
@@ -15828,7 +15313,7 @@ var UTObjectivesHubViewController = function(o) {
             n.intervalController.start()) : (services.Notification.queue([services.Localization.localize("notification.scmp.categories.loadFailed"), UINotificationType.NEGATIVE]),
             null === (i = n.getNavigationController()) || void 0 === i || i.popViewController())
         }
-        function Xea(e, t) {
+        function eda(e, t) {
             e.unobserve(n);
             var o = services.Localization;
             t.success ? t.success && JSUtils.isObject(t.data) && (n.objectivesViewModel && t.data.needsAutoClaim && n.objectivesViewModel.claimExpiredWorldRewards().observe(n, function(e, t) {
@@ -15844,14 +15329,14 @@ var UTObjectivesHubViewController = function(o) {
             }),
             !t.data.campaign && n.objectivesViewModel && n.objectivesViewModel.currentCategoryId === UTObjectivesViewModel.TabId.WORLD && (n.objectivesViewModel.currentCategoryId = UTObjectivesViewModel.TabId.SEASON)) : services.Notification.queue([o.localize("notification.wcmp.loadfail"), UINotificationType.NEGATIVE]),
             DebugUtils.Assert(JSUtils.isValid(n.objectivesViewModel), "Missing objectives view model when loading view data."),
-            n.objectivesViewModel && n.objectivesViewModel.requestCategories().observe(n, Wea)
+            n.objectivesViewModel && n.objectivesViewModel.requestCategories().observe(n, dda)
         }
         var n = this;
         this.objectivesViewModel && this.objectivesViewModel.requestActiveCampaignDetails().observe(this, function(e, t) {
             var i;
             e.unobserve(n),
             DebugUtils.Assert(JSUtils.isValid(n.objectivesViewModel), "Missing objectives view model when loading view data."),
-            t.success && n.objectivesViewModel ? n.objectivesViewModel.requestActiveWorldCampaign().observe(n, Xea) : t.success || (services.Notification.queue([services.Localization.localize("notification.scmp.campaign.loadFailed"), UINotificationType.NEGATIVE]),
+            t.success && n.objectivesViewModel ? n.objectivesViewModel.requestActiveWorldCampaign().observe(n, eda) : t.success || (services.Notification.queue([services.Localization.localize("notification.scmp.campaign.loadFailed"), UINotificationType.NEGATIVE]),
             null === (i = n.getNavigationController()) || void 0 === i || i.popViewController())
         })
     }
@@ -18140,7 +17625,7 @@ var UTTacticsPositionAdjustmentView = function(i) {
         }
         ),
         u)) {
-            function Cqa() {
+            function Loa() {
                 n.removeClass("empty"),
                 n.setItemView(c),
                 r.setItemView(l),
@@ -18149,7 +17634,7 @@ var UTTacticsPositionAdjustmentView = function(i) {
                     swapTo: t
                 })
             }
-            d ? Cqa() : (n.addClass("noBackground"),
+            d ? Loa() : (n.addClass("noBackground"),
             u.animate(_, {
                 duration: this.animationDuration
             }).onfinish = function(e) {
@@ -18157,7 +17642,7 @@ var UTTacticsPositionAdjustmentView = function(i) {
                 u.style.removeProperty("left"),
                 u.style.removeProperty("top"),
                 n.removeClass("noBackground"),
-                Cqa()
+                Loa()
             }
             )
         }
@@ -18651,7 +18136,7 @@ var UTTacticsFormationSelectViewController = function(a) {
         var r = this;
         if (DebugUtils.Assert(JSUtils.isValid(this.tacticsViewModel), "Missing tactics view model. Unable to change mentality formation."),
         this.tacticsViewModel) {
-            function Zsa() {
+            function gra() {
                 var e = repositories.Squad.getFormation(i.value);
                 DebugUtils.Assert(JSUtils.isValid(e), "Could not find formation with name: " + i.value),
                 e && (null == s || s.setFormation(e))
@@ -18661,7 +18146,7 @@ var UTTacticsFormationSelectViewController = function(a) {
               , n = JSUtils.isString(o) && "true" === o.toLowerCase()
               , a = "true" === services.UserSettings.getItem(UserSettingsKey.TACTICS_FORMATION_MESSAGE_DISPLAYED, "false").toLowerCase();
             if ((null == s ? void 0 : s.getId()) !== SquadMentalityType.BALANCED || n || a)
-                Zsa();
+                gra();
             else {
                 var l = new UTTacticsFormationPopupViewController;
                 l.modalDisplayStyle = "form",
@@ -18672,7 +18157,7 @@ var UTTacticsFormationSelectViewController = function(a) {
                     if (e.unobserve(r),
                     r.dismissViewController(),
                     t === enums.UIDialogOptions.OK)
-                        Zsa();
+                        gra();
                     else {
                         var n = r.getView();
                         n.removeTarget(r, r.onChangeFormation, UTTacticsFormationSelectView.Event.FORMATION_CHANGE),
@@ -22553,7 +22038,7 @@ var UTSquadActionsViewController = function(i) {
     }
     ,
     UTSquadActionsViewController.prototype._onMakeActive = function() {
-        function BJa(e, t) {
+        function KHa(e, t) {
             e.unobserve(i),
             t.success ? (i.onDataChange.notify(),
             i._setViewButtonStates(),
@@ -22568,10 +22053,10 @@ var UTSquadActionsViewController = function(i) {
                 var n = this._squad;
                 n.save().observe(this, function(e, t) {
                     e.unobserve(i),
-                    t.success ? services.Squad.setActiveSquad(n.getId()).observe(i, BJa) : services.Notification.queue([o.localize("popup.error.activesquad.SaveFailed"), UINotificationType.NEGATIVE])
+                    t.success ? services.Squad.setActiveSquad(n.getId()).observe(i, KHa) : services.Notification.queue([o.localize("popup.error.activesquad.SaveFailed"), UINotificationType.NEGATIVE])
                 })
             } else
-                services.Squad.setActiveSquad(this._squad.getId()).observe(this, BJa)
+                services.Squad.setActiveSquad(this._squad.getId()).observe(this, KHa)
     }
     ,
     UTSquadActionsViewController.prototype._onSquadBuilder = function() {
@@ -22714,7 +22199,7 @@ var UTSquadActionsViewController = function(i) {
     }
     ,
     UTSquadActionsViewController.prototype._onOpen = function() {
-        function KKa() {
+        function TIa() {
             var e = o.getNavigationController();
             if (e) {
                 var t = isPhone() ? new UTSquadOverviewViewController : new UTSquadSplitViewController;
@@ -22724,13 +22209,13 @@ var UTSquadActionsViewController = function(i) {
         }
         var o = this
           , n = this.getView();
-        this._squad && (this._squad.isSquadLoaded() ? KKa() : (n.setInteractionState(!1),
+        this._squad && (this._squad.isSquadLoaded() ? TIa() : (n.setInteractionState(!1),
         services.Squad.requestSquadById(this._squad.getId()).observe(this, function(e, t) {
             var i;
             e.unobserve(o),
             t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.squad) && (o._squad = t.data.squad),
             n.setInteractionState(!0),
-            KKa()
+            TIa()
         })))
     }
     ,
@@ -22739,19 +22224,19 @@ var UTSquadActionsViewController = function(i) {
           , n = this._squad;
         if (DebugUtils.Assert(JSUtils.isValid(n), "Missing squad entity when changing formation."),
         n) {
-            function WKa() {
+            function dJa() {
                 var e = o._formations[i.index].value.toString()
                   , t = repositories.Squad.getFormation(e);
                 t && n.setFormation(t),
                 o._inSquadContext || o.onDataChange.notify()
             }
             var r = this.getView();
-            this._inSquadContext || n.isSquadLoaded() ? WKa() : (r.setInteractionState(!1),
+            this._inSquadContext || n.isSquadLoaded() ? dJa() : (r.setInteractionState(!1),
             services.Squad.requestSquadById(n.getId()).observe(this, function(e, t) {
                 var i;
                 e.unobserve(o),
                 t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.squad) && (o.setSquad(t.data.squad),
-                WKa(),
+                dJa(),
                 r.toggleClearState(!n.isSquadEmpty())),
                 r.setInteractionState(!0)
             }))
@@ -22759,7 +22244,7 @@ var UTSquadActionsViewController = function(i) {
     }
     ,
     UTSquadActionsViewController.prototype._eTacticsSelected = function(e, t, i) {
-        function eLa() {
+        function nJa() {
             var e = isPhone() ? new UTTacticsMentalityMenuViewController : new UTTacticsSplitViewController
               , t = new UTSquadTacticsViewModel(services.Squad)
               , i = services.UserSettings.getSessionItem(UserSettingsKey.SAVE_TACTICS_MESSAGE_DISPLAYED);
@@ -22773,7 +22258,7 @@ var UTSquadActionsViewController = function(i) {
         if (TelemetryManager.trackEvent(TelemetryManager.Sections.SQUADS, TelemetryManager.Categories.BUTTON_PRESS, "Squads - Modify Tactics"),
         this._squad)
             if (this._squad.isSquadLoaded())
-                eLa.call(this);
+                nJa.call(this);
             else {
                 var n = this.getView();
                 n.setInteractionState(!1),
@@ -22782,13 +22267,13 @@ var UTSquadActionsViewController = function(i) {
                     e.unobserve(o),
                     t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.squad) && (o._squad = t.data.squad),
                     n.setInteractionState(!0),
-                    eLa.call(o)
+                    nJa.call(o)
                 })
             }
     }
     ,
     UTSquadActionsViewController.prototype._eSquadUpdate = function(e, o) {
-        function rLa() {
+        function AJa() {
             var e, t;
             if (o.slots && n.isViewDisplayed()) {
                 var i = null !== (t = null === (e = n._squad) || void 0 === e ? void 0 : e.isSquadEmpty()) && void 0 !== t && t;
@@ -22798,11 +22283,11 @@ var UTSquadActionsViewController = function(i) {
         var t, n = this, r = this.getView();
         if (o)
             if (this._inSquadContext)
-                rLa(),
+                AJa(),
                 r.setCurrentFormation(this._getFormationDPIndex());
             else if (this._squad) {
                 var i = this._squad;
-                (o.chemistry && o.chemistry !== i.getChemistry() || o.rating && o.rating !== i.getRating() || o.type && o.type !== i.getType() || o.formation && o.formation.id !== (null === (t = i.getFormation()) || void 0 === t ? void 0 : t.id) || o.name && o.name !== i.getName()) && (rLa(),
+                (o.chemistry && o.chemistry !== i.getChemistry() || o.rating && o.rating !== i.getRating() || o.type && o.type !== i.getType() || o.formation && o.formation.id !== (null === (t = i.getFormation()) || void 0 === t ? void 0 : t.id) || o.name && o.name !== i.getName()) && (AJa(),
                 this.onDataChange.notify())
             }
     }
@@ -24115,16 +23600,16 @@ var UTSquadOverviewView = function(s) {
     }
     ,
     UTSquadOverviewView.prototype.onDragMove = function(e) {
-        function hSa(e, t) {
+        function qQa(e, t) {
             return !!t && (e.clientY >= t.top && e.clientY <= t.bottom && e.clientX >= t.left && e.clientX <= t.right)
         }
-        function lSa() {
+        function uQa() {
             var e, t, i, o, n;
             r.leftTabClientRect = null !== (t = null === (e = r.leftTab) || void 0 === e ? void 0 : e.getBoundingClientRect()) && void 0 !== t ? t : null,
             r.leftDockClientRect = null !== (o = null === (i = r.leftDock) || void 0 === i ? void 0 : i.getBoundingClientRect()) && void 0 !== o ? o : null,
             null === (n = r.utilDragDrop) || void 0 === n || n.updateCollisionData()
         }
-        function mSa() {
+        function vQa() {
             var e, t, i, o, n;
             r.rightTabClientRect = null !== (t = null === (e = r.rightTab) || void 0 === e ? void 0 : e.getBoundingClientRect()) && void 0 !== t ? t : null,
             r.rightDockClientRect = null !== (o = null === (i = r.rightDock) || void 0 === i ? void 0 : i.getBoundingClientRect()) && void 0 !== o ? o : null,
@@ -24141,10 +23626,10 @@ var UTSquadOverviewView = function(s) {
             }())
         }
         .call(this) ? this.leftDockClientRect && (null === (t = this.leftDock) || void 0 === t ? void 0 : t.isVisible) && !this.leftDock.isAnimating && o.clientY < this.leftDockClientRect.top ? this.closeLeftDock(function() {
-            return lSa()
+            return uQa()
         }) : this.rightDockClientRect && (null === (i = this.rightDock) || void 0 === i ? void 0 : i.isVisible) && !this.rightDock.isAnimating && o.clientY < this.rightDockClientRect.top && this.closeRightDock(function() {
-            return mSa()
-        }) : this.leftDock && hSa(o, this.leftTabClientRect) ? this.openLeftDock(lSa) : this.rightDock && hSa(o, this.rightTabClientRect) && this.openRightDock(mSa)
+            return vQa()
+        }) : this.leftDock && qQa(o, this.leftTabClientRect) ? this.openLeftDock(uQa) : this.rightDock && qQa(o, this.rightTabClientRect) && this.openRightDock(vQa)
     }
     ,
     UTSquadOverviewView.prototype.onDroppable = function(e) {
@@ -24211,7 +23696,7 @@ var UTSquadOverviewView = function(s) {
         }
         ),
         u)) {
-            function iTa() {
+            function rRa() {
                 n.removeClass("empty"),
                 n.setItemView(c),
                 r.setItemView(l),
@@ -24220,7 +23705,7 @@ var UTSquadOverviewView = function(s) {
                     swapTo: t
                 })
             }
-            d ? iTa() : (n.addClass("noBackground"),
+            d ? rRa() : (n.addClass("noBackground"),
             u.animate(_, {
                 duration: this.animationDuration
             }).onfinish = function(e) {
@@ -24228,7 +23713,7 @@ var UTSquadOverviewView = function(s) {
                 u.style.removeProperty("left"),
                 u.style.removeProperty("top"),
                 n.removeClass("noBackground"),
-                iTa()
+                rRa()
             }
             )
         }
@@ -28772,7 +28257,7 @@ function(e) {
             t = "SquadBattles_3_3.png";
             break;
         default:
-            t = "SquadBattle_Unranked.png"
+            t = "SquadBattles_Unranked.png"
         }
         this._tierImage.setLocalResource("images/gameModes/squadBattles/" + t)
     }
@@ -29028,10 +28513,9 @@ var UTSquadBattlesView = function(i) {
         if (n.init(),
         n.direction = isPhone() ? TierProgressBarDirection.VERTICAL : TierProgressBarDirection.HORIZONTAL,
         n.setTier(e.level),
-        o)
-            n.setProgress(100),
-            n.setTierState("complete");
-        else if (i < e.level)
+        -1 === i)
+            n.setProgress(0);
+        else if (o || i < e.level)
             n.setProgress(100),
             n.setTierState("complete");
         else if (t >= e.startPoints || t >= e.previousTierStartPoints) {
@@ -29048,7 +28532,7 @@ var UTSquadBattlesView = function(i) {
     UTSquadBattlesView.prototype.generateEventTierTile = function(e, t, i) {
         var o = new UTSquadBattlesTierView
           , n = TierViewState.NONE;
-        return i ? n = TierViewState.SURPASSED : t < e.level ? n = TierViewState.SURPASSED : t === e.level ? n = TierViewState.OBTAINED : t - 1 === e.level && (n = TierViewState.IN_PROGRESS),
+        return i ? n = TierViewState.SURPASSED : -1 === t ? n = TierViewState.NONE : t < e.level ? n = TierViewState.SURPASSED : t === e.level ? n = TierViewState.OBTAINED : t - 1 === e.level && (n = TierViewState.IN_PROGRESS),
         o.init(),
         o.setId(e.awardSetId),
         o.setStyle(isPhone() ? "vertical" : "horizontal"),
@@ -29105,50 +28589,51 @@ var UTSquadBattlesView = function(i) {
         }).find(function(e) {
             return t.userCurrentTierLevel === e.level
         });
-        if (e) {
-            var o = Date.now() / MS_PER_SECOND;
-            if (this._header.setCountdown(this.loc.localizeTimeRemaining(t.endTime - o)),
-            t.isRanked())
-                this._header.setTitle(this.loc.localize("squadbattles.rank.title", [t.rank.toString()])),
-                this._header.setRank(t.rank),
-                this._header.toggleProgressBar(!0),
-                this._header.setRankPoints(t.rank, e.start, e.end),
-                this._header.setProgressLabel(this.loc.localize("gamemodes.common.rank", [e.end.toString()])),
-                this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.rank", [e.start.toString()])),
-                this._header.toggleInfo(!1);
-            else {
-                this._header.setTitle(this.loc.localize("squadbattles.tier" + e.level + ".title")),
-                this._header.setSubtitle(this.loc.localize("squadbattles.gamesplayed", [t.gamesPlayed.toString()]));
-                var n = t.score
-                  , r = e.startPoints
-                  , s = e.endPoints;
-                this._header.setWeeklyPointsLabel(this.loc.localize("squadbattles.weeklypoints", [this.loc.localizeNumber(t.score)])),
-                1 === e.level && -1 === s ? (this._header.setProgress(50),
-                this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [n.toString()]))) : (this._header.setTierPoints(n, r, s),
-                this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [r.toString()])),
-                this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.points", [s.toString()]))),
-                this._header.setTier(t.userCurrentTierLevel),
-                this._header.toggleInfo(!1)
-            }
-            t.prizeTiers.filter(function(e) {
-                return e.type === SquadBattlesTierType.POINT_TIERS
-            }).forEach(function(e) {
-                i.progressBars.push(i.generateEventTierProgress(e, t.score, t.userCurrentTierLevel, t.isRanked())),
-                i.levels.push(i.generateEventTierTile(e, t.userCurrentTierLevel, t.isRanked()))
-            }, this),
-            t.prizeTiers.filter(function(e) {
-                return e.type === SquadBattlesTierType.RANK_TIERS
-            }).forEach(function(e) {
-                i.progressBars.push(i.generateRankProgress(e, t.rank)),
-                i.levels.push(i.generateRankTile(e, t.rank))
-            }, this),
-            this.layoutSubviews(),
-            this.levels.forEach(function(e, t) {
-                e.setupRewardsCarousel(0)
-            }, this),
-            this.scrollToActiveTier()
-        } else
-            DebugUtils.Assert(!1, "User is not ranked nor do they have an available current tier. ViewController should have figured this out")
+        e || (e = t.prizeTiers.filter(function(e) {
+            return e.type === SquadBattlesTierType.POINT_TIERS
+        })[0],
+        this._header.toggleProgressBar(!1));
+        var o = Date.now() / MS_PER_SECOND;
+        if (this._header.setCountdown(this.loc.localizeTimeRemaining(t.endTime - o)),
+        t.isRanked())
+            this._header.setTitle(this.loc.localize("squadbattles.rank.title", [t.rank.toString()])),
+            this._header.setRank(t.rank),
+            this._header.toggleProgressBar(!0),
+            this._header.setRankPoints(t.rank, e.start, e.end),
+            this._header.setProgressLabel(this.loc.localize("gamemodes.common.rank", [e.end.toString()])),
+            this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.rank", [e.start.toString()])),
+            this._header.toggleInfo(!1);
+        else {
+            t.hasProgression() ? this._header.setTitle(this.loc.localize("squadbattles.tier" + e.level + ".title")) : this._header.setTitle(this.loc.localize("squadbattles.noprogress.title")),
+            this._header.setSubtitle(this.loc.localize("squadbattles.gamesplayed", [t.gamesPlayed.toString()]));
+            var n = t.score
+              , r = e.startPoints
+              , s = e.endPoints;
+            this._header.setWeeklyPointsLabel(this.loc.localize("squadbattles.weeklypoints", [this.loc.localizeNumber(t.score)])),
+            1 === e.level && -1 === s ? (this._header.setProgress(50),
+            this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [n.toString()]))) : (this._header.setTierPoints(n, r, s),
+            this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [r.toString()])),
+            this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.points", [s.toString()]))),
+            this._header.setTier(t.userCurrentTierLevel),
+            this._header.toggleInfo(!1)
+        }
+        t.prizeTiers.filter(function(e) {
+            return e.type === SquadBattlesTierType.POINT_TIERS
+        }).forEach(function(e) {
+            i.progressBars.push(i.generateEventTierProgress(e, t.score, t.userCurrentTierLevel, t.isRanked())),
+            i.levels.push(i.generateEventTierTile(e, t.userCurrentTierLevel, t.isRanked()))
+        }, this),
+        t.prizeTiers.filter(function(e) {
+            return e.type === SquadBattlesTierType.RANK_TIERS
+        }).forEach(function(e) {
+            i.progressBars.push(i.generateRankProgress(e, t.rank)),
+            i.levels.push(i.generateRankTile(e, t.rank))
+        }, this),
+        this.layoutSubviews(),
+        this.levels.forEach(function(e, t) {
+            e.setupRewardsCarousel(0)
+        }, this),
+        this.scrollToActiveTier()
     }
     ,
     UTSquadBattlesView.prototype.onRewardInfoSelected = function(e, t, i) {
@@ -29556,11 +29041,6 @@ var UTRivalsProgressionHeaderView = function(e) {
         this.__subtitle.append(r, a)
     }
     ,
-    UTRivalsProgressionHeaderView.prototype.setRewardPreview = function(e) {
-        this._reward.setData([e]),
-        this._reward.render(!0)
-    }
-    ,
     UTRivalsProgressionHeaderView.prototype.setWeeklyRewardsTitle = function(e) {
         this.__weeklyRewardsTitle.textContent = e
     }
@@ -29589,12 +29069,12 @@ var UTRivalsProgressionHeaderView = function(e) {
         this.__matchesRemainingLabel.textContent = e
     }
     ,
-    UTRivalsProgressionHeaderView.prototype.toggleRewardPreviewContainer = function(e) {
-        this.__rewardPreviewContainer.style.display = e ? "" : "none"
+    UTRivalsProgressionHeaderView.prototype.toggleMatchesRemainingLabel = function(e) {
+        this.__matchesRemainingLabel.style.display = e ? "" : "none"
     }
     ,
     UTRivalsProgressionHeaderView.prototype.toggleDivisionElements = function(e) {
-        this.toggleRewardPreviewContainer(e),
+        this.toggleMatchesRemainingLabel(e),
         this.toggleUpgradedRewardsTitle(e),
         this.toggleWeeklyRewardsTitle(e)
     }
@@ -29632,13 +29112,9 @@ UTRivalsProgressionHeaderView.prototype._generate = function _generate() {
         this.__upgradedRewardsTitle = document.createElement("p"),
         this.__upgradedRewardsTitle.classList.add("ut-progression-header-view--rewards"),
         o.appendChild(this.__upgradedRewardsTitle),
-        this.__rewardPreviewContainer = document.createElement("div"),
-        this.__rewardPreviewContainer.classList.add("ut-progression-header-view--rewards-preview"),
-        this._reward = new UTRewardsFooterView,
-        this.__rewardPreviewContainer.appendChild(this._reward.getRootElement()),
         this.__matchesRemainingLabel = document.createElement("p"),
-        this.__rewardPreviewContainer.appendChild(this.__matchesRemainingLabel),
-        o.appendChild(this.__rewardPreviewContainer),
+        this.__matchesRemainingLabel.classList.add("ut-progression-header-view--matches-remaining"),
+        o.appendChild(this.__matchesRemainingLabel),
         t.appendChild(o),
         e.appendChild(t),
         this._infoBtn = new UTImageButtonControl,
@@ -29665,8 +29141,6 @@ UTRivalsProgressionHeaderView.prototype.destroyGeneratedElements = function dest
     this.__countdown = null,
     this.__weeklyRewardsTitle = null,
     this.__upgradedRewardsTitle = null,
-    this.__rewardPreviewContainer = null,
-    this._reward.destroy(),
     this.__matchesRemainingLabel = null,
     this._infoBtn.destroy(),
     this.__progressBarContainer = null,
@@ -29817,8 +29291,8 @@ __extends = this && this.__extends || function() {
     }
 }();
 !function(e) {
-    e[e.UPGRADED_REWARDS = 1] = "UPGRADED_REWARDS",
-    e[e.WEEKLY_REWARDS = 2] = "WEEKLY_REWARDS"
+    e[e.WEEKLY_REWARDS = 0] = "WEEKLY_REWARDS",
+    e[e.UPGRADED_REWARDS = 1] = "UPGRADED_REWARDS"
 }(RivalsRewardTileType = RivalsRewardTileType || {});
 var UTRivalsView = function(i) {
     function UTRivalsView(e) {
@@ -29852,7 +29326,9 @@ var UTRivalsView = function(i) {
         this.clearViews(),
         DOMKit.removeClass(this.__progressView, "horizontal vertical"),
         DOMKit.addClass(this.__progressView, isPhone() ? "vertical" : "horizontal"),
-        e === RivalsTierType.SEASONAL ? this.renderSeasonalView(t) : this.renderDivisionView(t)
+        this.removeClass("division"),
+        e === RivalsTierType.SEASONAL ? this.renderSeasonalView(t) : (this.renderDivisionView(t),
+        this.addClass("division"))
     }
     ,
     UTRivalsView.prototype.renderSeasonalView = function(t) {
@@ -29874,50 +29350,51 @@ var UTRivalsView = function(i) {
         this.scrollToActiveTier()
     }
     ,
-    UTRivalsView.prototype.renderDivisionView = function(e) {
-        var t, i, o, n;
+    UTRivalsView.prototype.renderDivisionView = function(t) {
+        var e, i, o, n;
         this._header.toggleInfo(!1),
-        0 === e.user.divisionId ? (this._header.toggleProgressBar(!1),
+        0 === t.user.divisionId ? (this._header.toggleProgressBar(!1),
         this._header.setTitle(this.loc.localize("rivals.masters.progress.title")),
-        this._header.setSkillRatingRank(null !== (t = e.user.elo) && void 0 !== t ? t : 0, null !== (i = e.user.rank) && void 0 !== i ? i : 0)) : this._header.setTitle(this.loc.localize("rivals.division.progress.title", [e.user.divisionId.toString(), (null !== (n = null === (o = e.getUserCurrentRank()) || void 0 === o ? void 0 : o.rank) && void 0 !== n ? n : "").toString()])),
-        this._header.setDivisionCrest(e.user.divisionId),
-        this._header.setCountdown(this.loc.localize("rivals.division.rewards.countdown", [this.loc.localizeTimeRemaining(e.getDivisionTimeRemaining())])),
+        this._header.setSkillRatingRank(null !== (e = t.user.elo) && void 0 !== e ? e : 0, null !== (i = t.user.rank) && void 0 !== i ? i : 0)) : this._header.setTitle(this.loc.localize("rivals.division.progress.title", [t.user.divisionId.toString(), (null !== (n = null === (o = t.getUserCurrentRank()) || void 0 === o ? void 0 : o.rank) && void 0 !== n ? n : "").toString()])),
+        this._header.setDivisionCrest(t.user.divisionId),
+        this._header.setCountdown(this.loc.localize("rivals.division.rewards.countdown", [this.loc.localizeTimeRemaining(t.getDivisionTimeRemaining())])),
         this._header.toggleDivisionElements(!0),
         this._header.setWeeklyRewardsTitle(this.loc.localize("rivals.division.header.weeklyrewards.title")),
         this._header.setUpgradedRewardsTitle(this.loc.localize("rivals.division.header.upgradedrewards.title")),
-        e.user.matchesWon >= e.season.weeklyTier2Threshold ? (this._header.setUpgradedRewardsComplete(),
+        t.user.matchesWon >= t.season.weeklyTier2Threshold ? (this._header.setUpgradedRewardsComplete(),
         this._header.setWeeklyRewardsComplete(),
-        this._header.toggleRewardPreviewContainer(!1)) : e.user.matchesWon < e.season.weeklyTier2Threshold && e.user.matchesWon >= e.season.weeklyTier1Threshold ? (this._header.setWeeklyRewardsComplete(),
-        this._header.setMatchesRemainingLabel(this.loc.localize("rivals.division.header.matchesremaining.label", [(e.season.weeklyTier2Threshold - e.user.matchesWon).toString()]))) : this._header.setMatchesRemainingLabel(this.loc.localize("rivals.division.header.matchesremaining.label", [(e.season.weeklyTier1Threshold - e.user.matchesWon).toString()])),
+        this._header.toggleMatchesRemainingLabel(!1)) : t.user.matchesWon < t.season.weeklyTier2Threshold && t.user.matchesWon >= t.season.weeklyTier1Threshold ? (this._header.setWeeklyRewardsComplete(),
+        this._header.setMatchesRemainingLabel(this.loc.localize("rivals.division.header.matchesremaining.label", [(t.season.weeklyTier2Threshold - t.user.matchesWon).toString()]))) : this._header.setMatchesRemainingLabel(this.loc.localize("rivals.division.header.matchesremaining.label", [(t.season.weeklyTier1Threshold - t.user.matchesWon).toString()])),
         this._header.toggleProgressBar(!1);
-        var r = e.division.stages.filter(function(e) {
+        var r = t.division.stages.filter(function(e) {
             return e.type === RivalsStageType.REWARD
-        }).length
-          , s = e.division.stages.length - r
-          , a = 0
+        })
+          , s = r.length
+          , a = t.division.stages.length - s
           , l = 0
-          , c = []
-          , d = e.division.stages.length - 1;
-        r <= 2 && DOMKit.addClass(this.__progressView, "small");
-        for (var u = e.getWinStreak(), h = 0; h < e.division.stages.length; h++) {
-            var p = e.division.stages[h];
-            if (p.type === RivalsStageType.REWARD) {
-                var _ = e.getUserCurrentRank();
-                this.progressBars.push(this.generateDivisionTierProgress(e.user, p, _, r, a, u, c, l)),
-                this.levels.push(this.generateDivisionTierTile(p, r, e.user.matchesWon, _, e.user.weeklyTier, e.season)),
-                l = p.id,
-                r--,
-                s -= a,
-                a = 0
-            } else if (h === d && p.type === RivalsStageType.PROGRESSION && 0 < s) {
-                this.progressBars.push(this.generateLastDivisionTierProgress(e.user, s, e.user.divisionId, p.id, e.user.stageId, u, c, l));
-                e.user.stageId,
-                p.id
+          , c = 0
+          , d = []
+          , u = t.division.stages.length - 1;
+        s <= 2 && DOMKit.addClass(this.__progressView, "small");
+        for (var h = t.getWinStreak(), p = 0; p < t.division.stages.length; p++) {
+            var _ = t.division.stages[p];
+            if (_.type === RivalsStageType.REWARD) {
+                var T = t.getUserCurrentRank();
+                this.progressBars.push(this.generateDivisionTierProgress(t.user, _, T, s, l, h, d, c)),
+                c = _.id,
+                s--,
+                a -= l,
+                l = 0
             } else
-                p.demotionThreshold && c.push(a),
-                a++
+                p === u && _.type === RivalsStageType.PROGRESSION && 0 < a ? this.progressBars.push(this.generateLastDivisionTierProgress(t.user, a, _.id, h, d, c)) : (_.demotionThreshold && d.push(l),
+                l++)
         }
-        this._header.setRewardPreview(this.rewardPreview),
+        var m = r.reverse().find(function(e) {
+            return t.user.stageId >= e.id
+        })
+          , g = t.getUserCurrentRank();
+        m && m.prizeTiers[0] && m.prizeTiers[1] && (this.levels.push(this.generateDivisionWeeklyRewardTile(m.prizeTiers[0], t.user.matchesWon, g, t.user.weeklyTier, t.season)),
+        this.levels.push(this.generateDivisionUpgradedRewardTile(m.prizeTiers[1], t.user.matchesWon, g, t.user.weeklyTier, t.season))),
         this.layoutSubviews(),
         this.levels.forEach(function(e, t) {
             e instanceof UTRivalsTierView && e.setupRewardsCarousel(0)
@@ -29989,54 +29466,71 @@ var UTRivalsView = function(i) {
                 0 < n && l.addProgressionNotches(n, -1, s);
         else
             0 < n && l.addProgressionNotches(n, -1, s);
-        return l.setRankCrest(e.divisionId, o),
+        return 5 <= n && l.addClass("extended"),
+        l.setRankCrest(e.divisionId, o),
         this.addSubview(l, this.__progressView),
         l
     }
     ,
-    UTRivalsView.prototype.generateDivisionTierTile = function(e, t, i, o, n, r) {
-        var s = this
-          , a = new UTRivalsTierView
-          , l = TierViewState.NONE;
-        i >= r.weeklyTier2Threshold ? l = TierViewState.OBTAINED : i >= r.weeklyTier1Threshold ? t === RivalsRewardTileType.WEEKLY_REWARDS ? l = TierViewState.OBTAINED : t === RivalsRewardTileType.UPGRADED_REWARDS && (l = TierViewState.IN_PROGRESS) : t === RivalsRewardTileType.WEEKLY_REWARDS && (l = TierViewState.IN_PROGRESS),
-        a.init(),
-        a.setStyle(isPhone() ? "vertical" : "horizontal"),
-        a.setState(l),
-        a.addClass("division"),
-        o && a.setTitle(this.loc.localize("gamemodes.common.rank", [o.rank.toString()])),
-        t === RivalsRewardTileType.UPGRADED_REWARDS ? a.setSubtitle(this.loc.localize("rivals.division.tier.upgraded.title")) : t === RivalsRewardTileType.WEEKLY_REWARDS && a.setSubtitle(this.loc.localize("rivals.division.tier.weekly.title"));
-        var c = e.prizeTiers[n].rewardSet;
-        return this.rewardPreview = c[0].rewards[0],
-        a.setTierLevelRewardOptions(c),
-        l !== TierViewState.OBTAINED ? t === RivalsRewardTileType.WEEKLY_REWARDS ? (a.setLabel(this.loc.localize("rivals.division.tier.weekly.label", [(r.weeklyTier1Threshold - i).toString()])),
-        a.setupWinsProgressLabel(i, r.weeklyTier1Threshold)) : (a.setLabel(this.loc.localize("rivals.division.tier.upgraded.label", [(r.weeklyTier2Threshold - i).toString()])),
-        a.setupWinsProgressLabel(i, r.weeklyTier2Threshold)) : l === TierViewState.OBTAINED && (t === RivalsRewardTileType.UPGRADED_REWARDS ? a.setLabel(this.loc.localize("rivals.division.tier.upgraded.qualified.label")) : t === RivalsRewardTileType.WEEKLY_REWARDS && a.setLabel(this.loc.localize("rivals.division.tier.weekly.qualified.label"))),
-        a.toggleRewardsInfoButton(1 < c.length),
-        a.addTarget(this, function() {
-            return s.onRewardInfoSelected(a, UTRivalsTierView.Event.REWARDS_INFO, {
-                id: e.id,
-                rewardSet: c
+    UTRivalsView.prototype.generateDivisionWeeklyRewardTile = function(e, t, i, o, n) {
+        var r = new UTRivalsTierView;
+        r.init();
+        var s = TierViewState.NONE;
+        return s = 0 === o ? TierViewState.IN_PROGRESS : TierViewState.OBTAINED,
+        r.setSubtitle(this.loc.localize("rivals.division.tier.weekly.title")),
+        s !== TierViewState.OBTAINED ? (r.setLabel(this.loc.localize("rivals.division.tier.weekly.label", [(n.weeklyTier1Threshold - t).toString()])),
+        r.setupWinsProgressLabel(t, n.weeklyTier1Threshold)) : s === TierViewState.OBTAINED && r.setLabel(this.loc.localize("rivals.division.tier.weekly.qualified.label")),
+        this.generateDivisionRewardTile(e, i, r, s)
+    }
+    ,
+    UTRivalsView.prototype.generateDivisionUpgradedRewardTile = function(e, t, i, o, n) {
+        var r = new UTRivalsTierView;
+        r.init();
+        var s = TierViewState.NONE;
+        return 1 === o ? s = TierViewState.IN_PROGRESS : 2 === o && (s = TierViewState.OBTAINED),
+        r.setSubtitle(this.loc.localize("rivals.division.tier.upgraded.title")),
+        s !== TierViewState.OBTAINED ? (r.setLabel(this.loc.localize("rivals.division.tier.upgraded.label", [(n.weeklyTier2Threshold - t).toString()])),
+        r.setupWinsProgressLabel(t, n.weeklyTier2Threshold)) : s === TierViewState.OBTAINED && r.setLabel(this.loc.localize("rivals.division.tier.upgraded.qualified.label")),
+        this.generateDivisionRewardTile(e, i, r, s)
+    }
+    ,
+    UTRivalsView.prototype.generateDivisionRewardTile = function(e, t, i, o) {
+        var n = this;
+        i.setStyle(isPhone() ? "vertical" : "horizontal"),
+        i.setState(o),
+        i.addClass("division"),
+        t && i.setTitle(this.loc.localize("gamemodes.common.rank", [t.rank.toString()]));
+        var r = e.rewardSet;
+        return i.setTierLevelRewardOptions(r),
+        i.toggleRewardsInfoButton(1 < r.length),
+        i.addTarget(this, function() {
+            return n.onRewardInfoSelected(i, UTRivalsTierView.Event.REWARDS_INFO, {
+                id: e.subLevel,
+                rewardSet: r
             })
         }, UTRivalsTierView.Event.REWARDS_INFO),
-        this.addSubview(a, this.__tierView),
-        a
+        this.addSubview(i, this.__tierView),
+        i
     }
     ,
-    UTRivalsView.prototype.generateLastDivisionTierProgress = function(e, t, i, o, n, r, s, a) {
-        var l = new UTRivalsTierProgressBarView;
-        if (l.init(),
-        l.direction = isPhone() ? TierProgressBarDirection.VERTICAL : TierProgressBarDirection.HORIZONTAL,
+    UTRivalsView.prototype.generateLastDivisionTierProgress = function(e, t, i, o, n, r) {
+        var s = new UTRivalsTierProgressBarView
+          , a = e.divisionId
+          , l = e.stageId;
+        if (s.init(),
+        s.direction = isPhone() ? TierProgressBarDirection.VERTICAL : TierProgressBarDirection.HORIZONTAL,
         0 < t)
-            if (o - t <= n) {
-                var c = e.stageId - a;
-                l.setTierState("inprogress"),
-                l.addProgressionNotches(t, c - 1, s),
-                l.toggleWinStreakFlag(r)
+            if (i - t <= l) {
+                var c = e.stageId - r;
+                s.setTierState("inprogress"),
+                s.addProgressionNotches(t, c - 1, n),
+                s.toggleWinStreakFlag(o)
             } else
-                l.addProgressionNotches(t, -1, s);
-        return l.setDivisionCrest(i - 1),
-        this.addSubview(l, this.__progressView),
-        l
+                s.addProgressionNotches(t, -1, n);
+        return 5 <= t && s.addClass("extended"),
+        s.setDivisionCrest(a - 1),
+        this.addSubview(s, this.__progressView),
+        s
     }
     ,
     UTRivalsView.prototype.scrollToActiveTier = function() {
@@ -30371,19 +29865,11 @@ var UTChampionsProgressionHeaderView = function(e) {
           , n = i.localize("champions.value.points", [e.toString()])
           , r = i.localize("champions.label.losses")
           , s = i.localize("champions.value.points", [t.toString()])
-          , a = document.createElement("div");
-        a.className = "label",
-        a.textContent = o;
-        var l = document.createElement("span");
-        l.textContent = n,
-        l.className = "value",
+          , a = this.createLabelDiv(o)
+          , l = this.createValueSpan(n);
         a.append(l);
-        var c = document.createElement("div");
-        c.textContent = r,
-        c.className = "label";
-        var d = document.createElement("span");
-        d.textContent = s,
-        d.className = "value",
+        var c = this.createLabelDiv(r)
+          , d = this.createValueSpan(s);
         c.append(d),
         this.__winloss.append(a, c),
         DOMKit.toggleDisplayStyle(this.__winloss, !0)
@@ -30393,15 +29879,35 @@ var UTChampionsProgressionHeaderView = function(e) {
         var i = services.Localization
           , o = i.localize("champions.label.gamesplayed")
           , n = i.localize("champions.fraction.gamesplayed", [e.toString(), t.toString()])
-          , r = document.createElement("div");
-        r.textContent = o,
-        r.className = "label";
-        var s = document.createElement("span");
-        s.textContent = n,
-        s.className = "value",
+          , r = this.createLabelDiv(o)
+          , s = this.createValueSpan(n);
         r.append(s),
         this.__entries.append(r),
         DOMKit.toggleDisplayStyle(this.__winloss, !0)
+    }
+    ,
+    UTChampionsProgressionHeaderView.prototype.setQualificationsMeta = function(e, t) {
+        var i = services.Localization.localize("champions.label.qualificationpoints")
+          , o = t.toString()
+          , n = this.createLabelDiv(i)
+          , r = this.createValueSpan(e + "/" + o);
+        n.append(r),
+        this.__qualifications.append(n),
+        DOMKit.toggleDisplayStyle(this.__qualifications, !0)
+    }
+    ,
+    UTChampionsProgressionHeaderView.prototype.createLabelDiv = function(e) {
+        var t = document.createElement("div");
+        return t.textContent = e,
+        t.className = "label",
+        t
+    }
+    ,
+    UTChampionsProgressionHeaderView.prototype.createValueSpan = function(e) {
+        var t = document.createElement("span");
+        return t.textContent = e,
+        t.className = "value",
+        t
     }
     ,
     UTChampionsProgressionHeaderView.prototype.setStageAssets = function(e, t) {
@@ -30448,6 +29954,9 @@ UTChampionsProgressionHeaderView.prototype._generate = function _generate() {
         this.__winloss = document.createElement("div"),
         this.__winloss.classList.add("ut-champions-progression-header-view--winloss"),
         o.appendChild(this.__winloss),
+        this.__qualifications = document.createElement("div"),
+        this.__qualifications.classList.add("ut-champions-progression-header-view--qualifications"),
+        o.appendChild(this.__qualifications),
         t.appendChild(o),
         e.appendChild(t),
         this._infoBtn = new UTImageButtonControl,
@@ -30474,6 +29983,7 @@ UTChampionsProgressionHeaderView.prototype.destroyGeneratedElements = function d
     this.__countdown = null,
     this.__entries = null,
     this.__winloss = null,
+    this.__qualifications = null,
     this._infoBtn.destroy(),
     this.__progressBarContainer = null,
     this._progressBar.destroy()
@@ -30672,9 +30182,7 @@ var UTChampionsView = function(i) {
             this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [(0).toString()])),
             this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.points", [T.toString()])),
             this._header.setEntriesUsed(0, d.maxGames)
-        } else {
-            if (!u || !h)
-                return void DebugUtils.Assert(!1, "User is has not made any champions progress ViewController should have figured this out");
+        } else if (u && h) {
             this._header.setStageAssets(u.stageLevel),
             this._header.setTitle(this.loc.localize("champions.stage" + u.stageLevel + ".title")),
             this._header.setWinLossMeta(u.pointsPerWin, u.pointsPerLoss),
@@ -30683,16 +30191,20 @@ var UTChampionsView = function(i) {
                 return h.pointsProgress >= e.tierStart && h.pointsProgress < e.tierEnd
             })
               , g = m ? m.tierStart : 0
-              , w = m ? m.tierEnd : null !== (l = null === (a = u.getFirstStageTier()) || void 0 === a ? void 0 : a.tierStart) && void 0 !== l ? l : 0;
+              , v = m ? m.tierEnd : null !== (l = null === (a = u.getFirstStageTier()) || void 0 === a ? void 0 : a.tierStart) && void 0 !== l ? l : 0;
             this._header.setProgressLabel(this.loc.localize("gamemodes.common.points", [g.toString()])),
-            this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.points", [w.toString()])),
-            this._header.setTierPoints(h.pointsProgress, g, w)
-        }
-        if (u || d) {
-            var v = null != u ? u : d;
-            null == v || v.prizeTiers.forEach(function(e) {
+            this._header.setProgressSecondLabel(this.loc.localize("gamemodes.common.points", [v.toString()])),
+            this._header.setTierPoints(h.pointsProgress, g, v)
+        } else
+            this._header.setQualificationImage(),
+            this._header.setTitle(this.loc.localize("champions.qualification.title")),
+            this._header.setSubtitle(this.loc.localize("champions.qualification.subtitle")),
+            this._header.setQualificationsMeta(e, o);
+        if (u || d || t.stages[0]) {
+            var w = u || d || t.stages[0];
+            null == w || w.prizeTiers.forEach(function(e) {
                 var t, i;
-                c.progressBars.push(c.generateEventTierProgress(v, e, null !== (t = null == h ? void 0 : h.pointsProgress) && void 0 !== t ? t : 0)),
+                c.progressBars.push(c.generateEventTierProgress(w, e, null !== (t = null == h ? void 0 : h.pointsProgress) && void 0 !== t ? t : 0)),
                 c.levels.push(c.generateEventTierTile(e, null !== (i = null == h ? void 0 : h.pointsProgress) && void 0 !== i ? i : 0))
             }, this)
         }
@@ -30899,18 +30411,12 @@ function(t) {
         var i, o, n = services.Localization, r = services.Notification;
         e.unobserve(this);
         var s = this.getView().getSquadBattlesTile();
-        if (s.setInteractionState(!1),
+        s.setInteractionState(!1),
         s.toggleRewardsState(!1),
-        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event)) {
-            var a = null === (o = t.data) || void 0 === o ? void 0 : o.event;
-            a.hasOutStandingRewards() ? (s.setTagText(n.localize("gamemodeshub.tag.enterclaim")),
-            s.addTarget(this, this.eSquadBattlesRewardSelected, EventType.TAP),
-            s.toggleRewardsState(!0),
-            s.setInteractionState(!0)) : a.hasProgression() ? (s.addTarget(this, this.eSquadBattlesTileSelected, EventType.TAP),
-            s.setInteractionState(!0)) : (s.setInteractionState(!0),
-            s.setTagText(n.localize("gamemodes.tag.no-progress")),
-            s.addTarget(this, this.eSquadBattlesTileNoProgressSelected, EventType.TAP))
-        }
+        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event) && ((null === (o = t.data) || void 0 === o ? void 0 : o.event).hasOutStandingRewards() ? (s.setTagText(n.localize("gamemodeshub.tag.enterclaim")),
+        s.addTarget(this, this.eSquadBattlesRewardSelected, EventType.TAP),
+        s.toggleRewardsState(!0)) : s.addTarget(this, this.eSquadBattlesTileSelected, EventType.TAP),
+        s.setInteractionState(!0));
         t.success || r.queue([n.localize("squadbattles.loaderror"), UINotificationType.NEGATIVE])
     }
     ,
@@ -30918,38 +30424,26 @@ function(t) {
         var i, o, n = services.Localization, r = services.Notification;
         e.unobserve(this);
         var s = this.getView().getRivalsTile();
-        if (s.setInteractionState(!1),
+        s.setInteractionState(!1),
         s.toggleRewardsState(!1),
-        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event)) {
-            var a = null === (o = t.data) || void 0 === o ? void 0 : o.event;
-            a.hasOutStandingRewards() ? (s.setTagText(n.localize("gamemodeshub.tag.enterclaim")),
-            s.addTarget(this, this.eRivalsRewardSelected, EventType.TAP),
-            s.toggleRewardsState(!0),
-            s.setInteractionState(!0)) : a.isFeatureAccessible() ? (s.addTarget(this, this.eRivalsTileSelected, EventType.TAP),
-            s.setInteractionState(!0)) : (s.setInteractionState(!0),
-            s.setTagText(n.localize("gamemodes.tag.no-progress")),
-            s.addTarget(this, this.eRivalsTileNoProgressSelected, EventType.TAP))
-        }
+        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event) && ((null === (o = t.data) || void 0 === o ? void 0 : o.event).hasOutStandingRewards() ? (s.setTagText(n.localize("gamemodeshub.tag.enterclaim")),
+        s.addTarget(this, this.eRivalsRewardSelected, EventType.TAP),
+        s.toggleRewardsState(!0)) : s.addTarget(this, this.eRivalsTileSelected, EventType.TAP),
+        s.setInteractionState(!0));
         t.success || r.queue([n.localize("rivals.loaderror"), UINotificationType.NEGATIVE])
     }
     ,
     UTGameModesHubViewController.prototype.onRequestChampionsEventDataComplete = function(e, t) {
-        var i, o, n, r, s, a = services.Localization, l = services.Notification;
+        var i, o, n = services.Localization, r = services.Notification;
         e.unobserve(this);
-        var c = this.getView().getChampsTile();
-        if (c.setInteractionState(!1),
-        c.toggleRewardsState(!1),
-        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event)) {
-            var d = null === (o = t.data) || void 0 === o ? void 0 : o.event;
-            d.hasOutStandingRewards() ? (c.setTagText(a.localize("gamemodeshub.tag.enterclaim")),
-            c.addTarget(this, this.eChampionsRewardSelected, EventType.TAP),
-            c.toggleRewardsState(!0),
-            c.setInteractionState(!0)) : d.hasProgression() || 0 < (null !== (s = null === (r = null === (n = repositories.Rivals.getEvent()) || void 0 === n ? void 0 : n.user) || void 0 === r ? void 0 : r.championsPoints) && void 0 !== s ? s : 0) ? (c.addTarget(this, this.eChampsTileSelected, EventType.TAP),
-            c.setInteractionState(!0)) : (c.setInteractionState(!0),
-            c.setTagText(a.localize("gamemodes.tag.no-progress")),
-            c.addTarget(this, this.eChampsTileNoProgressSelected, EventType.TAP))
-        }
-        t.success || l.queue([a.localize("champions.loaderror"), UINotificationType.NEGATIVE])
+        var s = this.getView().getChampsTile();
+        s.setInteractionState(!1),
+        s.toggleRewardsState(!1),
+        t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.event) && ((null === (o = t.data) || void 0 === o ? void 0 : o.event).hasOutStandingRewards() ? (s.setTagText(n.localize("gamemodeshub.tag.enterclaim")),
+        s.addTarget(this, this.eChampionsRewardSelected, EventType.TAP),
+        s.toggleRewardsState(!0)) : s.addTarget(this, this.eChampsTileSelected, EventType.TAP),
+        s.setInteractionState(!0));
+        t.success || r.queue([n.localize("champions.loaderror"), UINotificationType.NEGATIVE])
     }
     ,
     UTGameModesHubViewController.prototype.requestEventData = function() {
@@ -31042,9 +30536,8 @@ function(t) {
                     o.getView().addTarget(r, r.eClosePopup, UTRewardSelectionChoiceView.Event.CONFIRM),
                     gPopupClickShield.setActivePopup(o);
                 var n = r.getView().getChampsTile();
-                n.toggleRewardsState(!1),
-                n.setInteractionState(!1),
-                n.setTagText(s.localize("gamemodes.tag.no-progress"))
+                r.requestEventData(),
+                n.addTarget(r, r.eSquadBattlesTileSelected, EventType.TAP)
             } else
                 services.Notification.queue([s.localize("notification.champions.claimFailed"), UINotificationType.NEGATIVE])
         })
@@ -31072,9 +30565,8 @@ function(t) {
                     gPopupClickShield.setActivePopup(n);
                 if (o) {
                     var r = s.getView().getSquadBattlesTile();
-                    r.toggleRewardsState(!1),
-                    r.setInteractionState(!1),
-                    r.setTagText(a.localize("gamemodes.tag.no-progress"))
+                    s.requestEventData(),
+                    r.addTarget(s, s.eSquadBattlesTileSelected, EventType.TAP)
                 }
             } else
                 NetworkErrorManager.checkCriticalStatus(t.status) ? NetworkErrorManager.handleStatus(t.status) : t.success && (!t.success || o) || services.Notification.queue([services.Localization.localize("notification.sqbt.claimAllFailed"), UINotificationType.NEGATIVE])
@@ -31084,7 +30576,7 @@ function(t) {
     UTGameModesHubViewController.prototype.eRivalsRewardSelected = function(e, t, i) {
         var o, s = this;
         TelemetryManager.trackEvent(TelemetryManager.Sections.GAMEMODES, TelemetryManager.Categories.BUTTON_PRESS, "Game Modes - Rivals Reward Tile");
-        function Fnb(e, t) {
+        function kmb(e, t) {
             var i, o;
             e.unobserve(s);
             var n = null !== (o = null === (i = null == t ? void 0 : t.data) || void 0 === i ? void 0 : i.rewards) && void 0 !== o ? o : [];
@@ -31107,7 +30599,7 @@ function(t) {
             var n = null !== (o = null === (i = null == t ? void 0 : t.data) || void 0 === i ? void 0 : i.unclaimedRewards) && void 0 !== o ? o : [];
             if (t.success && 0 < n.length)
                 if (1 === n.length)
-                    s.rivalsViewModel.claimWeeklyRivalsRewardsById(n[0].id).observe(s, Fnb);
+                    s.rivalsViewModel.claimWeeklyRivalsRewardsById(n[0].id).observe(s, kmb);
                 else {
                     var r = new UTRewardSelectionChoiceViewController(n);
                     r.setTitleText(a.localize("rivals.rewards.weeklyclaimedtitle")),
@@ -31120,7 +30612,7 @@ function(t) {
     }
     ,
     UTGameModesHubViewController.prototype.checkForSeasonalRivalRewards = function() {
-        function Wnb(e, t) {
+        function Bmb(e, t) {
             var i, o;
             e.unobserve(s);
             var n = null !== (o = null === (i = null == t ? void 0 : t.data) || void 0 === i ? void 0 : i.rewards) && void 0 !== o ? o : [];
@@ -31136,22 +30628,27 @@ function(t) {
                 NetworkErrorManager.checkCriticalStatus(t.status) ? NetworkErrorManager.handleStatus(t.status) : services.Notification.queue([a.localize("notification.rivals.claimFailed"), UINotificationType.NEGATIVE])
         }
         var e, s = this, a = services.Localization;
-        (null === (e = this.rivalsViewModel.currentEvent) || void 0 === e ? void 0 : e.isSeasonPrizeAvailable()) && this.rivalsViewModel.getSeasonalRewardsInfo().observe(this, function(e, t) {
-            var i, o;
-            e.unobserve(s);
-            var n = null !== (o = null === (i = null == t ? void 0 : t.data) || void 0 === i ? void 0 : i.unclaimedRewards) && void 0 !== o ? o : [];
-            if (t.success && 0 < n.length)
-                if (1 === n.length)
-                    s.rivalsViewModel.claimSeasonalRivalsRewardsById(n[0].id).observe(s, Wnb);
-                else {
-                    var r = new UTRewardSelectionChoiceViewController(n);
-                    r.setTitleText(a.localize("rivals.rewards.seasonaltitle")),
-                    r.getView().addTarget(s, s.eRivalsSeasonalRewardClaimed, UTRewardSelectionChoiceView.Event.CONFIRM),
-                    gPopupClickShield.setActivePopup(r)
-                }
-            else
-                NetworkErrorManager.checkCriticalStatus(t.status) && NetworkErrorManager.handleStatus(t.status)
-        })
+        if (null === (e = this.rivalsViewModel.currentEvent) || void 0 === e ? void 0 : e.isSeasonPrizeAvailable()) {
+            this.rivalsViewModel.getSeasonalRewardsInfo().observe(this, function(e, t) {
+                var i, o;
+                e.unobserve(s);
+                var n = null !== (o = null === (i = null == t ? void 0 : t.data) || void 0 === i ? void 0 : i.unclaimedRewards) && void 0 !== o ? o : [];
+                if (t.success && 0 < n.length)
+                    if (1 === n.length)
+                        s.rivalsViewModel.claimSeasonalRivalsRewardsById(n[0].id).observe(s, Bmb);
+                    else {
+                        var r = new UTRewardSelectionChoiceViewController(n);
+                        r.setTitleText(a.localize("rivals.rewards.seasonaltitle")),
+                        r.getView().addTarget(s, s.eRivalsSeasonalRewardClaimed, UTRewardSelectionChoiceView.Event.CONFIRM),
+                        gPopupClickShield.setActivePopup(r)
+                    }
+                else
+                    NetworkErrorManager.checkCriticalStatus(t.status) && NetworkErrorManager.handleStatus(t.status)
+            });
+            var t = this.getView().getRivalsTile();
+            this.requestEventData(),
+            t.addTarget(this, this.eRivalsTileSelected, EventType.TAP)
+        }
     }
     ,
     UTGameModesHubViewController.prototype.eRivalsWeeklyRewardClaimed = function(e, t, i) {
@@ -31181,7 +30678,7 @@ function(t) {
         (null === (e = this.rivalsViewModel.currentEvent) || void 0 === e ? void 0 : e.hasOutStandingRewards()) ? ((t = this.getView().getRivalsTile()).toggleRewardsState(!0),
         t.setInteractionState(!0)) : ((t = this.getView().getRivalsTile()).toggleRewardsState(!1),
         t.setInteractionState(!0),
-        t.setTagText(services.Localization.localize("gamemodes.tag.no-progress")))
+        t.setTagText(""))
     }
     ,
     UTGameModesHubViewController.prototype.eClosePopup = function(e, t, i) {
@@ -31543,7 +31040,7 @@ UTHomeHubViewController.prototype._onClaimLtpRewards = function _onClaimLtpRewar
         var i = services.Localization
           , o = new UTRewardSelectionChoiceViewController(t.data.rewards);
         o.setTitleText(i.localize("worldcup.rewards.title")),
-        o.setDescriptionText(i.localize("worldcup.rewards.description", t.data.lastTierAchieved)),
+        o.setDescriptionText(i.localize("worldcup.rewards.description", [t.data.lastTierAchieved])),
         o.setClaimableState(!0),
         gPopupClickShield.setActivePopup(o)
     } else
@@ -37677,7 +37174,7 @@ function(r) {
     }
     ,
     UTGameFlowNavigationController.prototype._eNavigationBarTapped = function(e, t, i) {
-        function yQb() {
+        function ePb() {
             var e, t = services.User.getUser(), i = null !== (e = null == t ? void 0 : t.getSelectedPersona()) && void 0 !== e ? e : null, o = services.Localization;
             if (DebugUtils.Assert(JSUtils.isValid(t), "Missing user entity when launching FIFA points purchase flow"),
             t && t.hasTradeAccess()) {
@@ -37703,10 +37200,10 @@ function(r) {
                 gPopupClickShield.setActivePopup(r)
             }
         }
-        function zQb(e, t) {
+        function fPb(e, t) {
             if (e.unobserve(s),
             t === UTPlayerHealthLimitPopupView.Events.IGNORE_TAPPED)
-                yQb(),
+                ePb(),
                 services.PlayerHealth.storeLimitIgnoredTimestamp(PlayerHealthStatId.POINTS_PURCHASED);
             else if (t === UTPlayerHealthLimitPopupView.Events.REVIEW_TAPPED) {
                 var i = new UTPlayerHealthViewController;
@@ -37714,7 +37211,7 @@ function(r) {
                 s.pushViewController(i, !0)
             }
         }
-        function AQb(e, t) {
+        function gPb(e, t) {
             if (e.unobserve(s),
             t.success && JSUtils.isObject(t.data) && t.data.playerHealth) {
                 var i = t.data.playerHealth
@@ -37723,13 +37220,13 @@ function(r) {
                     var n = new UTPlayerHealthLimitPopupViewController
                       , r = n.getView();
                     n.init(),
-                    n.onExit.observe(s, zQb),
+                    n.onExit.observe(s, fPb),
                     r.setContentByType(o.id, o.limit),
                     gPopupClickShield.setActivePopup(n)
                 } else
-                    yQb()
+                    ePb()
             } else
-                yQb()
+                ePb()
         }
         var s = this;
         gClickShield.showShield(EAClickShieldView.Shield.LOADING),
@@ -37737,7 +37234,7 @@ function(r) {
             e.unobserve(s);
             var i = s._hasCommerceAccess();
             s._navigationBar.toggleClass("currency-purchase", i),
-            i && (services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(s, AQb) : yQb()),
+            i && (services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(s, gPb) : ePb()),
             gClickShield.hideShield(EAClickShieldView.Shield.LOADING)
         })
     }
@@ -46349,6 +45846,14 @@ function(t) {
         this.appendActionButton(this._btnOpen)
     }
     ,
+    UTStorePackDetailsView.prototype.getPackShine = function() {
+        return this._pack.getPackShine()
+    }
+    ,
+    UTStorePackDetailsView.prototype.updateShineAnimationState = function() {
+        this._pack.getPackShine().updateAnimationRunState()
+    }
+    ,
     UTStorePackDetailsView.prototype.removeBuyCoinsButton = function() {
         this._btnBuyCoins && this.removeActionButton(this._btnBuyCoins)
     }
@@ -46726,6 +46231,10 @@ var UTStoreArticlePackGraphicView = function(e) {
         this._packGraphic.setPackForeground(e)
     }
     ,
+    UTStoreArticlePackGraphicView.prototype.getPackGraphic = function() {
+        return this._packGraphic
+    }
+    ,
     UTStoreArticlePackGraphicView.prototype.renderSingle = function(e) {
         this.renderItem(e),
         this.toggleClass(UTStoreArticlePackGraphicView.Styles.SINGLE, !0)
@@ -46852,6 +46361,14 @@ var UTStoreXrayPackDetailsView = function(o) {
         this._reviewBtn.addTarget(this, this.eBubbleEvent, EventType.TAP),
         this._reviewBtn.setInteractionState(!0),
         this.appendActionButton(this._reviewBtn)
+    }
+    ,
+    UTStoreXrayPackDetailsView.prototype.getPackShine = function() {
+        return this._xrayPack.getPackGraphic().getPackShine()
+    }
+    ,
+    UTStoreXrayPackDetailsView.prototype.updateShineAnimationState = function() {
+        this._xrayPack.getPackGraphic().getPackShine().updateAnimationRunState()
     }
     ,
     UTStoreXrayPackDetailsView.prototype.toggleReplacementWarning = function(e) {
@@ -47193,6 +46710,14 @@ var UTStoreBundleDetailsView = function(e) {
         this.addClass(e)
     }
     ,
+    UTStoreBundleDetailsView.prototype.getPackShine = function() {
+        return this._articleGraphic.getPackGraphic().getPackShine()
+    }
+    ,
+    UTStoreBundleDetailsView.prototype.updateShineAnimationState = function() {
+        this._articleGraphic.getPackGraphic().getPackShine().updateAnimationRunState()
+    }
+    ,
     UTStoreBundleDetailsView.prototype.renderBundle = function(e) {
         this.setStyle(UTStoreBundleDetailsView.Styles.BUNDLE),
         this._articleGraphic.renderBundle(e)
@@ -47469,25 +46994,37 @@ __extends = this && this.__extends || function() {
 var UTStoreView = function(t) {
     function UTStoreView() {
         var e = t.call(this) || this;
-        return e.storePacks = [],
+        return e.checkPackShineStates = function() {
+            e.storePacks.forEach(function(e) {
+                return e.updateShineAnimationState()
+            })
+        }
+        ,
+        e.storePacks = [],
         e.nimbleMTXItems = [],
         e
     }
     return __extends(UTStoreView, t),
     UTStoreView.prototype.init = function() {
+        var e = this;
         t.prototype.init.call(this),
         this._unassignedTile.init(),
         this._unassignedTile.addTarget(this, this._eUnassignedTileSelected, EventType.TAP),
         this._unassignedTile.setDisplay(!1),
         this._navigation.addTarget(this, this._handleTabSelect, EventType.TAP),
         this.setInteractionState(!0),
-        this.toggleDescription(!1)
+        this.toggleDescription(!1),
+        this.debounceCallback = JSUtils.debounce(function() {
+            return e.checkPackShineStates()
+        }, 200),
+        this.__itemList.addEventListener(EventType.SCROLL, this.debounceCallback, !1)
     }
     ,
     UTStoreView.prototype.dealloc = function() {
         this.clearPacks(),
         this.clearNimbleMTXItems(),
         this._navigation.removeTarget(this, this._handleTabSelect, EventType.TAP),
+        this.__itemList.removeEventListener(EventType.SCROLL, this.debounceCallback, !1),
         t.prototype.dealloc.call(this)
     }
     ,
@@ -47583,7 +47120,8 @@ var UTStoreView = function(t) {
         e.forEach(function(e) {
             e instanceof UTStoreXrayItemPackEntity ? n.generateXrayPack(e, o) : e instanceof UTStoreItemPackEntity ? n.generatePack(e, t, i, !e.isMyPack && o) : e instanceof UTStoreBundleEntity && n.generateBundle(e, t, i)
         }),
-        this.layoutSubviews()
+        this.layoutSubviews(),
+        this.checkPackShineStates()
     }
     ,
     UTStoreView.prototype.setupArticleView = function(e) {
@@ -48366,7 +47904,7 @@ function(o) {
     }
     ,
     UTStoreViewController.prototype.gotoUnassigned = function() {
-        function wzc(e, t) {
+        function eyc(e, t) {
             var i;
             e.unobserve(r);
             var o = r.getNavigationController();
@@ -48388,7 +47926,7 @@ function(o) {
             var i;
             e.unobserve(r),
             t.success && (null === (i = t.data) || void 0 === i ? void 0 : i.stadium) && (a = t.data.stadium),
-            services.Item.requestUnassignedItems().observe(r, wzc)
+            services.Item.requestUnassignedItems().observe(r, eyc)
         })
     }
     ,
@@ -48436,7 +47974,7 @@ function(o) {
             var u = !d.isPreviewed()
               , r = d.isCollectionCached();
             c.setInteractionState(!1);
-            function eAc(e, t, i) {
+            function Oyc(e, t, i) {
                 if (e.unobserve(l),
                 t === UTStoreRevealModalListView.Event.COIN_PURCHASE || t === UTStoreRevealModalListView.Event.POINTS_PURCHASE)
                     return l.isPreviewingPack = !1,
@@ -48448,11 +47986,11 @@ function(o) {
                 u && l.updateViewCategories(),
                 c.setInteractionState(!0)
             }
-            function fAc() {
+            function Pyc() {
                 if (n) {
                     var e = new UTStorePackRevealModalListViewController(r,d,n);
                     e.init(),
-                    e.onExit.observe(l, eAc),
+                    e.onExit.observe(l, Oyc),
                     gPopupClickShield.setActivePopup(e)
                 } else
                     DebugUtils.Assert(!1, "viewmodel is not undefined and required to progress")
@@ -48470,12 +48008,12 @@ function(o) {
                                 l.dismissViewController(!1, function() {
                                     o.dealloc()
                                 }),
-                                fAc()
+                                Pyc()
                             }),
                             o.modalDisplayStyle = "fullscreen",
                             l.presentViewController(o, !0)
                         } else
-                            fAc();
+                            Pyc();
                     else
                         DebugUtils.Assert(!1, "Unable to determine the itemToShow")
                 } else {
@@ -48507,79 +48045,74 @@ function(o) {
         }
     }
     ,
-    UTStoreViewController.prototype.eOpenPack = function(u, e, t) {
-        var i, h = this;
+    UTStoreViewController.prototype.eOpenPack = function(p, e, t) {
+        var i, _ = this;
         if (!this.isOpeningPack) {
-            var p = this.getView()
-              , _ = null === (i = this.viewmodel) || void 0 === i ? void 0 : i.getPackById(t.articleId, e === UTStorePackDetailsView.Event.OPEN, JSUtils.isBoolean(t.tradable) ? t.tradable : void 0)
-              , T = e === UTStorePackDetailsView.Event.BUY_POINTS || e === UTStoreBundleDetailsView.Event.BUY_POINTS || e === UTStoreRevealModalListView.Event.POINTS_PURCHASE ? GameCurrency.POINTS : GameCurrency.COINS;
+            var T = this.getView()
+              , m = null === (i = this.viewmodel) || void 0 === i ? void 0 : i.getPackById(t.articleId, e === UTStorePackDetailsView.Event.OPEN, JSUtils.isBoolean(t.tradable) ? t.tradable : void 0)
+              , g = e === UTStorePackDetailsView.Event.BUY_POINTS || e === UTStoreBundleDetailsView.Event.BUY_POINTS || e === UTStoreRevealModalListView.Event.POINTS_PURCHASE ? GameCurrency.POINTS : GameCurrency.COINS;
             this.isOpeningPack = !0,
-            p.setInteractionState(!1);
-            function BAc() {
-                utils.PopupManager.showConfirmation(utils.PopupManager.Confirmations.UNASSIGNED_ENTITLEMENT, [], h.gotoUnassigned.bind(h), function() {
-                    p.setInteractionState(!0)
+            T.setInteractionState(!1);
+            function jzc() {
+                utils.PopupManager.showConfirmation(utils.PopupManager.Confirmations.UNASSIGNED_ENTITLEMENT, [], _.gotoUnassigned.bind(_), function() {
+                    T.setInteractionState(!0)
                 })
             }
-            function CAc(e, t) {
+            function kzc(e, t) {
                 var i, o, n;
-                if (e.unobserve(h),
-                h.isOpeningPack = !1,
+                if (e.unobserve(_),
+                _.isOpeningPack = !1,
                 t.success && JSUtils.isObject(t.response))
                     if (repositories.Item.setDirty(ItemPile.PURCHASED),
                     services.User.requestCurrencies(),
-                    _ instanceof UTStoreItemPackEntity && (null == _ ? void 0 : _.isMyPack) && (null === (i = services.User.getUser()) || void 0 === i || i.decrementNumUnopenedPacks()),
-                    u instanceof UTStorePackRevealModalListViewController)
+                    m instanceof UTStoreItemPackEntity && (null == m ? void 0 : m.isMyPack) && (null === (i = services.User.getUser()) || void 0 === i || i.decrementNumUnopenedPacks()),
+                    p instanceof UTStorePackRevealModalListViewController)
                         repositories.Store.setDirty(),
-                        h.gotoUnassigned();
+                        _.gotoUnassigned();
                     else {
-                        var s = null
-                          , r = t.response.items.filter(function(e) {
+                        var r = null
+                          , s = t.response.items.filter(function(e) {
                             return e.isPlayer()
                         });
-                        if (0 < r.length ? r.forEach(function(e) {
-                            if (s) {
-                                var t = e.rareflag > s.rareflag
-                                  , i = e.rareflag === s.rareflag
-                                  , o = e.getTier() > s.getTier()
-                                  , n = e.getTier() === s.getTier()
-                                  , r = e.rating > s.rating;
-                                (e.isSpecial() && (t || i && r) || !(null == s ? void 0 : s.isSpecial()) && (o || n && t || n && i && r)) && (s = e)
-                            } else
-                                s = e
-                        }) : t.response.items.forEach(function(e) {
-                            (!s || s.discardValue < e.discardValue) && (s = e)
-                        }),
-                        s && _) {
-                            var a = new UTPackAnimationViewController;
-                            a.initWithPackData(s, _.assetId),
-                            a.setAnimationCallback(function() {
+                        if (0 < s.length) {
+                            var a = new UTItemUtils
+                              , l = s.sort(a.sortByType);
+                            r = l[0]
+                        } else
+                            t.response.items.forEach(function(e) {
+                                (!r || r.discardValue < e.discardValue) && (r = e)
+                            });
+                        if (r && m) {
+                            var c = new UTPackAnimationViewController;
+                            c.initWithPackData(r, m.assetId),
+                            c.setAnimationCallback(function() {
                                 this.dismissViewController(!1, function() {
-                                    a.dealloc()
+                                    c.dealloc()
                                 }),
                                 repositories.Store.setDirty(),
                                 this.gotoUnassigned()
                             }
-                            .bind(h)),
-                            a.modalDisplayStyle = "fullscreen",
-                            h.presentViewController(a, !0)
+                            .bind(_)),
+                            c.modalDisplayStyle = "fullscreen",
+                            _.presentViewController(c, !0)
                         } else
                             DebugUtils.Assert(!1, "Unable to determine the itemToShow")
                     }
                 else {
-                    p.setInteractionState(!0);
-                    var l = services.Localization
-                      , c = t.error ? t.error.code : t.status;
-                    if (c === HttpStatusCode.NOT_FOUND)
-                        h.createCustomErrorPopup("store.x.e.t.p.e", "store.x.e.d.p.e");
-                    else if (c === HttpStatusCode.FORBIDDEN)
-                        h.createCustomErrorPopup("fut.p.c.not_expired.title", "fut.x.not_expired");
-                    else if (c === UtasErrorCode.STATE_INVALID)
-                        h.createCustomErrorPopup("fut.p.c.changed.title", "fut.p.x.p.c.changed");
-                    else if (c === UtasErrorCode.ITEM_EXISTS)
+                    T.setInteractionState(!0);
+                    var d = services.Localization
+                      , u = t.error ? t.error.code : t.status;
+                    if (u === HttpStatusCode.NOT_FOUND)
+                        _.createCustomErrorPopup("store.x.e.t.p.e", "store.x.e.d.p.e");
+                    else if (u === HttpStatusCode.FORBIDDEN)
+                        _.createCustomErrorPopup("fut.p.c.not_expired.title", "fut.x.not_expired");
+                    else if (u === UtasErrorCode.STATE_INVALID)
+                        _.createCustomErrorPopup("fut.p.c.changed.title", "fut.p.x.p.c.changed");
+                    else if (u === UtasErrorCode.ITEM_EXISTS)
                         repositories.Item.setDirty(ItemPile.PURCHASED),
-                        BAc.call(h);
-                    else if (c === UtasErrorCode.SERVICE_IS_DISABLED) {
-                        switch (T) {
+                        jzc.call(_);
+                    else if (u === UtasErrorCode.SERVICE_IS_DISABLED) {
+                        switch (g) {
                         case GameCurrency.COINS:
                             services.Store.setCoinsEnabled(!1);
                             break;
@@ -48590,35 +48123,35 @@ function(o) {
                             services.Store.setStoreEnabled(!1)
                         }
                         if (!services.Store.isCoinsEnabled() && !services.Store.hasPointsSpendingAccess() || !services.Store.isStoreEnabled())
-                            (d = h.getNavigationController()) && d.popViewController()
-                    } else if (c === HttpStatusCode.RATE_LIMIT)
-                        h.createCustomErrorPopup("store.popup.error.RateLimitHeader", "store.popup.error.RateLimitBody");
-                    else if (NetworkErrorManager.checkCriticalStatus(c))
-                        NetworkErrorManager.handleStatus(c);
+                            (h = _.getNavigationController()) && h.popViewController()
+                    } else if (u === HttpStatusCode.RATE_LIMIT)
+                        _.createCustomErrorPopup("store.popup.error.RateLimitHeader", "store.popup.error.RateLimitBody");
+                    else if (NetworkErrorManager.checkCriticalStatus(u))
+                        NetworkErrorManager.handleStatus(u);
                     else {
-                        var d;
-                        services.Notification.queue([l.localize("notification.store.failedRequest"), UINotificationType.NEGATIVE]),
-                        (d = h.getNavigationController()) && d.popViewController()
+                        var h;
+                        services.Notification.queue([d.localize("notification.store.failedRequest"), UINotificationType.NEGATIVE]),
+                        (h = _.getNavigationController()) && h.popViewController()
                     }
-                    h.getStorePacks()
+                    _.getStorePacks()
                 }
             }
-            function DAc() {
-                if (_ instanceof UTStorePurchasableArticleEntity) {
-                    var e = T === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_PACK_POINTS : utils.PopupManager.Confirmations.BUY_PACK_COINS;
-                    _ instanceof UTStoreBundleEntity && _.isSingle ? e = T === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_ITEM_POINTS : utils.PopupManager.Confirmations.BUY_ITEM_COINS : _ instanceof UTStoreBundleEntity && !_.isSingle && (e = T === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_BUNDLE_POINTS : utils.PopupManager.Confirmations.BUY_BUNDLE_COINS),
-                    utils.PopupManager.showConfirmation(e, [services.Localization.localize(_.packName), services.Localization.localizeNumber(_.getPrice(T))], function() {
-                        _.purchase(T).observe(this, CAc)
+            function lzc() {
+                if (m instanceof UTStorePurchasableArticleEntity) {
+                    var e = g === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_PACK_POINTS : utils.PopupManager.Confirmations.BUY_PACK_COINS;
+                    m instanceof UTStoreBundleEntity && m.isSingle ? e = g === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_ITEM_POINTS : utils.PopupManager.Confirmations.BUY_ITEM_COINS : m instanceof UTStoreBundleEntity && !m.isSingle && (e = g === GameCurrency.POINTS ? utils.PopupManager.Confirmations.BUY_BUNDLE_POINTS : utils.PopupManager.Confirmations.BUY_BUNDLE_COINS),
+                    utils.PopupManager.showConfirmation(e, [services.Localization.localize(m.packName), services.Localization.localizeNumber(m.getPrice(g))], function() {
+                        m.purchase(g).observe(this, kzc)
                     }
-                    .bind(h), function() {
+                    .bind(_), function() {
                         this.isOpeningPack = !1,
-                        p.setInteractionState(!0)
+                        T.setInteractionState(!0)
                     }
-                    .bind(h))
+                    .bind(_))
                 }
             }
-            function EAc(e, t) {
-                if (e.unobserve(h),
+            function mzc(e, t) {
+                if (e.unobserve(_),
                 t === UTPlayerHealthLimitPopupView.Events.IGNORE_TAPPED)
                     services.PIN.sendData(PINEventType.MILESTONE, {
                         mode: PIN_MILESTONE_EVT_MODE,
@@ -48626,24 +48159,24 @@ function(o) {
                         mstid: PINMilestoneEventId.PACK_LIMIT,
                         type: PINMilestoneEventType.PLAY_TIME
                     }),
-                    DAc.call(h),
+                    lzc.call(_),
                     services.PlayerHealth.storeLimitIgnoredTimestamp(PlayerHealthStatId.PACKS_OPENED);
                 else if (t === UTPlayerHealthLimitPopupView.Events.REVIEW_TAPPED) {
-                    var i = h.getNavigationController();
+                    var i = _.getNavigationController();
                     if (i) {
                         var o = new UTPlayerHealthViewController;
                         o.init(),
                         i.pushViewController(o, !0)
                     }
-                    h.isOpeningPack = !1,
-                    p.setInteractionState(!0)
+                    _.isOpeningPack = !1,
+                    T.setInteractionState(!0)
                 } else
-                    h.isOpeningPack = !1,
-                    p.setInteractionState(!0)
+                    _.isOpeningPack = !1,
+                    T.setInteractionState(!0)
             }
-            _ ? 0 < repositories.Item.numItemsInCache(ItemPile.PURCHASED) ? (BAc.call(this),
-            this.isOpeningPack = !1) : e === UTStorePackDetailsView.Event.OPEN ? _.open().observe(this, CAc) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.PACKS_OPENED) ? services.PlayerHealth.readPlayerHealth().observe(this, function(e, t) {
-                if (e.unobserve(h),
+            m ? 0 < repositories.Item.numItemsInCache(ItemPile.PURCHASED) ? (jzc.call(this),
+            this.isOpeningPack = !1) : e === UTStorePackDetailsView.Event.OPEN ? m.open().observe(this, kzc) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.PACKS_OPENED) ? services.PlayerHealth.readPlayerHealth().observe(this, function(e, t) {
+                if (e.unobserve(_),
                 t.success && t.data && t.data.playerHealth) {
                     var i = t.data.playerHealth
                       , o = i.getStatById(PlayerHealthStatId.PACKS_OPENED);
@@ -48657,13 +48190,13 @@ function(o) {
                         var n = new UTPlayerHealthLimitPopupViewController;
                         n.init(),
                         n.getView().setContentByType(o.id, o.limit),
-                        n.onExit.observe(h, EAc),
+                        n.onExit.observe(_, mzc),
                         gPopupClickShield.setActivePopup(n)
                     } else
-                        DAc.call(h)
+                        lzc.call(_)
                 } else
-                    DAc.call(h)
-            }) : DAc.call(this) : DebugUtils.Assert(!1, "Unable to determine the pack from viewmodel")
+                    lzc.call(_)
+            }) : lzc.call(this) : DebugUtils.Assert(!1, "Unable to determine the pack from viewmodel")
         }
     }
     ,
@@ -49184,12 +48717,12 @@ function(n) {
             if (!services.Store.isMobileMTXEnabled())
                 return services.Notification.queue([services.Localization.localize("mtx.error.disabled"), UINotificationType.NEGATIVE]),
                 void this.disablePointsPurchasing();
-            function hEc(e, t) {
+            function NCc(e, t) {
                 e.unobserve(s),
                 t.success || (s.isOpeningPack = !1,
                 services.Notification.queue([services.Localization.localize("mtx.error.nocharge"), UINotificationType.NEGATIVE]))
             }
-            function iEc(e, t) {
+            function OCc(e, t) {
                 if (e.unobserve(s),
                 t === UTPlayerHealthLimitPopupView.Events.IGNORE_TAPPED)
                     services.PIN.sendData(PINEventType.MILESTONE, {
@@ -49198,7 +48731,7 @@ function(n) {
                         mstid: PINMilestoneEventId.POINT_LIMIT,
                         type: PINMilestoneEventType.PLAY_TIME
                     }),
-                    services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, hEc),
+                    services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, NCc),
                     services.PlayerHealth.storeLimitIgnoredTimestamp(PlayerHealthStatId.POINTS_PURCHASED);
                 else if (t === UTPlayerHealthLimitPopupView.Events.REVIEW_TAPPED) {
                     var i = s.getNavigationController();
@@ -49211,7 +48744,7 @@ function(n) {
                 } else
                     s.isOpeningPack = !1
             }
-            function jEc(e, t) {
+            function PCc(e, t) {
                 if (e.unobserve(s),
                 t.success && t.data && t.data.playerHealth) {
                     var i = t.data.playerHealth
@@ -49226,21 +48759,21 @@ function(n) {
                         var n = new UTPlayerHealthLimitPopupViewController;
                         n.init(),
                         n.getView().setContentByType(o.id, o.limit),
-                        n.onExit.observe(s, iEc),
+                        n.onExit.observe(s, OCc),
                         gPopupClickShield.setActivePopup(n)
                     } else
-                        services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, hEc)
+                        services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, NCc)
                 } else
-                    services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, hEc)
+                    services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, NCc)
             }
             var i = function(e, t) {
                 e.unobserve(s),
-                t.success ? services.MTX.hasUnverifiedTransactions() ? services.MTX.verifyStoredTransactions().observe(s, i) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(s, jEc) : services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, hEc) : (s.isOpeningPack = !1,
+                t.success ? services.MTX.hasUnverifiedTransactions() ? services.MTX.verifyStoredTransactions().observe(s, i) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(s, PCc) : services.MTX.beginTransaction(r.nimbleMTXsku).observe(s, NCc) : (s.isOpeningPack = !1,
                 services.Notification.queue([services.Localization.localize("mtx.error.nocharge"), UINotificationType.NEGATIVE]),
                 s.disablePointsPurchasing())
             };
             this.isOpeningPack = !0,
-            services.MTX.hasUnverifiedTransactions() ? services.MTX.verifyStoredTransactions().observe(this, i) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(this, jEc) : services.MTX.beginTransaction(r.nimbleMTXsku).observe(this, hEc)
+            services.MTX.hasUnverifiedTransactions() ? services.MTX.verifyStoredTransactions().observe(this, i) : services.PlayerHealth.isIgnoreLimitPeriodExpired(PlayerHealthStatId.POINTS_PURCHASED) ? services.PlayerHealth.readPlayerHealth().observe(this, PCc) : services.MTX.beginTransaction(r.nimbleMTXsku).observe(this, NCc)
         }
     }
     ,
@@ -49746,7 +49279,7 @@ var UTWatchListViewController = function(o) {
     }
     ,
     UTWatchListViewController.prototype._renderView = function() {
-        function uHc(t) {
+        function $Fc(t) {
             var e, i, o = null === (e = l.viewmodel) || void 0 === e ? void 0 : e.indexOf(function(e) {
                 return e.id === t.id
             });
@@ -49770,23 +49303,23 @@ var UTWatchListViewController = function(o) {
         var d = services.Localization
           , u = null !== (t = null === (e = this.viewmodel) || void 0 === e ? void 0 : e.getSectionItems(UTWatchSectionListViewModel.SECTION.ACTIVE)) && void 0 !== t ? t : []
           , h = c.renderSection(u, UTWatchSectionListViewModel.SECTION.ACTIVE, function(e) {
-            return uHc(e)
+            return $Fc(e)
         });
         h.setHeader(d.localize("watchlist.dock.categories.active"), ""),
         h.setEmptyMessage(d.localize("watchlist.availabletransfers.empty.header"), d.localize("watchlist.availabletransfers.empty.body"));
         var p = null !== (o = null === (i = this.viewmodel) || void 0 === i ? void 0 : i.getSectionItems(UTWatchSectionListViewModel.SECTION.WATCHED)) && void 0 !== o ? o : []
           , _ = c.renderSection(p, UTWatchSectionListViewModel.SECTION.WATCHED, function(e) {
-            return uHc(e)
+            return $Fc(e)
         });
         _.setHeader(d.localize("watchlist.dock.categories.watched"), ""),
         _.setEmptyMessage(d.localize("watchlist.watched.empty.header"), d.localize("watchlist.watched.empty.body"));
         var T = null !== (r = null === (n = this.viewmodel) || void 0 === n ? void 0 : n.getSectionItems(UTWatchSectionListViewModel.SECTION.WON)) && void 0 !== r ? r : [];
         c.renderSection(T, UTWatchSectionListViewModel.SECTION.WON, function(e) {
-            return uHc(e)
+            return $Fc(e)
         }).setEmptyMessage(d.localize("watchlist.won.empty.header"), d.localize("watchlist.won.empty.body"));
         var m = null !== (a = null === (s = this.viewmodel) || void 0 === s ? void 0 : s.getSectionItems(UTWatchSectionListViewModel.SECTION.EXPIRED)) && void 0 !== a ? a : [];
         c.renderSection(m, UTWatchSectionListViewModel.SECTION.EXPIRED, function(e) {
-            return uHc(e)
+            return $Fc(e)
         }).setEmptyMessage(d.localize("watchlist.expired.empty.header"), d.localize("watchlist.expired.empty.body")),
         this._updateSectionHeaders()
     }
@@ -50541,20 +50074,20 @@ UTRootViewController.prototype.showGameView = function showGameView() {
         g.setTag(UTGameTabBarController.TabTag.STADIUM),
         g.setText(services.Localization.localize("nav.label.customizeHub")),
         g.addClass("icon-stadium");
-        var w = new UTTabBarItemView;
-        w.init(),
-        w.setTag(UTGameTabBarController.TabTag.LEADERBOARDS),
-        w.setText(services.Localization.localize("nav.label.leaderboards")),
-        w.addClass("icon-leaderboards");
         var v = new UTTabBarItemView;
         v.init(),
-        v.setTag(UTGameTabBarController.TabTag.SETTINGS),
-        v.setText(services.Localization.localize("button.settings")),
-        v.addClass("icon-settings"),
+        v.setTag(UTGameTabBarController.TabTag.LEADERBOARDS),
+        v.setText(services.Localization.localize("nav.label.leaderboards")),
+        v.addClass("icon-leaderboards");
+        var w = new UTTabBarItemView;
+        w.init(),
+        w.setTag(UTGameTabBarController.TabTag.SETTINGS),
+        w.setText(services.Localization.localize("button.settings")),
+        w.addClass("icon-settings"),
         h.tabBarItem = m,
         p.tabBarItem = g,
-        _.tabBarItem = w,
-        T.tabBarItem = v,
+        _.tabBarItem = v,
+        T.tabBarItem = w,
         e = e.concat([h, p, _, T])
     }
     return t.initWithViewControllers(e),

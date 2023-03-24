@@ -10,6 +10,9 @@ export class Table {
     constructor(opts) {
         this.#mapper = opts.mapper;
         this.#table = createElem("table", { id: opts.id, className: opts.className });
+        if(opts.caption) {
+            this.#table.createCaption().textContent = opts.caption;
+        }
         const thead = this.#table.createTHead();
         const theadRow = thead.insertRow();
 

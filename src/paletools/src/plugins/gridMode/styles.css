@@ -327,6 +327,11 @@ div.ut-pinned-item .listFUTItem div.entityContainer div.player-stats-data-compon
 	font-size: 24px !important;
 }
 
+.ut-store-reveal-modal-list-view {
+	max-width: 700px !important;
+}
+
+.ut-store-reveal-modal-list-view .player-stats-data-component, 
 .ut-watch-list-view .player-stats-data-component {
 	display: none !important;
 }
@@ -348,3 +353,4 @@ div.ut-pinned-item .listFUTItem div.entityContainer div.player-stats-data-compon
 .listFUTItem .auction .futbinprice span {
 	color: white !important;
 }
+

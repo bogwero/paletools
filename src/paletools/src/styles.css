@@ -2,6 +2,10 @@
     max-height: 100% !important;
 }
 
+.phone .ea-dialog-view--msg {
+    padding: 1rem !important;
+}
+
 input[type="number"] {
     border-radius: 0;
     padding: 0 .5em;

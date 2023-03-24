@@ -229,7 +229,14 @@ let settings = {
             packCollector: true,
             filter: true,
             filterText: null,
+        },
+        sbcRatingCalculator: {
+            enabled: true,
+            maxCombinations: 10,
+            lowerBound: 5,
+            upperBound: 5
         }
+        
     }
 };
 
