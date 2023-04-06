@@ -91,21 +91,21 @@ function run(){
         }
     }
 
-    // const UTGameFlowNavigationController_viewDidAppear = UTGameFlowNavigationController.prototype.viewDidAppear;
-    // UTGameFlowNavigationController.prototype.viewDidAppear = function() {
-    //     UTGameFlowNavigationController_viewDidAppear.call(this);
+    const UTGameFlowNavigationController_viewDidAppear = UTGameFlowNavigationController.prototype.viewDidAppear;
+    UTGameFlowNavigationController.prototype.viewDidAppear = function() {
+        UTGameFlowNavigationController_viewDidAppear.call(this);
 
-    //     if(this._navigationBar instanceof UTCurrencyNavigationBarView){
-    //         const toggleState = this._navigationBar._gridModeToggle.getToggleState();
+        if(this._navigationBar instanceof UTCurrencyNavigationBarView){
+            const toggleState = this._navigationBar._gridModeToggle.getToggleState();
 
-    //         if(cfg.enabled && !toggleState){
-    //             this._navigationBar._gridModeToggle.toggle();
-    //         }
-    //         else if(!cfg.enabled && toggleState){
-    //             this._navigationBar._gridModeToggle.toggle();
-    //         }
-    //     }
-    // }
+            if(cfg.enabled && !toggleState){
+                this._navigationBar._gridModeToggle.toggle();
+            }
+            else if(!cfg.enabled && toggleState){
+                this._navigationBar._gridModeToggle.toggle();
+            }
+        }
+    }
 }
 
 plugin = {

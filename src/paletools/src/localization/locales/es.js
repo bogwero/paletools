@@ -10,7 +10,7 @@ export default {
     "loading": "Cargando",
     "from": "Desde",
     "to": "Hasta",
-    
+
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modo grilla",
     /// #endif
@@ -298,11 +298,17 @@ export default {
     /// #if process.env.SBC_RATING_CALCULATOR
     "plugins.sbcRatingCalculator.settings.title": "Calculadora de Medias",
     "plugins.sbcRatingCalculator.buttons.openDialog": "Calcular Medias Restantes",
-    "plugins.sbcRatingCalculator.table.rating": "Media", 
+    "plugins.sbcRatingCalculator.table.rating": "Media",
     "plugins.sbcRatingCalculator.table.count": "Cant.",
     "plugins.sbcRatingCalculator.buttons.calculate": "Calcular",
     "plugins.sbcRatingCalculator.dialog.title": "Calculadora de Medias",
     "plugins.sbcRatingCalculator.dialog.ranges.title": "Rango de medias a probar",
+    /// #endif
+
+    /// #if process.env.CLAIM_OBJECTIVES
+    "plugins.claimObjectives.settings.title": "Reclamar Todas las Recompensas",
+    "plugins.claimObjectives.button.text": "Reclamar Recompensas",
+    "plugins.claimObjectives.button.loading": "Reclamando Recompensas",
     /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",

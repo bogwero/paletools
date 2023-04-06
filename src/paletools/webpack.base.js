@@ -46,5 +46,6 @@ module.exports = {
     PACKS_OPENER: false,
     LIMBO: false,
     MY_PACKS: true,
-    SBC_RATING_CALCULATOR: false
+    SBC_RATING_CALCULATOR: false,
+    CLAIM_OBJECTIVES: true
 };

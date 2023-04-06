@@ -45,6 +45,7 @@ import bidAll from "./bidAll";
 import myPacks from "./myPacks";
 import sbcRatingCalculator from "./sbcRatingCalculator";
 import limbo from "./limbo";
+import claimObjectives from "./claimObjectives";
 
 const plugins = [
     minMaxPrices,
@@ -90,6 +91,7 @@ const plugins = [
     myPacks,
     externalMarketPrices,
     sbcRatingCalculator,
+    claimObjectives,
     limbo,
     snipe,
     keyListener,

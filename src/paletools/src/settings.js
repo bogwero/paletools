@@ -235,8 +235,10 @@ let settings = {
             maxCombinations: 10,
             lowerBound: 5,
             upperBound: 5
+        },
+        claimObjectives: {
+            enabled: true
         }
-        
     }
 };
 
