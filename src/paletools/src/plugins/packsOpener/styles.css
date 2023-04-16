@@ -1,0 +1,35 @@
+.ut-store-pack-details-view--footer {
+    flex-flow: row wrap;
+}
+
+.pack-opener {
+    order: 3;
+    width: 100%;
+    margin-top: 2px;
+}
+
+.ut-store-pack-details-view--footer .currency.points.call-to-action {
+    margin-left: 0 !important;
+}
+
+.pack-opener-dialog {
+    display: flex;
+    flex-direction: column;
+}
+
+.pack-opener-dialog select {
+    border: 1px solid #4ee6eb;
+    font-size: 14px;
+    padding: 8px;
+    background-color: #262c38;
+    color: #4ee6eb;
+    font-weight: bold;
+}
+
+.pack-opener-dialog label {
+    margin-top: 18px;
+}
+
+.pack-opener-dialog label:first-child {
+    margin-top: 0;
+}

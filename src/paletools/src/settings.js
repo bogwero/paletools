@@ -238,6 +238,9 @@ let settings = {
         },
         claimObjectives: {
             enabled: true
+        },
+        packsOpener: {
+            enabled: false
         }
     }
 };

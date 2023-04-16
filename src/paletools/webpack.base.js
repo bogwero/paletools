@@ -43,7 +43,7 @@ module.exports = {
     REFRESH_COINS: true,
     EXTERNAL_MARKET_PRICES: false,
     BID_ALL: false,
-    PACKS_OPENER: false,
+    PACKS_OPENER: true,
     LIMBO: false,
     MY_PACKS: true,
     SBC_RATING_CALCULATOR: false,

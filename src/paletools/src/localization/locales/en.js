@@ -314,6 +314,36 @@ export default {
     "plugins.claimObjectives.button.loading": "Claiming Rewards",
     /// #endif
 
+    /// #if process.env.PACKS_OPENER
+    "plugins.packsOpener.settings.title": "Packs Opener",
+    "plugins.packsOpener.button.text": "Open Pack",
+    "plugins.packsOpener.button.subtext": "Automatically",
+    "plugins.packsOpener.purchaseAction.moveToClub": "Move To Club",
+    "plugins.packsOpener.purchaseAction.moveToTransferList": "Move To Transfer List",
+    "plugins.packsOpener.purchaseAction.quickSell": "Quick Sell",
+    "plugins.packsOpener.purchaseAction.stopProcess": "Stop Buying Packs",
+    "plugins.packsOpener.errors.missingPack": "No pack has been selected",
+    "plugins.packsOpener.errors.generic": "There has been an error opening the pack",
+    "plugins.packsOpener.errors.transferListFull": "The transfer list is full",
+    "plugins.packsOpener.packsRemaining": "Only # packs left to be opened",
+    "plugins.packsOpener.handlingNonDuplicatePlayers": "Processing non duplicate players",
+    "plugins.packsOpener.handlingNonDuplicateManagers": "Processing non duplicate managers",
+    "plugins.packsOpener.handlingNonDuplicateItems": "Processing non duplicate items",
+    "plugins.packsOpener.handlingDuplicatePlayers": "Handling duplicate players",
+    "plugins.packsOpener.handlingDuplicateManagers": "Handling duplicate managers",
+    "plugins.packsOpener.handlingDuplicateItems": "Handling duplicate items",
+    "plugins.packsOpener.handlingCredits": "Updating credits",
+    "plugins.packsOpener.labels.purchaseAction.players": "¿What should I do with players?",
+    "plugins.packsOpener.labels.purchaseAction.duplicatePlayers": "¿What should I do with duplicated players?",
+    "plugins.packsOpener.labels.purchaseAction.managers": "¿What should I do with managers?",
+    "plugins.packsOpener.labels.purchaseAction.duplicateManagers": "¿What should I do with duplicated managers?",
+    "plugins.packsOpener.labels.purchaseAction.items": "¿What should I do with items that are NOT players and NOT managers?",
+    "plugins.packsOpener.labels.purchaseAction.duplicateItems": "¿What should I do with duplicated items that are NOT players and NOT managers?",
+    "plugins.packsOpener.labels.purchaseAction.transferListFull": "¿What should I do when the transfer list is full?",
+    "plugins.packsOpener.labels.currency": "Type of currency to use",    
+    "plugins.packsOpener.labels.packsCount": "¿How many packs should I open?",
+    /// #endif
+
     "plugins.warningScreen.title": "PALETOOLS - USAGE WARNING",
     "plugins.warningScreen.disclaimer": "<p>Dear user, since Paletools allows you to perform actions that were not design by EA and allows you to be much quicker in the usage of the WebApp you are at a potential risk of ban from EA</p><p><br /></p><p>Therefore you shall use it at your own discretion and you should be very cautious</p><p><br /></p><p>If you perform too many snipes in a row you might get a soft market ban or even worst a <b>permanent ban from the transfer market</b></p><p><br /></p><p>Please <b>USE THIS TOOL AT YOUR OWN RISK</b></p><p><br /></p><p>Thanks a have a nice day!</p>",
 
