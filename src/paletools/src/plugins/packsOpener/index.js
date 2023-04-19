@@ -73,6 +73,21 @@ function run() {
             ],
             localize("plugins.packsOpener.settings.title"),
             `<div class="pack-opener-dialog">
+                <label for="pack-opener-speed">${localize("plugins.packsOpener.labels.speed")}</label>
+                <select id="pack-opener-speed">
+                    <option value="3">${localize("plugins.packsOpener.speed.slow")}</option>
+                    <option value="1">${localize("plugins.packsOpener.speed.fast")}</option>
+                </select> 
+
+                <label for="pack-opener-purchase-count">${localize("plugins.packsOpener.labels.packsCount")}</label>
+                <input id="pack-opener-purchase-count" type="number" class="ut-text-input-control fut-bin-buy" />
+
+                <label for="pack-opener-currency">${localize("plugins.packsOpener.labels.currency")}</label>
+                <select id="pack-opener-currency">
+                    <option value="${GameCurrency.COINS}">${localize("currency.coins")}</option>
+                    <option value="${GameCurrency.POINTS}">${localize("currency.points")}</option>
+                </select>
+
                 <label for="pack-opener-players-purchase-action">${localize("plugins.packsOpener.labels.purchaseAction.players")}</label>
                 <select id="pack-opener-players-purchase-action" data-purchase-action="players">
                     <option value="${PURCHASE_ACTION.MOVE_TO_CLUB}">${localize("plugins.packsOpener.purchaseAction.moveToClub")}</option>
@@ -117,20 +132,12 @@ function run() {
                     <option value="${PURCHASE_ACTION.QUICK_SELL}">${localize("plugins.packsOpener.purchaseAction.quickSell")}</option>
                     <option value="${PURCHASE_ACTION.STOP_PROCESS}">${localize("plugins.packsOpener.purchaseAction.stopProcess")}</option>
                 </select> 
-             
-                <label for="pack-opener-purchase-count">${localize("plugins.packsOpener.labels.packsCount")}</label>
-                <input id="pack-opener-purchase-count" type="number" class="ut-text-input-control fut-bin-buy" />
-
-                <label for="pack-opener-currency">${localize("plugins.packsOpener.labels.currency")}</label>
-                <select id="pack-opener-currency">
-                    <option value="${GameCurrency.COINS}">${localize("currency.coins")}</option>
-                    <option value="${GameCurrency.POINTS}">${localize("currency.points")}</option>
-                </select>
              </div>
              `,
             (text) => {
                 if (text == enums.UIDialogOptions.OK) {
                     openPack(pack,
+                        select("#pack-opener-speed").value,
                         select("#pack-opener-players-purchase-action").value,
                         select("#pack-opener-duplicated-players-purchase-action").value,
                         select("#pack-opener-managers-purchase-action").value,
@@ -170,6 +177,7 @@ function run() {
     }
 
     async function openPack(pack,
+        speedMultiplier,
         playersPurchaseAction,
         duplicatedPlayersPurchaseAction,
         managersPurchaseAction,
@@ -181,6 +189,7 @@ function run() {
         currency) {
 
         cfg.purchaseActions = cfg.purchaseActions || {};
+        cfg.speedMultiplier = speedMultiplier;
         cfg.purchaseActions.players = playersPurchaseAction;
         cfg.purchaseActions.duplicatedPlayers = duplicatedPlayersPurchaseAction;
         cfg.purchaseActions.managers = managersPurchaseAction;
@@ -194,6 +203,7 @@ function run() {
         while (purchaseCount > 0) {
             const buyPackResult = await buyPack(
                 pack,
+                speedMultiplier,
                 playersPurchaseAction,
                 duplicatedPlayersPurchaseAction,
                 managersPurchaseAction,
@@ -224,7 +234,7 @@ function run() {
                 break;
             }
             else {
-                await delay(527, 1378);
+                await delay(527 * speedMultiplier, 1378 * speedMultiplier);
                 purchaseCount--;
                 notifyNeutral(localize("plugins.packsOpener.packsRemaining").replace('#', purchaseCount));
             }
@@ -320,6 +330,7 @@ function run() {
     };
 
     async function buyPack(pack,
+        speedMultiplier,
         playersPurchaseAction,
         duplicatedPlayersPurchaseAction,
         managersPurchaseAction,
@@ -348,7 +359,7 @@ function run() {
             if (result != HandleItemResult.SUCCESS) {
                 return result;
             }
-            await delay(314, 681);
+            await delay(314 * speedMultiplier, 681 * speedMultiplier);
             return result;
         }
 

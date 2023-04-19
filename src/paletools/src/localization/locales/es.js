@@ -339,6 +339,9 @@ export default {
     "plugins.packsOpener.labels.purchaseAction.transferListFull": "¿Qué tengo que hacer cuando la lista de transferencia esta llena?",
     "plugins.packsOpener.labels.currency": "Tipo de moneda a usar",    
     "plugins.packsOpener.labels.packsCount": "¿Cuantos packs debo abrir?",
+    "plugins.packsOpener.labels.speed": "Velocidad de Apertura",
+    "plugins.packsOpener.speed.slow": "Lenta",
+    "plugins.packsOpener.speed.fast": "Rápida",
     /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",

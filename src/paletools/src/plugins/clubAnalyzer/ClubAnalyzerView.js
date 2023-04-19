@@ -73,13 +73,13 @@ ClubAnalyzerView.prototype._appendBody = function (container) {
         const exportCsvButton = new UTStandardButtonControl();
         exportCsvButton.init();
         exportCsvButton.setText(loc("view.buttons.exportCsv"));
-        exportCsvButton.addTarget(this, () => this.onReloadClicked.notify(), EventType.TAP);
+        exportCsvButton.addTarget(this, () => this.onExportCsvClicked.notify(), EventType.TAP);
         addClass(exportCsvButton, "call-to-action");
 
         const exportHtmlButton = new UTStandardButtonControl();
         exportHtmlButton.init();
         exportHtmlButton.setText(loc("view.buttons.exportHtml"));
-        exportHtmlButton.addTarget(this, () => this.onReloadClicked.notify(), EventType.TAP);
+        exportHtmlButton.addTarget(this, () => this.onExportHtmlClicked.notify(), EventType.TAP);
         addClass(exportHtmlButton, "call-to-action");
 
         append(commandsContainer, exportCsvButton, exportHtmlButton);
