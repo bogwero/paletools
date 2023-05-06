@@ -180,7 +180,10 @@ function run() {
     UTSBCSquadOverviewViewController.prototype._onChallengeSubmitted = function _onChallengeSubmitted(...args) {
         UTSBCSquadOverviewViewController_onChallengeSubmitted.call(this, ...args);
 
-        this.getNavigationController().pushViewController(this);
+        const navController = this.getNavigationController();
+        if(navController) {
+            navController.pushViewController(this);
+        }
     }
 
     const UTSquadBuilderViewController_init = UTSquadBuilderViewController.prototype.init;

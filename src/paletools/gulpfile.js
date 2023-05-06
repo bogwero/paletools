@@ -6,6 +6,7 @@ const VERSION = require("./build/version");
 const userscript = require("gulp-userscript");
 const tampermonkeyHeader = require("./build/tampermonkey-header");
 const { series } = require('gulp');
+const BASE_OUT_DIR = '../../../eallegretta.github.io/fifa';
 
 const tampermonkeyHederDev = JSON.parse(JSON.stringify(tampermonkeyHeader));
 
@@ -27,11 +28,11 @@ function base64Encode(getCode) {
 }
 
 const deploySteps = [
-        { from: ['./dist/paletools-mobile*.js'], to: `d:\\code\\eallegretta.github.io\\fifa\\dist\\${VERSION}\\` },
-        { from: ['./dist/paletools-mobile.prod.js'], transform: base64Encode(getJsCode), to: `d:\\code\\eallegretta.github.io\\fifa\\dist\\${VERSION}\\mobile` },
-        { from: ['./dist/paletools.development.user.js'], transform: userscript(tampermonkeyHederDev), to: `d:\\code\\eallegretta.github.io\\fifa\\dist\\latest` },
-        { from: ['./dist/paletools.user.js'], transform: userscript(tampermonkeyHeader), to: `d:\\code\\eallegretta.github.io\\fifa\\dist\\latest` },
-        { from: ['./dist/paletools.prod.js'], transform: base64Encode(getJsCode), to: `d:\\code\\eallegretta.github.io\\fifa\\dist\\${VERSION}\\` }
+        { from: ['./dist/paletools-mobile*.js'], to: `${BASE_OUT_DIR}/dist/${VERSION}/` },
+        { from: ['./dist/paletools-mobile.prod.js'], transform: base64Encode(getJsCode), to: `${BASE_OUT_DIR}/dist/${VERSION}/mobile` },
+        { from: ['./dist/paletools.development.user.js'], transform: userscript(tampermonkeyHederDev), to: `${BASE_OUT_DIR}/dist/latest` },
+        { from: ['./dist/paletools.user.js'], transform: userscript(tampermonkeyHeader), to: `${BASE_OUT_DIR}/dist/latest` },
+        { from: ['./dist/paletools.prod.js'], transform: base64Encode(getJsCode), to: `${BASE_OUT_DIR}/dist/${VERSION}/` }
 
 ]
 
@@ -54,9 +55,9 @@ function deploy() {
 }
 
 function postDeploy(){
-        fs.writeFileSync("d:\\code\\eallegretta.github.io\\fifa\\version.txt", VERSION);
-        fs.copyFileSync('d:\\code\\eallegretta.github.io\\fifa\\dist\\latest\\paletools.development.user.js', `d:\\code\\eallegretta.github.io\\fifa\\dist\\${VERSION}\\paletools.development.user.js`);
-        fs.copyFileSync('d:\\code\\eallegretta.github.io\\fifa\\dist\\latest\\paletools.user.js', `d:\\code\\eallegretta.github.io\\fifa\\dist\\${VERSION}\\paletools.user.js`);
+        fs.writeFileSync(`${BASE_OUT_DIR}/version.txt`, VERSION);
+        fs.copyFileSync(`${BASE_OUT_DIR}/dist/latest/paletools.development.user.js`, `${BASE_OUT_DIR}/dist/${VERSION}/paletools.development.user.js`);
+        fs.copyFileSync(`${BASE_OUT_DIR}/dist/latest/paletools.user.js`, `${BASE_OUT_DIR}/dist/${VERSION}/paletools.user.js`);
         return Promise.resolve("DONE");
 }
 

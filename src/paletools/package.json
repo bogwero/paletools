@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build-all": "npm run build && npm run build-mobile && npm run build-tm",
+    "build": "webpack",
+    "build-mobile": "webpack --config webpack.config.mobile.js",
+    "build-tm": "webpack --config webpack.config.tampermonkey.js",
+    "deploy": "npm run build-all && gulp deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "css-loader": "^6.5.0",
     "gulp": "^4.0.2",
     "gulp-copy": "^4.0.1",
