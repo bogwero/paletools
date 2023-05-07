@@ -176,15 +176,15 @@ function run() {
         this._searchToggles.destroy();
     }
 
-    const UTSBCSquadOverviewViewController_onChallengeSubmitted = UTSBCSquadOverviewViewController.prototype._onChallengeSubmitted;
-    UTSBCSquadOverviewViewController.prototype._onChallengeSubmitted = function _onChallengeSubmitted(...args) {
-        UTSBCSquadOverviewViewController_onChallengeSubmitted.call(this, ...args);
+    // const UTSBCSquadOverviewViewController_onChallengeSubmitted = UTSBCSquadOverviewViewController.prototype._onChallengeSubmitted;
+    // UTSBCSquadOverviewViewController.prototype._onChallengeSubmitted = function _onChallengeSubmitted(...args) {
+    //     UTSBCSquadOverviewViewController_onChallengeSubmitted.call(this, ...args);
 
-        const navController = this.getNavigationController();
-        if(navController) {
-            navController.pushViewController(this);
-        }
-    }
+    //     const navController = this.getNavigationController();
+    //     if(navController) {
+    //         navController.pushViewController(this);
+    //     }
+    // }
 
     const UTSquadBuilderViewController_init = UTSquadBuilderViewController.prototype.init;
     UTSquadBuilderViewController.prototype.init = function () {
