@@ -1453,7 +1453,7 @@ function(n) {
         r.injuryGames = t && t.injuryGames ? t.injuryGames : 0,
         r.preferredPosition = t && JSUtils.isNumber(t.preferredPosition) ? t.preferredPosition : -1,
         r.possiblePositions = t && t.possiblePositions ? t.possiblePositions : [],
-        r._attributes = t && t.attributes ? t.attributes : [0, 0, 0, 0, 0, 0],
+        r.attributes = t && t.attributes ? t.attributes : [0, 0, 0, 0, 0, 0],
         r._lifetimeStats = t && t.lifetimeStats ? t.lifetimeStats : [0, 0, 0, 0],
         r._stats = t && t.stats ? t.stats : [0, 0, 0, 0],
         r._skillMoves = t && JSUtils.isNumber(t.skillMoves) ? t.skillMoves : -1,
@@ -1485,7 +1485,7 @@ function(n) {
         r.guidAssetId = null !== (i = null == t ? void 0 : t.guidAssetId) && void 0 !== i ? i : "",
         r.rankId = t && t.rankId ? t.rankId : -1,
         r.authenticity = !(!t || !t.authenticity) && t.authenticity,
-        r._keyAttributes = t && t.keyAttributes ? t.keyAttributes : null,
+        r.keyAttributes = t && t.keyAttributes ? t.keyAttributes : null,
         r.endTime = t && t.endTime ? t.endTime : -1,
         r.startTime = t && t.startTime ? t.startTime : -1,
         r
@@ -1616,7 +1616,9 @@ function(n) {
         this.injuryType = t.injuryType,
         this.injuryGames = t.injuryGames,
         this.preferredPosition = t.preferredPosition,
-        this.playStyle = t.playStyle),
+        this.playStyle = t.playStyle,
+        this.attributes = t.attributes,
+        this.keyAttributes = t.keyAttributes),
         this.isManager() && (this.leagueId = t.leagueId),
         this.getAuctionData().update(t.getAuctionData())
     }
@@ -1716,7 +1718,7 @@ function(n) {
     }
     ,
     UTItemEntity.prototype.getPlayerSubAttributes = function() {
-        return this._keyAttributes ? this._keyAttributes : null
+        return this.keyAttributes ? this.keyAttributes : null
     }
     ,
     UTItemEntity.prototype.getMetaData = function() {
@@ -1761,8 +1763,12 @@ function(n) {
         return this.isPlayer() && this.teamId === UTItemEntity.LEAGUE_HERO_CLUB_ID
     }
     ,
-    UTItemEntity.prototype.isSuperFuttiesItem = function() {
-        return this.isPlayer() && this.rareflag === ItemRarity.SUPER_FUTTIES
+    UTItemEntity.prototype.isSuperChem = function() {
+        var t, e = null !== (t = repositories.ServerSettings.getStringSettingByKey(UTServerSettingsRepository.KEY.SUPER_CHEM_RARITY_IDS)) && void 0 !== t ? t : "";
+        if ("" === e)
+            return !1;
+        var i = e.split(",");
+        return this.isPlayer() && i.includes(this.rareflag.toString())
     }
     ,
     UTItemEntity.prototype.isShapeshifterHeroItem = function() {
@@ -1802,11 +1808,11 @@ function(n) {
     }
     ,
     UTItemEntity.prototype.getBaseAttribute = function(t) {
-        return this._attributes[t] || 0
+        return this.attributes[t] || 0
     }
     ,
     UTItemEntity.prototype.getAttributes = function() {
-        return this.isPlayer() ? this._attributes.slice() : []
+        return this.isPlayer() ? this.attributes.slice() : []
     }
     ,
     UTItemEntity.prototype.getStats = function() {
@@ -4061,7 +4067,7 @@ function(r) {
                 }
                 if (-1 !== r.playStyle && t.playStyle !== r.playStyle)
                     return !1;
-                if (0 < r.excludeDefIds.length && -1 < r.excludeDefIds.indexOf(t.definitionId) || 0 < r.defId.length && r.defId.indexOf(t.definitionId) < 0)
+                if (0 < r.excludeDefIds.length && -1 < r.excludeDefIds.indexOf(t.definitionId) || 0 < r.defId.length && r.defId.indexOf(t.definitionId) < 0 && r.defId.indexOf(t.databaseId) < 0)
                     return !1
             } else if (r.type === SearchType.STAFF && r.category !== SearchCategory.ANY && t.isManager() && r.category !== SearchCategory.MANAGER)
                 return !1;
@@ -5027,7 +5033,7 @@ function(r) {
     }
     ,
     UTMyStadiumEntity.prototype.getActiveClubItemIds = function() {
-        function Ay(t) {
+        function Dy(t) {
             return t.filter(function(t) {
                 return t.item.isValid()
             }).map(function(t) {
@@ -5040,7 +5046,7 @@ function(r) {
               , i = t.getSlotsBySubtype(ItemSubType.BALL)
               , r = t.getSlotsBySubtype(ItemSubType.KIT)
               , n = t.getSlotsBySubtype(ItemSubType.STADIUM);
-            return Ay(e).concat(Ay(i), Ay(r), Ay(n))
+            return Dy(e).concat(Dy(i), Dy(r), Dy(n))
         }
         return []
     }
@@ -10670,13 +10676,13 @@ function(i) {
     }
     ,
     EALocalizationService.prototype.addObfuscatedLocalizationStrings = function(t) {
-        function $1(t) {
+        function b2(t) {
             return decodeURIComponent(atob(t).split("").map(function(t) {
                 return "%" + ("00" + t.charCodeAt(0).toString(16)).slice(-2)
             }).join(""))
         }
         for (var e in t)
-            t.hasOwnProperty(e) && this.repository.set($1(e), $1(t[e]))
+            t.hasOwnProperty(e) && this.repository.set(b2(e), b2(t[e]))
     }
     ,
     EALocalizationService.prototype.requestLocalization = function() {
@@ -11222,7 +11228,7 @@ var UTOnboardingService = function(t) {
     }
     ,
     UTOnboardingService.prototype.createClub = function() {
-        function j5(t, e) {
+        function m5(t, e) {
             t.unobserve(s),
             l.success = e.success,
             l.status = e.status,
@@ -11239,7 +11245,7 @@ var UTOnboardingService = function(t) {
                 var n = e.response
                   , o = null === (r = null === (i = services.Authentication.getUtasSession()) || void 0 === i ? void 0 : i.user) || void 0 === r ? void 0 : r.getSelectedPersona();
                 o ? (o.setLoyaltyRewards(n.rewards),
-                o.createClub(n.name, n.abbr).observe(s, j5)) : (l.success = !1,
+                o.createClub(n.name, n.abbr).observe(s, m5)) : (l.success = !1,
                 l.status = HttpStatusCode.BAD_REQUEST,
                 a.notify(l))
             } else
@@ -12393,7 +12399,7 @@ function(i) {
         s.data = {
             stadium: null
         };
-        function fca(t, e) {
+        function ica(t, e) {
             if (t.unobserve(n),
             s.success = e.success,
             s.status = e.status,
@@ -12411,9 +12417,9 @@ function(i) {
         }
         return this.stadiumRepository.isCacheExpired() ? t && t.isStadiumModified() ? t.saveStadium().observe(this, function(t, e) {
             t.unobserve(n),
-            e.success && n.stadiumDAO.getStadium().observe(n, fca),
+            e.success && n.stadiumDAO.getStadium().observe(n, ica),
             DebugUtils.Assert(e.success, "Failed to save dirty stadium!")
-        }) : this.stadiumDAO.getStadium().observe(this, fca) : (s.success = !0,
+        }) : this.stadiumDAO.getStadium().observe(this, ica) : (s.success = !0,
         s.status = 200,
         s.data.stadium = this.stadiumRepository.getFullStadium(),
         o.notify(s)),
@@ -12700,7 +12706,7 @@ function(i) {
             s.data.campaign = a,
             o.notify(s),
             o;
-        function Bda(t, e) {
+        function Eda(t, e) {
             var i;
             t.unobserve(n),
             s.success = e.success,
@@ -12714,8 +12720,8 @@ function(i) {
         }
         return this.isCampaignCacheExpired() && r === ObjectiveCampaignIteration.ACTIVE ? this.requestActiveCampaign().observe(this, function(t, e) {
             t.unobserve(n),
-            n.objectivesDAO.getCampaignDetails(r).observe(n, Bda)
-        }) : this.objectivesDAO.getCampaignDetails(r).observe(this, Bda),
+            n.objectivesDAO.getCampaignDetails(r).observe(n, Eda)
+        }) : this.objectivesDAO.getCampaignDetails(r).observe(this, Eda),
         o
     }
     ,
@@ -12798,7 +12804,7 @@ function(i) {
             a.data.group = t,
             s.notify(a),
             s;
-        function _da(t, e) {
+        function cea(t, e) {
             if (t.unobserve(o),
             a.success = e.success,
             a.status = e.status,
@@ -12812,7 +12818,7 @@ function(i) {
             }
             s.notify(a)
         }
-        return t.isMilestone() || t.isExpiringMilestone() ? this.objectivesDAO.getLearningGroupObjectives(r.id, t.id).observe(this, _da) : this.objectivesDAO.getGroupObjectives(r.id, t.type, t.id).observe(this, _da),
+        return t.isMilestone() || t.isExpiringMilestone() ? this.objectivesDAO.getLearningGroupObjectives(r.id, t.id).observe(this, cea) : this.objectivesDAO.getGroupObjectives(r.id, t.type, t.id).observe(this, cea),
         s
     }
     ,
@@ -13715,7 +13721,7 @@ function(r) {
             c.success = !1,
             l.notify(c),
             l;
-        function Zia(t, e) {
+        function aja(t, e) {
             if (t.unobserve(a),
             c.success = e.success,
             c.status = e.status,
@@ -13761,7 +13767,7 @@ function(r) {
         var u = o.squad;
         return this.saveChallenge(o).observe(this, function(t, e) {
             t.unobserve(a),
-            e.success ? a.sbcDAO.submitChallenge(o.id, !!i).observe(a, Zia) : (c.success = e.success,
+            e.success ? a.sbcDAO.submitChallenge(o.id, !!i).observe(a, aja) : (c.success = e.success,
             c.status = e.status,
             c.error = e.error,
             l.notify(c))
@@ -14493,7 +14499,7 @@ function(i) {
     }
     ,
     UTSquadService.prototype.addShowOff = function(r) {
-        function Vna(t, e) {
+        function Yna(t, e) {
             if (t.unobserve(l),
             u.success = e.success,
             u.status = e.status,
@@ -14515,9 +14521,9 @@ function(i) {
             } else
                 c.notify(u)
         }
-        function Wna(t, e) {
+        function Zna(t, e) {
             t.unobserve(l),
-            e.success ? l.squadDao.createShowOffSquad(r).observe(l, Vna) : (u.status = e.status,
+            e.success ? l.squadDao.createShowOffSquad(r).observe(l, Yna) : (u.status = e.status,
             c.notify(u))
         }
         var l = this
@@ -14530,9 +14536,9 @@ function(i) {
                     var i = e.response.showOffSquads.map(function(t) {
                         return t.id
                     });
-                    l.deleteShowOff(Math.min.apply(Math, i)).observe(l, Wna)
+                    l.deleteShowOff(Math.min.apply(Math, i)).observe(l, Zna)
                 } else
-                    l.squadDao.createShowOffSquad(r).observe(l, Vna);
+                    l.squadDao.createShowOffSquad(r).observe(l, Yna);
             else
                 u.status = e.status,
                 c.notify(u)
@@ -14566,7 +14572,7 @@ function(i) {
             return s.status = HttpStatusCode.BAD_REQUEST,
             o.notify(s),
             o;
-        function yoa(t) {
+        function Boa(t) {
             n.squadDao.getShowOffSquad(t, e).observe(n, function(t, e) {
                 t.unobserve(n),
                 n.unauthenticatedShowOffId = "",
@@ -14582,13 +14588,13 @@ function(i) {
         var e = t[0]
           , a = t[1]
           , i = services.Authentication.getServerShardBySKU(a);
-        return i ? yoa(i) : services.Authentication.requestServerShards().observe(this, function(t, e) {
+        return i ? Boa(i) : services.Authentication.requestServerShards().observe(this, function(t, e) {
             if (t.unobserve(n),
             e.success && JSUtils.isObject(e.data) && 0 < e.data.shards.length) {
                 for (var i in e.data.shards) {
                     var r = e.data.shards[i];
                     if (r.supportsSKU(a))
-                        return void yoa(r)
+                        return void Boa(r)
                 }
                 n.unauthenticatedShowOffId = "",
                 o.notify(s)
@@ -14706,7 +14712,7 @@ function(i) {
     }
     ,
     UTSquadService.prototype.removeItemsFromSquads = function(r) {
-        function hpa(t, e) {
+        function kpa(t, e) {
             (e.isPlayer() || e.isManager()) && t.forEach(function(t) {
                 t.containsItem(e, !0) && t.removeItem(e)
             })
@@ -14717,8 +14723,8 @@ function(i) {
             e.success && JSUtils.isObject(e.data)) {
                 var i = e.data.squads;
                 Array.isArray(r) ? r.forEach(function(t) {
-                    return hpa(i, t)
-                }) : hpa(i, r)
+                    return kpa(i, t)
+                }) : kpa(i, r)
             }
         })
     }
@@ -15807,7 +15813,7 @@ var UTPresentationController = function(r) {
     UTPresentationController.prototype.present = function(t, e) {
         var i = this;
         if (!this.isPresenting) {
-            function Iva() {
+            function Lva() {
                 i.presentationDidEnd(),
                 i.presentingViewController.didPresent(i.presentedViewController),
                 e && e()
@@ -15840,7 +15846,7 @@ var UTPresentationController = function(r) {
                 DebugUtils.Assert(!1, "View controller does not have a supported modal display style.")
             }
             this.presentedViewController.viewDidAppear(),
-            t ? this.presentedViewController.getView().perform(enums.UIAnimation.FADE_IN, Iva) : Iva.call(this)
+            t ? this.presentedViewController.getView().perform(enums.UIAnimation.FADE_IN, Lva) : Lva.call(this)
         }
     }
     ,
@@ -16101,11 +16107,11 @@ function(e) {
     UTViewController.prototype.presentViewController = function(t, e, i) {
         var r = this;
         if (!this._presentationController || this._presentationController.getPresentedViewController() !== t) {
-            function Vwa() {
+            function Ywa() {
                 r._presentationController = r._getPresentationControllerInstance(t),
                 r._presentationController.present(!!e, i)
             }
-            this._presentationController ? this._presentationController.queuePresentation ? this._presentationController.queue(t, !!e, i) : this.dismissViewController(!!e, Vwa.bind(this)) : Vwa.call(this)
+            this._presentationController ? this._presentationController.queuePresentation ? this._presentationController.queue(t, !!e, i) : this.dismissViewController(!!e, Ywa.bind(this)) : Ywa.call(this)
         }
     }
     ,
@@ -17263,13 +17269,13 @@ function(n) {
     }
     ,
     UTDataProviderFactory.prototype.getPlayStyleDP = function(t) {
-        function zBa(t) {
+        function CBa(t) {
             return new UTDataProviderEntryDTO(t,t.toString(),UTLocalizationUtil.playStyleIdToName(t, e.locDelegate))
         }
         var e = this
           , i = [new UTDataProviderEntryDTO(-1,"-1",this.locDelegate.localize("roles.defaultRole"))];
-        return JSUtils.isBoolean(t) && t || (i = i.concat(zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_1), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_2), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_3), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_4), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_5), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_6), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_7), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_8), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_9), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_10), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_11), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_12), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_13), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_14), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_15), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_16), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_17), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_18), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_19))),
-        JSUtils.isBoolean(t) && !t || (i = i.concat(zBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_1), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_2), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_3), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_4), zBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_5))),
+        return JSUtils.isBoolean(t) && t || (i = i.concat(CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_1), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_2), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_3), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_4), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_5), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_6), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_7), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_8), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_9), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_10), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_11), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_12), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_13), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_14), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_15), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_16), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_17), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_18), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GENERAL_19))),
+        JSUtils.isBoolean(t) && !t || (i = i.concat(CBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_1), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_2), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_3), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_4), CBa(ItemSubType.TRAINING_PLAYERSTYLE_GOALKEEPER_5))),
         i
     }
     ,
@@ -18131,9 +18137,9 @@ function(i) {
     UTSquadChemCalculatorUtils.prototype.getContribution = function(t, e) {
         switch (t) {
         case ChemistryParamId.CLUB:
-            return e.isLeagueHeroItem() || e.isLegend() || e.isManager() ? 0 : 1;
+            return !e.isSuperChem() && (e.isLeagueHeroItem() || e.isLegend() || e.isManager()) ? 0 : 1;
         case ChemistryParamId.LEAGUE:
-            return e.isLeagueHeroItem() ? 2 : e.isLegend() ? 0 : 1;
+            return e.isLeagueHeroItem() || e.isSuperChem() ? 2 : e.isLegend() ? 0 : 1;
         case ChemistryParamId.NATION:
             return e.isLegend() ? 2 : 1
         }
@@ -18188,7 +18194,7 @@ function(i) {
             }
         }),
         i.forEach(function(t, e) {
-            var i, r, n = null !== (r = null === (i = _.getPosition(e)) || void 0 === i ? void 0 : i.typeId) && void 0 !== r ? r : -1, o = t.preferredPosition === n, s = t.isLegend() || t.isCharityItem() || t.isLeagueHeroItem(), a = {
+            var i, r, n = null !== (r = null === (i = _.getPosition(e)) || void 0 === i ? void 0 : i.typeId) && void 0 !== r ? r : -1, o = t.preferredPosition === n, s = t.isLegend() || t.isCharityItem() || t.isLeagueHeroItem() || t.isSuperChem(), a = {
                 missed: 0,
                 parameters: [],
                 points: 0
@@ -20231,12 +20237,12 @@ function(e) {
     }
     ,
     UTClubRepository.prototype.createConsumables = function(t) {
-        function pPa(t) {
+        function sPa(t) {
             var e = i.consumables.get(t.definitionId);
             e ? e.update(t) : i.consumables.set(t.definitionId, t)
         }
         var i = this;
-        Array.isArray(t) ? t.forEach(pPa, this) : pPa(t)
+        Array.isArray(t) ? t.forEach(sPa, this) : sPa(t)
     }
     ,
     UTClubRepository.prototype.removeItem = function(t) {
@@ -24393,15 +24399,15 @@ var ShowOffLoginControllerStep, UTLicenseViewController = function(e) {
     }
     ,
     UTLicenseViewController.prototype.checkFreeDiskSpace = function() {
-        function M6a() {
+        function P6a() {
             e.setContinueFlag(UTLicenseViewController.FLAGS.MEMORY)
         }
         var e = this;
-        isChrome() ? M6a.call(this) : window.plugins.utilities.getFreeDiskSpace(function(t) {
+        isChrome() ? P6a.call(this) : window.plugins.utilities.getFreeDiskSpace(function(t) {
             e.hasLowMemory = t < UTLicenseViewController.LOW_MEMORY_LIMIT,
             e.setContinueFlag(UTLicenseViewController.FLAGS.MEMORY)
         }
-        .bind(this), M6a.bind(this))
+        .bind(this), P6a.bind(this))
     }
     ,
     UTLicenseViewController.prototype.transitionToLogin = function() {
@@ -24459,35 +24465,35 @@ var UTShowOffLoginController = function(e) {
     }
     return __extends(UTShowOffLoginController, e),
     UTShowOffLoginController.prototype.onPreLoadSquad = function() {
-        function g7a() {
+        function j7a() {
             i.isRunning = !1,
             utils.PopupManager.showAlert(utils.PopupManager.Alerts.ORIGIN_UNAVAILABLE, i.logout.bind(i)),
             gClickShield.hideShield(EAClickShieldView.Shield.LOADING)
         }
-        function h7a(t, e) {
-            t.unobserve(i),
-            e.success ? i.runNextStep() : g7a()
-        }
-        function i7a(t, e) {
-            t.unobserve(i),
-            e.success ? services.Configuration.requestSquadData().observe(i, h7a) : g7a()
-        }
-        function j7a(t, e) {
-            t.unobserve(i),
-            e.success ? services.Configuration.loadRarityData().observe(i, i7a) : g7a()
-        }
         function k7a(t, e) {
             t.unobserve(i),
-            e.success ? services.Configuration.requestPlayerIconData().observe(i, j7a) : g7a()
+            e.success ? i.runNextStep() : j7a()
         }
         function l7a(t, e) {
             t.unobserve(i),
-            e.success ? services.Configuration.requestPlayerMetaData().observe(i, k7a) : g7a()
+            e.success ? services.Configuration.requestSquadData().observe(i, k7a) : j7a()
+        }
+        function m7a(t, e) {
+            t.unobserve(i),
+            e.success ? services.Configuration.loadRarityData().observe(i, l7a) : j7a()
+        }
+        function n7a(t, e) {
+            t.unobserve(i),
+            e.success ? services.Configuration.requestPlayerIconData().observe(i, m7a) : j7a()
+        }
+        function o7a(t, e) {
+            t.unobserve(i),
+            e.success ? services.Configuration.requestPlayerMetaData().observe(i, n7a) : j7a()
         }
         var i = this;
         services.Configuration.requestTeamConfig().observe(this, function(t, e) {
             t.unobserve(i),
-            e.success ? services.Configuration.requestStaticPlayerData().observe(i, l7a) : g7a()
+            e.success ? services.Configuration.requestStaticPlayerData().observe(i, o7a) : j7a()
         })
     }
     ,
@@ -25357,7 +25363,7 @@ function(e) {
         i[i.RATING = 11] = "RATING",
         i[i.RESOURCE = 12] = "RESOURCE",
         i[i.PLAYERPICK = 13] = "PLAYERPICK";
-        function Bab(t, e, i) {
+        function Eab(t, e, i) {
             switch (t) {
             case r.RECENCY:
                 return JSUtils.sortCompare(e.timestamp, i.timestamp, n.sort === SearchSortOrder.DESCENDING);
@@ -25390,7 +25396,7 @@ function(e) {
             }
         }
         var o, s = [ItemType.PLAYER, ItemType.MANAGER, ItemType.CONTRACT, ItemType.HEALTH, ItemType.TRAINING, ItemType.BADGE, ItemType.KIT, ItemType.BALL, ItemType.STADIUM, ItemType.MISC];
-        o = t.getAuctionData().isActiveTrade() && e.getAuctionData().isActiveTrade() ? [r.RECENCY, r.EXPIRY, r.DISCARD, r.TYPE, r.RANK, r.RATING, r.LEGEND, r.SPECIAL, r.TIER, r.RARITY, r.RESOURCE] : this.sort === SearchSortOrder.ASCENDING ? [r.RECENCY, r.PLAYERPICK, r.DISCARD, r.LOAN, r.RANK, r.RATING, r.RESOURCE] : t.concept && e.concept ? [r.TIER, r.RANK, r.RATING, r.SPECIAL, r.RARITY, r.RESOURCE] : [r.PLAYERPICK, r.DISCARD, r.TYPE, r.RATING, r.RANK, r.LEGEND, r.SPECIAL, r.TIER, r.RARITY, r.LOAN, r.UNTRADEABLE, r.RECENCY, r.RESOURCE];
+        o = t.getAuctionData().isActiveTrade() && e.getAuctionData().isActiveTrade() || this.sortByRecency ? [r.RECENCY, r.EXPIRY, r.DISCARD, r.TYPE, r.RANK, r.RATING, r.LEGEND, r.SPECIAL, r.TIER, r.RARITY, r.RESOURCE] : this.sort === SearchSortOrder.ASCENDING ? [r.RECENCY, r.PLAYERPICK, r.DISCARD, r.LOAN, r.RANK, r.RATING, r.RESOURCE] : t.concept && e.concept ? [r.TIER, r.RANK, r.RATING, r.SPECIAL, r.RARITY, r.RESOURCE] : [r.PLAYERPICK, r.DISCARD, r.TYPE, r.RATING, r.RANK, r.LEGEND, r.SPECIAL, r.TIER, r.RARITY, r.LOAN, r.UNTRADEABLE, r.RECENCY, r.RESOURCE];
         var a = 0;
         if (!this.sortByRecency && (a = 1,
         this.sortType === SearchSortType.RATING)) {
@@ -25402,7 +25408,7 @@ function(e) {
             }
         }
         for (var u = 0; 0 === u && a !== o.length; )
-            u = Bab.call(this, o[a], t, e),
+            u = Eab.call(this, o[a], t, e),
             a++;
         return u
     }
@@ -29201,7 +29207,7 @@ var UTPlayerItemView = function(e) {
             this.__playerRating && (this.__playerRating.textContent = e.rating.toString()),
             this.__biofirstOwner) {
                 var n = 1 < e.owners;
-                this.__biofirstOwner.style.display = n ? "none" : ""
+                this.__biofirstOwner.style.display = n || e.concept ? "none" : ""
             }
             this.setPortrait(e),
             this.setRank(e),
@@ -29680,17 +29686,17 @@ function(f) {
             DOMKit.findElements(i, ".statValue.Dribbling")[0].innerHTML = o.getAttribute(PlayerAttribute.FOUR).toString(),
             DOMKit.findElements(i, ".statValue.Defending")[0].innerHTML = o.getAttribute(PlayerAttribute.FIVE).toString(),
             DOMKit.findElements(i, ".statValue.Header")[0].innerHTML = o.getAttribute(PlayerAttribute.SIX).toString();
-            function Bub(t, e) {
+            function Eub(t, e) {
                 DOMKit.findElements(i, t).forEach(function(t) {
                     return t.innerHTML = e
                 })
             }
-            if (Bub(".statLabel.Pace", n ? services.Localization.localize("cards.cardfront.divingAbbr") : services.Localization.localize("cards.cardfront.paceAbbr")),
-            Bub(".statLabel.Header", n ? services.Localization.localize("cards.cardfront.positionAbbr") : services.Localization.localize("cards.cardfront.headingAbbr")),
-            Bub(".statLabel.Dribbling", n ? services.Localization.localize("cards.cardfront.reflexAbbr") : services.Localization.localize("cards.cardfront.dribblingAbbr")),
-            Bub(".statLabel.Shooting", n ? services.Localization.localize("cards.cardfront.handlingAbbr") : services.Localization.localize("cards.cardfront.shootingAbbr")),
-            Bub(".statLabel.Defending", n ? services.Localization.localize("cards.cardfront.speedAbbr") : services.Localization.localize("cards.cardfront.defendingAbbr")),
-            Bub(".statLabel.Passing", n ? services.Localization.localize("cards.cardfront.kickAbbr") : services.Localization.localize("cards.cardfront.passingAbbr")),
+            if (Eub(".statLabel.Pace", n ? services.Localization.localize("cards.cardfront.divingAbbr") : services.Localization.localize("cards.cardfront.paceAbbr")),
+            Eub(".statLabel.Header", n ? services.Localization.localize("cards.cardfront.positionAbbr") : services.Localization.localize("cards.cardfront.headingAbbr")),
+            Eub(".statLabel.Dribbling", n ? services.Localization.localize("cards.cardfront.reflexAbbr") : services.Localization.localize("cards.cardfront.dribblingAbbr")),
+            Eub(".statLabel.Shooting", n ? services.Localization.localize("cards.cardfront.handlingAbbr") : services.Localization.localize("cards.cardfront.shootingAbbr")),
+            Eub(".statLabel.Defending", n ? services.Localization.localize("cards.cardfront.speedAbbr") : services.Localization.localize("cards.cardfront.defendingAbbr")),
+            Eub(".statLabel.Passing", n ? services.Localization.localize("cards.cardfront.kickAbbr") : services.Localization.localize("cards.cardfront.passingAbbr")),
             r && (this.applyColors(".playerOverview", r.header),
             this.applyColors(".name", r.name),
             this.applyColors(".ut-item-view--main .statValue", r.attributeValues),
@@ -29758,7 +29764,7 @@ function(f) {
     }
     ,
     UTLargePlayerItemView.prototype.resetRender = function() {
-        function Uub(t) {
+        function Xub(t) {
             return (t.className.match(/(^|\s)chemstyle\S+/g) || []).join(" ")
         }
         var t = this.getRootElement();
@@ -29766,8 +29772,8 @@ function(f) {
         DOMKit.findElements(t, ".statLabel").forEach(function(t) {
             return DOMKit.removeClass(t, "gold silver bronze")
         }),
-        DOMKit.removeClass(this.__playStyle, Uub(this.__playStyle)),
-        DOMKit.removeClass(this.__playStyleLarge, Uub(this.__playStyleLarge))
+        DOMKit.removeClass(this.__playStyle, Xub(this.__playStyle)),
+        DOMKit.removeClass(this.__playStyleLarge, Xub(this.__playStyleLarge))
     }
     ,
     UTLargePlayerItemView.prototype.getAssetDimensions = function(t, e) {
@@ -36303,7 +36309,7 @@ var UTSelectItemFromClubViewController = function(i) {
     }
     ,
     UTSelectItemFromClubViewController.prototype.onTableCellActionSelected = function(t, e, i) {
-        function vWb(t) {
+        function yWb(t) {
             var e;
             o.searchCriteria && (o.searchCriteria.defId = []),
             o.addItemToSlot(t),
@@ -36325,11 +36331,11 @@ var UTSelectItemFromClubViewController = function(i) {
                             return t.definitionId === s.definitionId
                         }) : null
                           , n = !((null == r ? void 0 : r.isLoaned()) && (null === (i = o.squad) || void 0 === i ? void 0 : i.isSBC()));
-                        vWb(r && n ? r : s)
+                        yWb(r && n ? r : s)
                     }
                 })
             } else
-                vWb(s)
+                yWb(s)
     }
     ,
     UTSelectItemFromClubViewController.prototype.onModifySearchSelected = function(t) {
@@ -36964,33 +36970,33 @@ function(i) {
     }
     ,
     UTConsumableCategoriesViewModel.prototype.getItems = function(t, e) {
-        function l$b(t) {
+        function o$b(t) {
             return !e || t.canApplyTo(e)
         }
         if (JSUtils.isNumber(t))
             switch (t) {
             case enums.UIConsumableCategory.CONTRACTS:
                 return this.values().filter(function(t) {
-                    return t.isContract() && l$b(t)
+                    return t.isContract() && o$b(t)
                 });
             case enums.UIConsumableCategory.HEALING:
                 return this.values().filter(function(t) {
-                    return t.isInjuryHealing() && l$b(t)
+                    return t.isInjuryHealing() && o$b(t)
                 });
             case enums.UIConsumableCategory.LEAGUEMOD:
                 return this.values().filter(function(t) {
-                    return t.isManagerLeagueModifier() && l$b(t)
+                    return t.isManagerLeagueModifier() && o$b(t)
                 });
             case enums.UIConsumableCategory.PLAYSTYLE:
                 return this.values().filter(function(t) {
-                    return t.isStyleModifier() && l$b(t)
+                    return t.isStyleModifier() && o$b(t)
                 });
             case enums.UIConsumableCategory.POSITION:
                 return this.values().filter(function(t) {
-                    return t.isPlayerPositionModifier() && l$b(t)
+                    return t.isPlayerPositionModifier() && o$b(t)
                 })
             }
-        return e ? this.values().filter(l$b) : this.values()
+        return e ? this.values().filter(o$b) : this.values()
     }
     ,
     UTConsumableCategoriesViewModel
@@ -37181,17 +37187,17 @@ var UTConsumableCategoriesView = function(e) {
     }
     ,
     UTConsumableCategoriesView.prototype.setCategoryValues = function(t) {
-        function e_b(t, e) {
+        function h_b(t, e) {
             0 !== e ? (t.setStackCount(e),
             t.setDisplay(!0),
             t.addTarget(i, i._eCategorySelected, EventType.TAP)) : t.setDisplay(!1)
         }
         var i = this;
-        0 < t.total ? (e_b.call(this, this._contract, t.contracts),
-        e_b.call(this, this._healing, t.healing),
-        e_b.call(this, this._leaguemod, t.managerLeagueModifier),
-        e_b.call(this, this._chemstyle, t.playStyle),
-        e_b.call(this, this._positioning, t.position)) : (this.noResultsView = new UTListNoResultsView,
+        0 < t.total ? (h_b.call(this, this._contract, t.contracts),
+        h_b.call(this, this._healing, t.healing),
+        h_b.call(this, this._leaguemod, t.managerLeagueModifier),
+        h_b.call(this, this._chemstyle, t.playStyle),
+        h_b.call(this, this._positioning, t.position)) : (this.noResultsView = new UTListNoResultsView,
         this.noResultsView.init(),
         this.noResultsView.setText(services.Localization.localize("consumables.empty")),
         DOMKit.empty(this.__categoryList),
@@ -37474,7 +37480,7 @@ var UTApplicablePositionSelectView = function(r) {
     }
     ,
     UTApplicablePositionSelectView.prototype.onConfirmButtonSelected = function(t, e, i) {
-        this.isInteractionEnabled() && this.selectedPosition && (this.setInteractionState(!1),
+        this.isInteractionEnabled() && JSUtils.isNumber(this.selectedPosition) && (this.setInteractionState(!1),
         this._triggerActions(UTApplicablePositionSelectView.Event.POSITION_SELECTED, {
             id: this.selectedPosition
         }))
@@ -38506,7 +38512,6 @@ var UTPlayerBioView = function(e) {
         n.title = e,
         n.setProgress(r),
         t.appendChild(n.getRootElement()),
-        console.log(n.getRootElement()),
         n.render()
     }
     ,
@@ -39394,7 +39399,7 @@ var _a, EANumberDrawBox = function(i) {
     (C = nt.BUFFER_TYPE || (nt.BUFFER_TYPE = {}))[C.ELEMENT_ARRAY_BUFFER = 34963] = "ELEMENT_ARRAY_BUFFER",
     C[C.ARRAY_BUFFER = 34962] = "ARRAY_BUFFER",
     C[C.UNIFORM_BUFFER = 35345] = "UNIFORM_BUFFER";
-    function N8b(t) {
+    function Q8b(t) {
         return void 0 !== t && "MacIntel" === t.platform && "number" == typeof t.maxTouchPoints && 1 < t.maxTouchPoints && "undefined" == typeof MSStream
     }
     var R = {
@@ -39461,9 +39466,9 @@ var _a, EANumberDrawBox = function(i) {
             apple: {
                 phone: n(P) && !n(F),
                 ipod: n(D),
-                tablet: !n(P) && (n(L) || N8b(e)) && !n(F),
+                tablet: !n(P) && (n(L) || Q8b(e)) && !n(F),
                 universal: n(x),
-                device: (n(P) || n(D) || n(L) || n(x) || N8b(e)) && !n(F)
+                device: (n(P) || n(D) || n(L) || n(x) || Q8b(e)) && !n(F)
             },
             amazon: {
                 phone: n(V),
@@ -40216,7 +40221,7 @@ var _a, EANumberDrawBox = function(i) {
             return null == t
         }
     };
-    function W8b(t, e, i, r) {
+    function Z8b(t, e, i, r) {
         e = e || "&",
         i = i || "=";
         var n = {};
@@ -40241,7 +40246,7 @@ var _a, EANumberDrawBox = function(i) {
         }
         return n
     }
-    function X8b(t) {
+    function $8b(t) {
         switch (typeof t) {
         case "string":
             return t;
@@ -40253,27 +40258,27 @@ var _a, EANumberDrawBox = function(i) {
             return ""
         }
     }
-    function Y8b(i, r, n, t) {
+    function _8b(i, r, n, t) {
         return r = r || "&",
         n = n || "=",
         null === i && (i = void 0),
         "object" == typeof i ? Object.keys(i).map(function(t) {
-            var e = encodeURIComponent(X8b(t)) + n;
+            var e = encodeURIComponent($8b(t)) + n;
             return Array.isArray(i[t]) ? i[t].map(function(t) {
-                return e + encodeURIComponent(X8b(t))
-            }).join(r) : e + encodeURIComponent(X8b(i[t]))
-        }).join(r) : t ? encodeURIComponent(X8b(t)) + n + encodeURIComponent(X8b(i)) : ""
+                return e + encodeURIComponent($8b(t))
+            }).join(r) : e + encodeURIComponent($8b(i[t]))
+        }).join(r) : t ? encodeURIComponent($8b(t)) + n + encodeURIComponent($8b(i)) : ""
     }
-    function _8b(t, e) {
+    function c9b(t, e) {
         return urlParse(t, !1, !0).resolve(e)
     }
-    function b9b(t) {
+    function e9b(t) {
         return Z.isString(t) && (t = urlParse(t)),
         t instanceof Url ? t.format() : Url.prototype.format.call(t)
     }
     var tt = createCommonjsModule(function(t, e) {
-        e.decode = e.parse = W8b,
-        e.encode = e.stringify = Y8b
+        e.decode = e.parse = Z8b,
+        e.encode = e.stringify = _8b
     })
       , et = urlParse;
     function Url() {
@@ -40595,8 +40600,8 @@ var _a, EANumberDrawBox = function(i) {
     ;
     var yt = {
         parse: et,
-        format: b9b,
-        resolve: _8b
+        format: e9b,
+        resolve: c9b
     };
     function assertPath(t) {
         if ("string" != typeof t)
@@ -43011,7 +43016,7 @@ var _a, EANumberDrawBox = function(i) {
     le.ResolveParser = "resolve-parser",
     le.CacheParser = "cache-parser",
     le.DetectionParser = "detection-parser";
-    function Wcc(t) {
+    function Zcc(t) {
         if ("function" == typeof t || "object" == typeof t && t.extension) {
             if (!t.extension)
                 throw new Error("Extension class must have an extension object");
@@ -43034,7 +43039,7 @@ var _a, EANumberDrawBox = function(i) {
         remove: function() {
             for (var t = arguments, n = this, e = [], i = 0; i < arguments.length; i++)
                 e[i] = t[i];
-            return e.map(Wcc).forEach(function(r) {
+            return e.map(Zcc).forEach(function(r) {
                 r.type.forEach(function(t) {
                     var e, i;
                     return null === (i = (e = n._removeHandlers)[t]) || void 0 === i ? void 0 : i.call(e, r)
@@ -43045,7 +43050,7 @@ var _a, EANumberDrawBox = function(i) {
         add: function() {
             for (var t = arguments, n = this, e = [], i = 0; i < arguments.length; i++)
                 e[i] = t[i];
-            return e.map(Wcc).forEach(function(r) {
+            return e.map(Zcc).forEach(function(r) {
                 r.type.forEach(function(t) {
                     var e = n._addHandlers
                       , i = n._queue;
@@ -44068,7 +44073,7 @@ var _a, EANumberDrawBox = function(i) {
         return this._load || (void 0 !== t && (this.createBitmap = t),
         this._load = new Promise(function(t, e) {
             var i = r.source;
-            function WMc() {
+            function ZMc() {
                 r.destroyed || (i.onload = null,
                 i.onerror = null,
                 r.resize(i.width, i.height),
@@ -44076,7 +44081,7 @@ var _a, EANumberDrawBox = function(i) {
                 r.createBitmap ? t(r.process()) : t(r))
             }
             r.url = i.src,
-            i.complete && i.src ? WMc() : (i.onload = WMc,
+            i.complete && i.src ? ZMc() : (i.onload = ZMc,
             i.onerror = function(t) {
                 e(t),
                 r.onError.emit(t)
@@ -47522,7 +47527,7 @@ var _a, EANumberDrawBox = function(i) {
             syncFunc: new Function("ud","uv","renderer","syncData","buffer",o.join("\n"))
         }
     }
-    function Pec() {}
+    function Sec() {}
     var hr = (GLProgram.prototype.destroy = function() {
         this.uniformData = null,
         this.uniformGroups = null,
@@ -49049,7 +49054,7 @@ var _a, EANumberDrawBox = function(i) {
             type: nt.ExtensionType.RendererPlugin
         }
     });
-    function yfc(t) {
+    function Bfc(t) {
         Object.defineProperty(qr, t, {
             get: function() {
                 return deprecation("6.0.0", "PIXI.systems." + t + " has moved to PIXI." + t),
@@ -49059,8 +49064,8 @@ var _a, EANumberDrawBox = function(i) {
     }
     var qr = {};
     for (var Hr in He)
-        yfc(Hr);
-    function Bfc(t) {
+        Bfc(Hr);
+    function Efc(t) {
         Object.defineProperty(zr, t, {
             get: function() {
                 return deprecation("6.0.0", "PIXI.resources." + t + " has moved to PIXI." + t),
@@ -49070,7 +49075,7 @@ var _a, EANumberDrawBox = function(i) {
     }
     var zr = {};
     for (var Hr in Sr)
-        Bfc(Hr);
+        Efc(Hr);
     var Yr = {
         accessible: !1,
         accessibleTitle: null,
@@ -55200,14 +55205,14 @@ var _a, EANumberDrawBox = function(i) {
         e = null),
         i && deprecation("6.5.0", "BasePrepare.upload callback is deprecated, use the return Promise instead."),
         new Promise(function(t) {
-            function nGd() {
+            function qGd() {
                 null == i || i(),
                 t()
             }
             e && r.add(e),
-            r.queue.length ? (r.completes.push(nGd),
+            r.queue.length ? (r.completes.push(qGd),
             r.ticking || (r.ticking = !0,
-            _e.system.addOnce(r.tick, r, nt.UPDATE_PRIORITY.UTILITY))) : nGd()
+            _e.system.addOnce(r.tick, r, nt.UPDATE_PRIORITY.UTILITY))) : qGd()
         }
         )
     }
@@ -58558,7 +58563,7 @@ var _a, EANumberDrawBox = function(i) {
     nt.Graphics = Wo,
     nt.GraphicsData = ko,
     nt.GraphicsGeometry = qo,
-    nt.IGLUniformData = Pec,
+    nt.IGLUniformData = Sec,
     nt.INSTALLED = fe,
     nt.INTERNAL_FORMAT_TO_BYTES_PER_PIXEL = Cn,
     nt.ImageBitmapResource = je,
@@ -59736,7 +59741,7 @@ var UTPlayerPicksViewController = function(e) {
                 var e = [];
                 return 0 < t.length ? e = this.picks.map(function(e) {
                     return JSUtils.isValid(JSUtils.find(t, function(t) {
-                        return t.definitionId === e.definitionId
+                        return t.definitionId === e.definitionId && t.isLoaned() === e.isLoaned()
                     }))
                 }, this) : (e.length = this.picks.length,
                 e.fill(!1, 0, this.picks.length)),
@@ -60528,7 +60533,7 @@ var UTSendToSquadViewController = function(i) {
     }
     ,
     UTSendToSquadViewController.prototype.eAddSwap = function(t, o) {
-        function V4d(t, e) {
+        function Y4d(t, e) {
             var i;
             t.unobserve(s),
             e.success ? s.defaultedToActiveSquad ? services.Notification.queue([a.localize("notification.item.toActiveSquad"), UINotificationType.NEUTRAL]) : (TelemetryManager.trackEvent(TelemetryManager.Sections.SQUADS, TelemetryManager.Categories.BUTTON_PRESS, "Squad Slot Detail View - Sent to Current Squad"),
@@ -60547,14 +60552,14 @@ var UTSendToSquadViewController = function(i) {
                         var i, r, n;
                         t.unobserve(s),
                         e.success && s.pinnedItem ? (u = null !== (r = null === (i = s.squad) || void 0 === i ? void 0 : i.addItemToSlot(o, s.pinnedItem)) && void 0 !== r ? r : null,
-                        null === (n = s.squad) || void 0 === n || n.save().observe(s, V4d)) : (services.Notification.queue(c),
+                        null === (n = s.squad) || void 0 === n || n.save().observe(s, Y4d)) : (services.Notification.queue(c),
                         NetworkErrorManager.handleStatus(e.status),
                         null == l || l.popViewController())
                     });
                 else {
                     var _ = null === (r = this.squad) || void 0 === r ? void 0 : r.addItemToSlot(o, this.pinnedItem);
                     u = _ || null,
-                    null === (n = this.squad) || void 0 === n || n.save().observe(this, V4d)
+                    null === (n = this.squad) || void 0 === n || n.save().observe(this, Y4d)
                 }
         } else
             utils.PopupManager.showAlert(utils.PopupManager.Alerts.DUPLICATE_ITEM),
@@ -60902,11 +60907,6 @@ function UTMarketSearchResultsViewController() {
         enumerable: !0
     })
 }
-function UTMarketSearchResultsSplitViewController() {
-    UTSplitViewController.call(this),
-    this._listController = new UTMarketSearchResultsViewController,
-    this._itemDetailController = new controllers.navigation.ItemDetails
-}
 UTMarketSearchView.prototype._generate = function _generate() {
     if (!this._generated) {
         var t = document.createElement("section");
@@ -61190,96 +61190,5 @@ UTMarketSearchResultsViewController.prototype._arbitraryViewUpdate = function _a
 ,
 UTMarketSearchResultsViewController.prototype._nInfoStateChanged = function _nInfoStateChanged() {
     TelemetryManager.trackEvent(TelemetryManager.Sections.AUCTIONS, TelemetryManager.Categories.BUTTON_PRESS, "Item Info Switch Button - Transfer Market Search Results")
-}
-,
-JSUtils.inherits(UTMarketSearchResultsSplitViewController, UTSplitViewController),
-UTMarketSearchResultsSplitViewController.prototype.init = function init() {
-    if (!this.initialized) {
-        this.superclass(),
-        this._listController.init(),
-        this._listController.setItemListViewDelegate(this),
-        this._listController.onDataChange.observe(this, this._eListDataChanged);
-        var t = this._listController.getView();
-        t.addTarget(this, this._ePageChange, enums.UIPaginationEvent.NEXT),
-        t.addTarget(this, this._ePageChange, enums.UIPaginationEvent.PREVIOUS),
-        this._itemDetailController.initWithIterator(this._listController.getIterator()),
-        this._itemDetailController.enableSwiping(!1),
-        this.addChildViewController(this._listController),
-        this.addChildViewController(this._itemDetailController);
-        var e = getDefaultDispatcher();
-        e.addObserver(AppNotification.ITEM_DISCARD, this, this._nItemDiscarded),
-        e.addObserver(AppNotification.ITEM_LIST, this, this._nItemListed),
-        e.addObserver(AppNotification.ITEM_MOVE, this, this._nItemMoved)
-    }
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.initWithSearchCriteria = function initWithSearchCriteria(t) {
-    this.initialized || (this._listController.initWithSearchCriteria(t),
-    this.init())
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.dealloc = function dealloc() {
-    this._itemDetailController.dealloc(),
-    this._itemDetailController = null,
-    this._listController.dealloc(),
-    this._listController = null;
-    var t = getDefaultDispatcher();
-    t.removeObserver(AppNotification.ITEM_DISCARD, this),
-    t.removeObserver(AppNotification.ITEM_LIST, this),
-    t.removeObserver(AppNotification.ITEM_MOVE, this),
-    this.superclass()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.getNavigationTitle = function getNavigationTitle() {
-    return this._listController.getNavigationTitle()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.viewDidAppear = function viewDidAppear() {
-    this.superclass(),
-    this._setLeftController(this._listController),
-    this._itemDetailController.setNavigationStyle(UTNavigationBarView.Style.SECONDARY)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setStadiumViewModel = function setStadiumViewModel(t) {
-    this._listController.setStadiumViewModel(t),
-    this._itemDetailController.setStadiumViewModel(t)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setPinnedItem = function setPinnedItem(t) {
-    this._listController && this._listController.setPinnedItem(t)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.setSelectedItem = function setSelectedItem(t) {
-    this._listController.setSelectedItem(t)
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.getSelectedItem = function getSelectedItem() {
-    return this._listController.getSelectedItem()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype.selectListRow = function selectListRow(t, e, i) {
-    t === this._listController && (this._listController.getView().selectListRow(i.id),
-    this._itemDetailController.setIndex(e))
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._eListDataChanged = function _eListDataChanged(t, e) {
-    e.items && (0 < e.items.length ? (this._setRightController(this._itemDetailController),
-    this._itemDetailController.setIndex(this._listController.getIterator().getIndex())) : this.hideRightController())
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._ePageChange = function _ePageChange() {
-    this._itemDetailController.onPageChange()
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemDiscarded = function _nItemDiscarded(t, e, i) {
-    this._listController.removeItemsById(i.itemIds || [])
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemListed = function _nItemListed(t, e, i) {
-    this._listController.removeItemsById(i.itemIds || [])
-}
-,
-UTMarketSearchResultsSplitViewController.prototype._nItemMoved = function _nItemMoved(t, e, i) {
-    this._listController.removeItemsById(i.itemIds || [])
 }
 ;

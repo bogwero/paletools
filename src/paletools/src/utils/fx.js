@@ -5,11 +5,16 @@ const fx = {
 };
 /// #endif
 
+export function isFxEnabled() {
+    /// #if process.env.FX
+    return true;
+    /// #endif
+}
 
-export default function playAudio(fxName){
-/// #if process.env.FX
-    if(!fx[fxName]) return;
-    
+export default function playAudio(fxName) {
+    /// #if process.env.FX
+    if (!fx[fxName]) return;
+
     fx[fxName].play();
-/// #endif
+    /// #endif
 }

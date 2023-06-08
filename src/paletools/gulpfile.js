@@ -28,6 +28,7 @@ function base64Encode(getCode) {
 }
 
 const deploySteps = [
+        { from: ['./dist/paletools-fx.prod.js'], transform: base64Encode(getJsCode), to: `${BASE_OUT_DIR}/dist/${VERSION}/` },
         { from: ['./dist/paletools-mobile*.js'], to: `${BASE_OUT_DIR}/dist/${VERSION}/` },
         { from: ['./dist/paletools-mobile.prod.js'], transform: base64Encode(getJsCode), to: `${BASE_OUT_DIR}/dist/${VERSION}/mobile` },
         { from: ['./dist/paletools.development.user.js'], transform: userscript(tampermonkeyHederDev), to: `${BASE_OUT_DIR}/dist/latest` },

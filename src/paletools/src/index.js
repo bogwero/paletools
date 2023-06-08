@@ -1,5 +1,5 @@
 import runOverrides from "./core-overrides";
-import { EVENTS, listenToWebAppEvents, triggerEvent } from "./events";
+import { EVENTS, listenToWebAppEvents, on, triggerEvent } from "./events";
 import runPlugins from "./plugins";
 import db from "./services/db";
 import { logDebug } from "./services/log";
@@ -7,6 +7,7 @@ import { watchForPlayersMovement } from "./services/ui/club";
 import getWindow from "./services/window";
 import styles from "./styles.css";
 import { addClass, hasClass, removeClass, select } from "./utils/dom";
+import playAudio, { isFxEnabled } from "./utils/fx";
 import { addStyle } from "./utils/styles";
 import { hide } from "./utils/visibility";
 import VERSION from "./version";
@@ -47,7 +48,7 @@ let isAppLoaded = false;
 async function init() {
     const login = select(".ut-login");
     if (login || (
-        !services 
+        !services
         || !services.Localization
         || !services.Authentication.sessionUtas
         || !services.Authentication.sessionUtas.url)) {
@@ -67,7 +68,7 @@ async function init() {
     else {
         return;
     }
-    
+
     runOverrides();
     await initDatabase();
     initApp();
@@ -100,7 +101,19 @@ function initApp() {
         //listenToWebAppEvents();
         getAppMain().getRootViewController().showGameView();
         triggerEvent(EVENTS.APP_LOADED);
-        watchForPlayersMovement(); 
+        watchForPlayersMovement();
+
+        if (isFxEnabled()) {
+            playAudio("castigo");
+
+            on("click", ev => {
+                switch (ev.button) {
+                    case 0:
+                        playAudio("tuki");
+                        break;
+                }
+            });
+        }
     } else {
         setTimeout(initApp, 1000);
     }

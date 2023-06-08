@@ -46,6 +46,7 @@ import myPacks from "./myPacks";
 import sbcRatingCalculator from "./sbcRatingCalculator";
 import limbo from "./limbo";
 import claimObjectives from "./claimObjectives";
+import decimalRating from "./decimalRating";
 
 const plugins = [
     minMaxPrices,
@@ -92,6 +93,7 @@ const plugins = [
     externalMarketPrices,
     sbcRatingCalculator,
     claimObjectives,
+    decimalRating,
     limbo,
     snipe,
     keyListener,

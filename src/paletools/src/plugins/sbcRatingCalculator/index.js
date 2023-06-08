@@ -65,31 +65,32 @@ function run() {
                     <div id="sbc-rating-calculator-options">
                         <div>
                             <label>${localize("from")}</label>
-                            <input type="number" id="sbc-rating-calculator-from" value="${rangeFrom}" />
+                            <input type="text" id="sbc-rating-calculator-from" value="${rangeFrom}" />
                         </div>
                         <div>
                             <label>${localize("to")}</label>
-                            <input type="number" id="sbc-rating-calculator-to" value="${rangeTo}" />
+                            <input type="text" id="sbc-rating-calculator-to" value="${rangeTo}" />
                         </div>
                         <div id="sbc-rating-calculator-button-container"></div>
                     </div>
                     <div id="sbc-rating-calculator-container"></div>
-                    <div id="sbc-rating-calculator-pager"></div>
+                    <div id="sbc-rating-calculator-pager" class="pagingContainer"></div>
                 </div>`);
 
                 const dialogContainer = select("#sbc-rating-calculator-container");
 
-                const prevPageButton = createElem("div", { className: "prev" }, "Prev");
-                const nextPageButton = createElem("div", { className: "next" }, "Next")
+                const prevPageButton = createElem("div", { className: "flat pagination prev" }, localize("label.prev"));
+                const nextPageButton = createElem("div", { className: "flat pagination next" }, localize("label.next"))
+
+                hide(prevPageButton);
+                hide(nextPageButton);
 
                 const pager = select("#sbc-rating-calculator-pager");
 
-                let currentPage = 0;
-                let maxPage = -1;
-
                 append(pager, prevPageButton);
                 append(pager, nextPageButton);
-
+                
+                let currentPage = 0;
                 on(prevPageButton, "click", () => {
                     if (currentPage > 0) {
                         displayCombinationsPage(currentPage - 1);
@@ -100,6 +101,32 @@ function run() {
                     displayCombinationsPage(currentPage + 1);
                 });
 
+                const tablesForPage = [];
+
+                function displayCombinationsPage(pageIndex) {
+                    currentPage = pageIndex;
+
+                    hide(prevPageButton);
+                    hide(nextPageButton);
+
+                    if (pageIndex > 0 && tablesForPage.length > 1) {
+                        show(prevPageButton);
+                        show(nextPageButton);
+                    }
+                    else if (pageIndex == 0 && tablesForPage.length > 1) {
+                        show(nextPageButton);
+                    }
+                    else if (pageIndex == tablesForPage.length - 1) {
+                        show(prevPageButton);
+                    }
+
+                    if (tablesForPage.length > pageIndex) {
+                        dialogContainer.innerHTML = "";
+                        for (let tableContainer of tablesForPage[pageIndex]) {
+                            append(dialogContainer, tableContainer);
+                        }
+                    }
+                }
 
                 const calculateButton = new UTStandardButtonControl();
                 calculateButton.init();
@@ -116,81 +143,58 @@ function run() {
                     const upperBound = parseInt(select("#sbc-rating-calculator-to").value) || cfg.upperBound;
 
                     const ratingsToTry = range(lowerBound, upperBound);
-                    let combinationsCounter = 0;
                     const combinations = SolverHelper.getMultisubsets(ratingsToTry, totalPlayers - currentRatings.length);
 
                     let currentCombination = combinations.next();
 
-                    const tablesForPage = [];
-
-                    displayCombinationsPage(0);
-
-                    function displayCombinationsPage(pageIndex) {
-                        if (pageIndex == 0) {
-                            hide(prevPageButton);
-                        }
-                        else {
-                            show(prevPageButton);
+                    let page = 0;
+                    let tableCount = 0;
+                    while (!currentCombination.done) {
+                        if (tableCount == SOLUTIONS_PER_PAGE) {
+                            tableCount = 0;
+                            page++;
                         }
 
-                        if (pageIndex === maxPage) {
-                            hide(nextPageButton);
-                        }
-                        else {
-                            show(nextPageButton);
-                        }
-                        currentPage = pageIndex;
-                        if (tablesForPage.length > pageIndex) {
-                            dialogContainer.innerHTML = "";
-                            for (let tableContainer of tablesForPage[pageIndex]) {
-                                append(dialogContainer, tableContainer);
-                            }
-                            return;
-                        }
+                        const combination = currentCombination.value;
+                        const rating = SolverHelper.getRating([...currentRatings, ...combination], totalPlayers);
 
-                        while (!currentCombination.done) {
-                            const combination = currentCombination.value;
-                            const rating = SolverHelper.getRating([...currentRatings, ...combination], totalPlayers);
-
-                            if (rating < targetRating) {
-                                currentCombination = combinations.next();
-                                continue;
-                            }
-
-                            combinationsCounter++;
-                            if (combinationsCounter > SOLUTIONS_PER_PAGE) {
-                                combinationsCounter = 0;
-                            };
-
-                            const ratingCounts = combination.reduce((acc, curr) => {
-                                acc[curr] = (acc[curr] || 0) + 1;
-                                return acc;
-                            }, {});
-
-                            const table = new Table({
-                                headers: [localize("plugins.sbcRatingCalculator.table.rating"), localize("plugins.sbcRatingCalculator.table.count")],
-                                caption: `${rating}`
-                            });
-                            const tableContainer = createElem("div", { className: "sbc-rating-calculator-table-container" });
-                            table.updateData(Object.keys(ratingCounts).map((rating) => [rating, ratingCounts[rating]]));
-
-                            append(tableContainer, table);
-
-                            if (tablesForPage.length <= currentPage) {
-                                tablesForPage.push([]);
-                            }
-
-                            tablesForPage[currentPage].push(tableContainer);
-
-                            append(dialogContainer, tableContainer);
-
+                        if (rating < targetRating) {
                             currentCombination = combinations.next();
+                            continue;
                         }
 
-                        if (combinationsCounter < SOLUTIONS_PER_PAGE) {
-                            maxPage = currentPage;
-                            hide(nextPageButton);
+                        const ratingCounts = combination.reduce((acc, curr) => {
+                            acc[curr] = (acc[curr] || 0) + 1;
+                            return acc;
+                        }, {});
+
+                        const table = new Table({
+                            headers: [localize("plugins.sbcRatingCalculator.table.rating"), localize("plugins.sbcRatingCalculator.table.count")],
+                            caption: `${rating}`
+                        });
+                        const tableContainer = createElem("div", { className: "sbc-rating-calculator-table-container" });
+                        table.updateData(Object.keys(ratingCounts).map((rating) => [rating, ratingCounts[rating]]));
+
+                        append(tableContainer, table);
+
+                        if (tablesForPage.length <= page) {
+                            tablesForPage.push([]);
                         }
+
+                        tablesForPage[page].push(tableContainer);
+
+                        currentCombination = combinations.next();
+
+                        tableCount++;
+
+                    }
+
+                    for (let tableContainer of tablesForPage[0]) {
+                        append(dialogContainer, tableContainer);
+                    }
+
+                    if (tablesForPage.length > 1) {
+                        show(nextPageButton);
                     }
                 }
             });

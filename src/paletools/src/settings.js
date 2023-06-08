@@ -241,6 +241,9 @@ let settings = {
         },
         packsOpener: {
             enabled: false
+        },
+        decimalRating: {
+            enabled: false
         }
     }
 };
