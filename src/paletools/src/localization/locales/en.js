@@ -11,6 +11,7 @@ export default {
     "from": "From",
     "to": "To",
     "extinct": "Extinct",
+    "market": "Market",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Grid Mode",

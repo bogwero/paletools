@@ -11,6 +11,7 @@ export default {
     "from": "Desde",
     "to": "Hasta",
     "extinct": "Extinto",
+    "market": "Mercado",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modo grilla",

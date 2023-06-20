@@ -74,7 +74,7 @@ function addLowestMarketPriceButton(listRows, buttonContainer) {
                 const minPrice = await findLowestMarketPrice(definitionId, group[definitionId][0].data.type, 1);
 
                 for (let itemCell of group[definitionId]) {
-                    const priceElem = new Price(minPrice ? localizeNumber(minPrice.value) : localize("extinct"));
+                    const priceElem = new Price(minPrice ? localizeNumber(minPrice.value) : localize("extinct"), localize("market"));
                     append(itemCell, priceElem);
                     removeLoadingProgress(itemCell);
                 }
@@ -102,7 +102,7 @@ function populateSellValue(cells) {
 
         if(!sellValue) continue;
 
-        const priceElem = new Price(localizeNumber(sellValue));
+        const priceElem = new Price(localizeNumber(sellValue), localize("market"));
         append(itemCell, priceElem);
         removeLoadingProgress(itemCell);
     }
