@@ -14,6 +14,7 @@ import { getUnassignedItems, discardItems, moveItemsToClub, moveItemsToTransferL
 import settings, { saveConfiguration } from "../../settings";
 import delay from "../../utils/delay";
 import { select, selectAll } from "../../utils/dom";
+import { show, hide } from "../../utils/visibility";
 import { addStyle, removeStyle } from "../../utils/styles";
 import { displayLoader, hideLoader } from "../../utils/loader";
 import { notifyFailure, notifyNeutral } from "../../utils/notifications";
@@ -57,7 +58,7 @@ function run() {
     on(EVENTS.APP_ENABLED, () => addStyles());
     on(EVENTS.APP_DISABLED, () => removeStyles());
 
-    async function autoOpenPacks() {
+    async function autoOpenPacks(packCoinsValue) {
         const response = await toPromise(services.Store.getPacks());
         const pack = response.response.packs.find(x => x.id === this.articleId);
 
@@ -80,7 +81,8 @@ function run() {
                 </select> 
 
                 <label for="pack-opener-purchase-count">${localize("plugins.packsOpener.labels.packsCount")}</label>
-                <input id="pack-opener-purchase-count" type="number" class="ut-text-input-control fut-bin-buy" />
+                <input id="pack-opener-purchase-count" type="number" min="0" class="ut-text-input-control fut-bin-buy" />
+                <label id="coins-to-spend"></label>
 
                 <label for="pack-opener-currency">${localize("plugins.packsOpener.labels.currency")}</label>
                 <select id="pack-opener-currency">
@@ -151,6 +153,24 @@ function run() {
             }
         );
 
+        const currencySelect = select("#pack-opener-currency");
+        const coinsToSpendLabel = select("#coins-to-spend");
+        hide(coinsToSpendLabel);
+        on(select("#pack-opener-purchase-count"), "change", ev => {
+            if(currencySelect.value != GameCurrency.COINS) return;
+
+            const value = parseInt(ev.target.value);
+            if(value > 0) {
+                show(coinsToSpendLabel);
+                coinsToSpendLabel.textContent = `${localize("currency.coins")}: ${packCoinsValue * value}`;
+            }
+            else {
+                hide(coinsToSpendLabel);
+            }
+            
+
+        });
+
         for (let purchaseActionSelect of selectAll("[data-purchase-action]")) {
             const cfgValue = cfg.purchaseActions[purchaseActionSelect.dataset.purchaseAction];
 
@@ -172,7 +192,9 @@ function run() {
         this._btnOpenPacks.setText(localize("plugins.packsOpener.button.text"));
         this._btnOpenPacks.setSubText(localize("plugins.packsOpener.button.subtext"));
         this._btnOpenPacks.addClass("call-to-action pack-opener");
-        this._btnOpenPacks.addTarget(this, autoOpenPacks, EventType.TAP);
+        this._btnOpenPacks.addTarget(this, function() {
+            autoOpenPacks.call(this, params[0]);
+        } , EventType.TAP);
         this.appendActionButton(this._btnOpenPacks);
     }
 

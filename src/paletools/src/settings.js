@@ -244,6 +244,9 @@ let settings = {
         },
         decimalRating: {
             enabled: false
+        },
+        lowestMarketPrice: {
+            enabled: false
         }
     }
 };

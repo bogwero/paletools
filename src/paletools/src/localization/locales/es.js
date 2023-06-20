@@ -10,6 +10,7 @@ export default {
     "loading": "Cargando",
     "from": "Desde",
     "to": "Hasta",
+    "extinct": "Extinto",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modo grilla",
@@ -348,6 +349,11 @@ export default {
     "plugins.decimalRating.settings.title": "Rating Decimal",
     /// #endif
 
+    /// #if process.env.LOWEST_MARKET_PRICE
+    "plugins.lowestMarketPrice.button.text": "Buscar Precio en el Mercado",
+    "plugins.lowestMarketPrice.settings.title": "Precio Mas Barato en el Mercado",
+    /// #endif
+    
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
     "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas aceptando que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
 

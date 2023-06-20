@@ -47,6 +47,7 @@ import sbcRatingCalculator from "./sbcRatingCalculator";
 import limbo from "./limbo";
 import claimObjectives from "./claimObjectives";
 import decimalRating from "./decimalRating";
+import lowestMarketPrice from "./lowestMarketPrice";
 
 const plugins = [
     minMaxPrices,
@@ -94,6 +95,7 @@ const plugins = [
     sbcRatingCalculator,
     claimObjectives,
     decimalRating,
+    lowestMarketPrice,
     limbo,
     snipe,
     keyListener,

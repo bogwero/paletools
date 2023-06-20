@@ -44,8 +44,6 @@ SettingsView.prototype._generate = function _generate() {
 
         createPluginsMenues();
 
-        
-
         this.__root = contentContainer;
         this.generated = true;
     }

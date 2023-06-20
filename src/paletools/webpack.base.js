@@ -48,5 +48,6 @@ module.exports = {
     MY_PACKS: true,
     SBC_RATING_CALCULATOR: true,
     CLAIM_OBJECTIVES: true,
-    DECIMAL_RATING: true
+    DECIMAL_RATING: true,
+    LOWEST_MARKET_PRICE: true
 };

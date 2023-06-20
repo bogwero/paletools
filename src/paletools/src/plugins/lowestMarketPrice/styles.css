@@ -1,0 +1,5 @@
+.listFUTItem .price-container {
+    position: absolute;
+    bottom: 0;
+    min-width: 100%;
+}

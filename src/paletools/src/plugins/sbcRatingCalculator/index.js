@@ -74,13 +74,13 @@ function run() {
                         <div id="sbc-rating-calculator-button-container"></div>
                     </div>
                     <div id="sbc-rating-calculator-container"></div>
-                    <div id="sbc-rating-calculator-pager" class="pagingContainer"></div>
+                    <div id="sbc-rating-calculator-pager"></div>
                 </div>`);
 
                 const dialogContainer = select("#sbc-rating-calculator-container");
 
-                const prevPageButton = createElem("div", { className: "flat pagination prev" }, localize("label.prev"));
-                const nextPageButton = createElem("div", { className: "flat pagination next" }, localize("label.next"))
+                const prevPageButton = createElem("div", { className: "prev" }, localize("label.prev"));
+                const nextPageButton = createElem("div", { className: "next" }, localize("label.next"))
 
                 hide(prevPageButton);
                 hide(nextPageButton);

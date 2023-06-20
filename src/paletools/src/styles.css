@@ -65,3 +65,53 @@ input[type="number"] {
         flex: 3
     }
 }
+
+.price-container .price .label {
+    color: #a4a9b4;
+    display: block;
+    font-size: .875rem;
+    text-transform: uppercase;
+}
+
+.price-container .price .value {
+    display: block;
+    font-family: UltimateTeamCondensed, sans-serif;
+    font-size: 1em;
+}
+
+.price-container .price .coins {
+    background-position: right top;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 100%;
+    display: inline-block;
+    height: 1em;
+    vertical-align: middle;
+    width: 1em;
+    background-image: url(../images/coinIcon.png);
+    margin-top: -0.15em;
+}
+
+
+.loading-progress {
+    background-color: #333333;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    animation: loading-progress 1.4s infinite;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes loading-progress {
+    0% {
+        opacity: 1;
+        width: 0;
+    }
+
+    100% {
+        opacity: 0;
+        width: 100%;
+    }
+}

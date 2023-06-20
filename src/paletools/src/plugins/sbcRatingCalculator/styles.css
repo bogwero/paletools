@@ -38,6 +38,11 @@
     border-radius: 4px;
 }
 
+#sbc-rating-calculator-pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
 
 .phone .sbc-rating-calculator-table-container {
     margin-right: 10px;
@@ -52,3 +57,4 @@
     white-space: break-spaces;
     line-height: 14px;
 }
+

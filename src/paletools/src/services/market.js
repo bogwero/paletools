@@ -1,11 +1,12 @@
 import delay from "../utils/delay";
 import { toPromise } from "../utils/observable";
+import Cache from "./caching/Cache";
 import db from "./db";
 import sendPinEvents from "./pinEvents";
 
 const itemActionController = new UTItemActionController();
 
-const playerSellValues = {};
+const itemSellValues = new Cache(300);
 
 export function getAuctionProfit(item, sellPrice) {
 	return new Promise(resolve => {
@@ -49,12 +50,12 @@ export function calculateProfit(buyPrice, sellPrice) {
 	return [profit, profitPerc];
 }
 
-export function setPlayerSellValue(definitionId, minValue) {
-	playerSellValues[definitionId] = minValue;
+export function setItemSellValue(definitionId, minValue) {
+	itemSellValues.set(definitionId, minValue);
 }
 
-export function getPlayerSellValue(definitionId) {
-	return playerSellValues[definitionId];
+export function getItemSellValue(definitionId) {
+	itemSellValues.get(definitionId);
 }
 
 export function getTransferListItems() {
@@ -192,6 +193,9 @@ function updateSearchCriteriaFromItemType(searchCriteria, itemType) {
 }
 
 export async function findLowestMarketPrice(definitionId, itemType = SearchType.PLAYER, pricesCount = 3) {
+	if(typeof definitionId === "string") {
+		definitionId = parseInt(definitionId);
+	}
 	const searchCriteria = new UTSearchCriteriaDTO();
 	const searchModel = new UTBucketedItemSearchViewModel();
 
@@ -229,7 +233,7 @@ export async function findLowestMarketPrice(definitionId, itemType = SearchType.
 	}
 
 	if (minBuyNowArr.length > 0) {
-		setPlayerSellValue(definitionId, minBuyNowArr[0]);
+		setItemSellValue(definitionId, minBuyNowArr[0]);
 	}
 
 	if (pricesCount <= 1) {

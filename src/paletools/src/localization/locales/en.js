@@ -10,6 +10,7 @@ export default {
     "loading": "Loading",
     "from": "From",
     "to": "To",
+    "extinct": "Extinct",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Grid Mode",
@@ -301,7 +302,7 @@ export default {
     /// #if process.env.SBC_RATING_CALCULATOR
     "plugins.sbcRatingCalculator.settings.title": "Ratings Calculator",
     "plugins.sbcRatingCalculator.buttons.openDialog": "Calculate Missing Ratings",
-    "plugins.sbcRatingCalculator.table.rating": "Rating", 
+    "plugins.sbcRatingCalculator.table.rating": "Rating",
     "plugins.sbcRatingCalculator.table.count": "Count",
     "plugins.sbcRatingCalculator.buttons.calculate": "Calculate",
     "plugins.sbcRatingCalculator.dialog.title": "Ratings Calculator",
@@ -340,7 +341,7 @@ export default {
     "plugins.packsOpener.labels.purchaseAction.items": "¿What should I do with items that are NOT players and NOT managers?",
     "plugins.packsOpener.labels.purchaseAction.duplicateItems": "¿What should I do with duplicated items that are NOT players and NOT managers?",
     "plugins.packsOpener.labels.purchaseAction.transferListFull": "¿What should I do when the transfer list is full?",
-    "plugins.packsOpener.labels.currency": "Type of currency to use",    
+    "plugins.packsOpener.labels.currency": "Type of currency to use",
     "plugins.packsOpener.labels.packsCount": "¿How many packs should I open?",
     "plugins.packsOpener.labels.speed": "Open Speed",
     "plugins.packsOpener.speed.slow": "Slow",
@@ -349,6 +350,11 @@ export default {
 
     /// #if process.env.DECIMAL_RATING
     "plugins.decimalRating.settings.title": "Decimal Rating",
+    /// #endif
+
+    /// #if process.env.LOWEST_MARKET_PRICE
+    "plugins.lowestMarketPrice.button.text": "Find Lowest Market Price",
+    "plugins.lowestMarketPrice.settings.title": "Lowest Market Price",
     /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - USAGE WARNING",
