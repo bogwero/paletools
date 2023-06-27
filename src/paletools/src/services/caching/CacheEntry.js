@@ -28,6 +28,6 @@ export default class CacheEntry {
     get isExpired() {
         if(!this.#expirationDateUtc) return false;
 
-        return new Date().getUTCDate() > this.#expirationDateUtc;
+        return new Date() > this.#expirationDateUtc;
     }
 }

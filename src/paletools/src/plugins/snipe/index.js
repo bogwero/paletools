@@ -93,7 +93,7 @@ function run() {
             addOneTouchButton(this._oneTouchIncMinBuyNow, localize("plugins.snipe.settings.search.oneTouchMinBuy"), this._minBuyNowPriceRow, "snipe-min-buy-now");
         }
 
-        on(EVENTS.SNIPE_EXECUTE, () => executeSnipe(this._oneTouchIncMinBid));
+        on(EVENTS.SNIPE_EXECUTE, () => executeSnipe(this._minBidPriceRow));
     }
 
     const UTMarketSearchFiltersView_destroyGeneratedElements = UTMarketSearchFiltersView.prototype.destroyGeneratedElements;

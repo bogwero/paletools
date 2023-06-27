@@ -39,6 +39,8 @@ export function listenToWebAppEvents(){
 function getEventName(eventName){
     return EVENTS.hasOwnProperty(eventName) 
         ? `paletools:${eventName}`
+        : MOBILE_EVENTS.hasOwnProperty(eventName)
+        ? `paletools-mobile:${eventName}`
         : eventName;
 }
 
@@ -66,4 +68,8 @@ export const EVENTS = {
     TRANSACTIONS_RELOADED: "transactionsReindex",
     REQUEST_UNASSIGNED: "requestUnassigned",
     UNASSIGNED_ITEM_ADDED: "unassignedItemAdded"
+}
+
+export const MOBILE_EVENTS = {
+    BACK_BUTTON_PRESSED: "backButtonPressed"
 }

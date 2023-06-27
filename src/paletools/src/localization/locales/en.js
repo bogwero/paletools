@@ -235,6 +235,7 @@ export default {
     /// #if process.env.SELL_MULTIPLE
     "plugins.sellMultiple.settings.title": "Sell multiple items at once",
     "plugins.sellMultiple.button.text": "Sell Multiple",
+    "plugins.sellMultiple.button.quickSellText": "Quick Sell Multiple",
     "plugins.sellMultiple.label.ignoredCards": "Card will be ignored if teh price range does not fall in the provided values",
     "plugins.sellMultiple.warning": "This is an automation feature, your account could potentially be banned if you are abusing of it, are you sure you want to enable it?",
     "plugins.sellMultiple.notifications.maxPlayersReached": "You have reached the limit of {PLAYERS} players you can listº",

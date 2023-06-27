@@ -2,4 +2,9 @@
     position: absolute;
     bottom: 0;
     min-width: 100%;
+    background: #2b3540;
+    opacity: 0.9;
+    z-index: 10;
+    display: flex;
+    justify-content: end;
 }

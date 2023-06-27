@@ -1,11 +1,9 @@
-
-
 let plugin;
 
 /// #if process.env.SELL_MULTIPLE
 import { addLabelWithToggle } from "../../controls";
 import { EVENTS, on } from "../../events";
-import localize from "../../localization";
+import localize, { localizeNumber } from "../../localization";
 import { openDialog } from "../../services/dialog";
 import { listItemOnTransferMarket } from "../../services/market";
 import settings, { saveConfiguration } from "../../settings";
@@ -13,6 +11,7 @@ import delay from "../../utils/delay";
 import { addClass, append, css, select } from "../../utils/dom";
 import { displayLoader, hideLoader } from "../../utils/loader";
 import { notifyFailure } from "../../utils/notifications";
+import { toPromise } from "../../utils/observable";
 import { addStyle } from "../../utils/styles";
 import SwipeEventDispatcher from "../../utils/swipe";
 import { hide, show } from "../../utils/visibility";
@@ -26,16 +25,24 @@ let lastListDate = null;
 
 function addSellMultiple(output) {
     output.selectedCardsCount = 0;
-    const selectedCards = {};
+    let selectedCards = {};
 
     const sellMultipleButton = new UTStandardButtonControl();
     const sellMultipleButtonEl = sellMultipleButton.getRootElement();
+    
     css(sellMultipleButtonEl, { marginLeft: "8px" });
     addClass(sellMultipleButtonEl, "sell-multiple", "section-header-btn", "mini", "call-to-action");
 
     sellMultipleButton.init();
     sellMultipleButton.setInteractionState(false);
     sellMultipleButton.setText(localize("plugins.sellMultiple.button.text"));
+
+    const quickSellMultipleButton = new UTStandardButtonControl();
+    quickSellMultipleButton.init();
+    quickSellMultipleButton.setInteractionState(false);
+    quickSellMultipleButton.setText(localize("plugins.sellMultiple.button.quickSellText"));
+    css(quickSellMultipleButton, { marginLeft: "8px" });
+    addClass(quickSellMultipleButton, "sell-multiple", "section-header-btn", "mini", "call-to-action");
 
     const chkClassName = "sell-multiple-checkbox";
 
@@ -48,7 +55,10 @@ function addSellMultiple(output) {
             delete selectedCards[item.data.id];
         }
 
-        sellMultipleButton.setInteractionState(Object.keys(selectedCards).length > 0);
+        const enabled = Object.keys(selectedCards).length > 0;
+
+        sellMultipleButton.setInteractionState(enabled);
+        quickSellMultipleButton.setInteractionState(enabled);
     }
 
     for (let item of output.listRows) {
@@ -78,6 +88,29 @@ function addSellMultiple(output) {
             });
         }
     }
+
+    quickSellMultipleButton.addTarget(this, () => {
+        const items = Object.values(selectedCards);
+        
+        if(items.length === 0) return;
+
+        const discardValue = items.reduce((accumulator, currentItem) => {
+            return accumulator + currentItem.discardValue;
+          }, 0);
+
+        utils.PopupManager.showConfirmation(items.length > 1 
+            ? utils.PopupManager.Confirmations.CONFIRM_DISCARD_ALL 
+            : utils.PopupManager.Confirmations.CONFIRM_DISCARD, 
+            [localizeNumber(discardValue)], async () => {
+            
+            await toPromise(services.Item.discard(items));
+
+            selectedCards = {};
+            output.selectedCardsCount = 0;
+            sellMultipleButton.setInteractionState(false);
+            quickSellMultipleButton.setInteractionState(false);
+        });
+    }, EventType.TAP);
 
 
     sellMultipleButton.addTarget(this, () => {
@@ -125,13 +158,18 @@ function addSellMultiple(output) {
 
                 displayLoader();
                 try {
-                    for (let id of Object.keys(selectedCards)) {
+                    const keys = Object.keys(selectedCards);
+
+                    for (let id of keys) {
                         await listItemOnTransferMarket(selectedCards[id], buyNowPrice, startPrice);
                         output.selectedCardsCount--;
                         await delay(3000, 5000);
+                        delete selectedCards[id];
                     }
 
                     if (output.selectedCardsCount < 0) output.selectedCardsCount = 0;
+
+                    selectedCards = {};
                 } catch (e) {
                     notifyFailure(e);
                 }
@@ -143,6 +181,7 @@ function addSellMultiple(output) {
     }, EventType.TAP)
 
     output._header.getRootElement().appendChild(sellMultipleButton.getRootElement());
+    output._header.getRootElement().appendChild(quickSellMultipleButton.getRootElement());
 
     on(EVENTS.APP_ENABLED, () => show(sellMultipleButton));
     on(EVENTS.APP_DISABLED, () => hide(sellMultipleButton));

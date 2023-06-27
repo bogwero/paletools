@@ -31,7 +31,7 @@ export default class Cache {
         if (!cacheEntry.expirationDateUtc && this.#defaultExpirationSeconds) {
             const date = new Date();
             date.setSeconds(date.getSeconds() + this.#defaultExpirationSeconds);
-            cacheEntry.expirationDateUtc = date.getUTCDate();
+            cacheEntry.expirationDateUtc = date;
         }
 
         this.#entries[cacheEntry.key] = cacheEntry;

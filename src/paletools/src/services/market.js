@@ -55,7 +55,7 @@ export function setItemSellValue(definitionId, minValue) {
 }
 
 export function getItemSellValue(definitionId) {
-	itemSellValues.get(definitionId);
+	return itemSellValues.get(definitionId);
 }
 
 export function getTransferListItems() {

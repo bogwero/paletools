@@ -232,6 +232,7 @@ export default {
     /// #if process.env.SELL_MULTIPLE
     "plugins.sellMultiple.settings.title": "Vender masiva de items",
     "plugins.sellMultiple.button.text": "Venta Masiva",
+    "plugins.sellMultiple.button.quickSellText": "Venta Rápida Masiva",
     "plugins.sellMultiple.label.ignoredCards": "Las cartas serán ignoradas si el rango de valores no se encuentra entre los valores provistos",
     "plugins.sellMultiple.warning": "Esto es una función de automatización, tu cuenta puede ser banneada si haces abuso de la misma, ¿estas seguro que quieres habilitarla?",
     "plugins.sellMultiple.notifications.maxPlayersReached": "Has alcanzado el límite de {PLAYERS} jugadores que puedes listar",

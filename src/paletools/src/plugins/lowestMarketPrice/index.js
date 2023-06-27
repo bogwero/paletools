@@ -7,7 +7,7 @@ import { addLabelWithToggle } from "../../controls";
 import { EVENTS, on } from "../../events";
 import localize, { localizeNumber } from "../../localization";
 import settings, { saveConfiguration } from "../../settings";
-import { addClass, append, attr, css, isHidden, select } from "../../utils/dom";
+import { addClass, append, attr, css, isHidden, remove, select } from "../../utils/dom";
 import { hide, show } from "../../utils/visibility";
 import { findLowestMarketPrice, getItemSellValue } from "../../services/market";
 import { addLoadingProgress, removeLoadingProgress } from "../../utils/loader";
@@ -74,7 +74,13 @@ function addLowestMarketPriceButton(listRows, buttonContainer) {
                 const minPrice = await findLowestMarketPrice(definitionId, group[definitionId][0].data.type, 1);
 
                 for (let itemCell of group[definitionId]) {
-                    const priceElem = new Price(minPrice ? localizeNumber(minPrice.value) : localize("extinct"), localize("market"));
+                    let priceElem = select(".price-container", itemCell);
+
+                    if(priceElem) {
+                        remove(priceElem);
+                    }
+
+                    priceElem = new Price(minPrice ? localizeNumber(minPrice.value) : localize("extinct"), localize("market"));
                     append(itemCell, priceElem);
                     removeLoadingProgress(itemCell);
                 }
@@ -102,7 +108,14 @@ function populateSellValue(cells) {
 
         if(!sellValue) continue;
 
-        const priceElem = new Price(localizeNumber(sellValue), localize("market"));
+        let priceElem = select(".price-container", itemCell);
+
+        if(priceElem) 
+        { 
+            remove(priceElem);
+        }
+
+        priceElem = new Price(localizeNumber(sellValue.value), localize("market"));
         append(itemCell, priceElem);
         removeLoadingProgress(itemCell);
     }

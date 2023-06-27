@@ -6,6 +6,7 @@
   "scripts": {
     "build-all": "npm run build && npm run build-mobile && npm run build-tm",
     "build": "webpack",
+    "buildf": "turbopack",
     "build-mobile": "webpack --config webpack.config.mobile.js",
     "build-tm": "webpack --config webpack.config.tampermonkey.js",
     "deploy": "npm run build-all && gulp deploy",
@@ -24,6 +25,8 @@
     "raw-loader": "^4.0.2",
     "style-loader": "^3.3.1",
     "through2": "^4.0.2",
+    "turbo": "^1.10.6",
+    "turbopack": "^0.0.1",
     "webpack": "^5.61.0",
     "webpack-cli": "^4.9.1",
     "webpack-conditional-loader": "^1.0.12",

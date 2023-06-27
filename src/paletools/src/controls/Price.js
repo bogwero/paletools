@@ -3,14 +3,14 @@ import { append, createElem, css } from "../utils/dom";
 export class Price {
     #elem;
 
-    constructor(coins, label) {
+    constructor(coins, labelText) {
         this.#elem = createElem("div", { className: "price-container" });
         css(this.#elem, { display: "block !important" });
 
         const aunctionValue = createElem("div", { className: "price" });
         const label = createElem("div", { className: "label" });
         const value = createElem("div", { className: "coins value" });
-        label.textContent = label;
+        label.textContent = labelText;
         value.textContent = coins;
 
         append(aunctionValue, label, value);

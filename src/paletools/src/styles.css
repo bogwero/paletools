@@ -90,6 +90,8 @@ input[type="number"] {
     width: 1em;
     background-image: url(../images/coinIcon.png);
     margin-top: -0.15em;
+    width: 100%;
+    text-align: right;
 }
 
 
@@ -102,6 +104,10 @@ input[type="number"] {
     height: 100%;
     animation: loading-progress 1.4s infinite;
     animation-timing-function: ease-in-out;
+}
+
+.ut-transfer-list-view .player-definition-id {
+    display: none;
 }
 
 @keyframes loading-progress {
