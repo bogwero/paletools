@@ -8,7 +8,7 @@ import localize from "../../localization";
 import { on } from "../../events";
 import { addClass, append, createElem, insertBefore } from "../../utils/dom";
 import { hide, show } from "../../utils/visibility";
-import { getSellBidPrice, setPlayerSellValue } from "../../services/market"
+import { setItemSellValue } from "../../services/market"
 
 const cfg = settings.plugins.compareMinMaxPrices;
 
@@ -81,7 +81,7 @@ function run() {
                     this._minPriceText.textContent = this._minBuyNowPrice;
                     this._maxPriceText.textContent = this._maxBuyNowPrice;
 
-                    setPlayerSellValue(definitionId, this._minBuyNowPrice);
+                    setItemSellValue(definitionId, this._minBuyNowPrice);
                     
                     show(this._minMaxPriceContainer);
                 }
