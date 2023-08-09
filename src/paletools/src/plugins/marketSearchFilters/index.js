@@ -311,15 +311,15 @@ function run() {
         return items;
     });
 
-    const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
-    UTItemTableCellView.prototype.render = function (e) {
-        UTItemTableCellView_render.call(this, e);
-        if (settings.enabled && this.data.isPlayer() && cfg.playerId) {
-            append(
-                select(".ut-item-view--main", this.__entityContainer),
-                createElem("span", { className: "player-definition-id" }, this.data.definitionId));
-        }
-    }
+    // const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
+    // UTItemTableCellView.prototype.render = function (e) {
+    //     UTItemTableCellView_render.call(this, e);
+    //     if (settings.enabled && this.data.isPlayer() && cfg.playerId) {
+    //         append(
+    //             select(".ut-item-view--main", this.__entityContainer),
+    //             createElem("span", { className: "player-definition-id" }, this.data.definitionId));
+    //     }
+    // }
 
     function shouldRenderItem(item, searchCriteria) {
         let rating = searchCriteria.rating;

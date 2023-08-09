@@ -3,6 +3,7 @@ let plugin;
 
 /// #if process.env.EXTERNAL_MARKET_PRICES
 import { addLabelWithToggle } from "../../controls";
+import { Price } from "../../controls/Price";
 import { EVENTS, on } from "../../events";
 import localize, { localizeNumber } from "../../localization";
 import { getExternalMarketPrices } from "../../services/external/market";
@@ -18,57 +19,48 @@ function run() {
 
     if (!isExternalRequestSupported()) return;
 
+    function populateExternalMarketPrices(listRows) {
+        getExternalMarketPrices(listRows.map(x => x.data)).then(prices => {
+            for (let row of listRows) {
+                const price = prices[row.data.definitionId];
+                if (price) {
+                    row.__externalPrice.setValue(price);
+                    show(row.__externalPrice);
+                }
+            }
+        });
+    }
+
     const UTItemTableCellView_generate = UTItemTableCellView.prototype._generate;
     UTItemTableCellView.prototype._generate = function _generate() {
         UTItemTableCellView_generate.call(this);
 
         if (!settings.enabled || !cfg.enabled) return;
 
-        this.__externalMarketPriceContainer = createElem("div", { className: "external-market-price auctionValue" });
-        this.__externalMarketPriceLabelContainer = createElem("span", { className: "external-market-price-text label" }, settings.externalServices.prices.provider.toUpperCase());
-        this.__externalMarketPriceValueContainer = createElem("span", { className: "external-market-price-value currency-coins value" });
+        this.__externalPrice = this.addPrice(settings.externalServices.prices.provider, "external-market-price");
+        hide(this.__externalPrice);
 
-        this.__externalMarketPriceContainer2 = createElem("div", { className: "external-market-price auctionValue" });
-        this.__externalMarketPriceLabelContainer2 = createElem("span", { className: "external-market-price-text label" }, settings.externalServices.prices.provider.toUpperCase());
-        this.__externalMarketPriceValueContainer2 = createElem("span", { className: "external-market-price-value currency-coins value" });
-
-        append(this.__externalMarketPriceContainer, this.__externalMarketPriceLabelContainer, this.__externalMarketPriceValueContainer);
-        append(this.__auction, this.__externalMarketPriceContainer);
-        append(this, this.__externalMarketPriceContainer2);
-        hide(this.__externalMarketPriceContainer);
+        on(EVENTS.APP_DISABLED, () => hide(this.__externalPrice));
+        on(EVENTS.APP_ENABLED, () => show(this.__externalPrice));
     }
 
     const UTPaginatedItemListView__renderItems = UTPaginatedItemListView.prototype._renderItems;
     UTPaginatedItemListView.prototype._renderItems = function (r) {
         UTPaginatedItemListView__renderItems.call(this, r);
-
-        getExternalMarketPrices(this.listRows.map(x => x.data)).then(prices => {
-            for (let row of this.listRows) {
-                const price = prices[row.data.definitionId];
-                if (price) {
-                    const priceText = localizeNumber(price);
-                    row.__externalMarketPriceValueContainer.textContent = priceText;
-                    row.__externalMarketPriceValueContainer2.textContent = priceText;
-                    show(row.__externalMarketPriceContainer);
-                }
-            }
-        });
-
+        populateExternalMarketPrices(this.listRows);
     }
 
     const UTSectionedItemListView_render = UTSectionedItemListView.prototype.render;
-    UTSectionedItemListView.prototype.render = function() {
+    UTSectionedItemListView.prototype.render = function () {
         UTSectionedItemListView_render.call(this);
+        populateExternalMarketPrices(this.listRows);
+    }
 
-        getExternalMarketPrices(this.listRows.map(x => x.data)).then(prices => {
-            for (let row of this.listRows) {
-                const price = prices[row.data.definitionId];
-                if (price) {
-                    row.__externalMarketPriceValueContainer.textContent = localizeNumber(price)
-                    show(row.__externalMarketPriceContainer);
-                }
-            }
-        });
+    const UTStoreRevealModalListView_addItems = UTStoreRevealModalListView.prototype.addItems;
+    UTStoreRevealModalListView.prototype.addItems = function(...args) {
+        const returnValue = UTStoreRevealModalListView_addItems.call(this, ...args);
+        populateExternalMarketPrices(this.listRows);
+        return returnValue;
     }
 
     on(EVENTS.APP_ENABLED, () => addStyle("paletools-external-market-prices", styles));

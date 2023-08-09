@@ -24,9 +24,15 @@ input[type="number"] {
     background-color: #394754 !important;
 }
 
+
+
 .ut-transfer-list-view .sectioned-item-list .itemList {
     background-color: #2b3540;
     border-bottom: 1px solid #556c95;
+}
+
+.listFUTItem {
+    flex-direction: column;
 }
 
 .listFUTItem .auction {
@@ -66,34 +72,54 @@ input[type="number"] {
     }
 }
 
+.prices-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+    opacity: 0.9;
+    display: flex;
+    background: #2b3540;
+    justify-content: end;
+}
+
+.ut-transfer-list-view .prices-container {
+    flex-direction: column;
+}
+
+.ut-transfer-list-view .prices-container .price {
+    flex-direction: column;
+}
+
+.ut-transfer-list-view .prices-container .price .label {
+    width: 100%;
+}
+
+.price-container .price {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+}
+
 .price-container .price .label {
     color: #a4a9b4;
     display: block;
     font-size: .875rem;
     text-transform: uppercase;
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+.price-container .price .label::after {
+    content: ':';
 }
 
 .price-container .price .value {
     display: block;
     font-family: UltimateTeamCondensed, sans-serif;
     font-size: 1em;
+    margin-right: 4px;
 }
-
-.price-container .price .coins {
-    background-position: right top;
-    content: "";
-    background-repeat: no-repeat;
-    background-size: 100%;
-    display: inline-block;
-    height: 1em;
-    vertical-align: middle;
-    width: 1em;
-    background-image: url(../images/coinIcon.png);
-    margin-top: -0.15em;
-    width: 100%;
-    text-align: right;
-}
-
 
 .loading-progress {
     background-color: #333333;

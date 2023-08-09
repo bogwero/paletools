@@ -2,7 +2,7 @@ let plugin;
 
 /// #if process.env.SNIPE
 import enableDisableApp from "../../app";
-import { EVENTS, on } from "../../events";
+import { EVENTS, off, on } from "../../events";
 import UTMarketSearchResultsSplitViewControllerHelpers from "../../helpers/UTMarketSearchResultsSplitViewControllerHelpers";
 import localize from "../../localization";
 import { getKeyboardActions } from "../../services/keyboard";
@@ -76,6 +76,7 @@ function run() {
             requestSnipe();
             incrementPriceRow(priceRow, self._maxBuyNowPriceRow);
             self._triggerActions(UTMarketSearchFiltersView.Event.SEARCH);
+            on(EVENTS.SNIPE_EXECUTE, () => executeSnipe(this._minBidPriceRow), { once: true });
         }
 
         this._searchButton.addTarget(this, () => {
@@ -93,7 +94,7 @@ function run() {
             addOneTouchButton(this._oneTouchIncMinBuyNow, localize("plugins.snipe.settings.search.oneTouchMinBuy"), this._minBuyNowPriceRow, "snipe-min-buy-now");
         }
 
-        on(EVENTS.SNIPE_EXECUTE, () => executeSnipe(this._minBidPriceRow));
+        on(EVENTS.SNIPE_EXECUTE, () => executeSnipe(this._minBidPriceRow), { once: true });
     }
 
     const UTMarketSearchFiltersView_destroyGeneratedElements = UTMarketSearchFiltersView.prototype.destroyGeneratedElements;

@@ -28,7 +28,7 @@ export class FutbinPriceProvider extends PriceProvider {
                 const futbinPricesUrl = `https://www.futbin.com/23/playerPrices?player=${playerId}&rids=${maxPlayerIds.join(",")}`;
                 const futbinResponse = await http(futbinPricesUrl);
 
-                const futbinPrices = JSON.parse(futbinResponse);
+                const futbinPrices = await futbinResponse.json();
 
                 for (const priceId of Object.keys(futbinPrices)) {
                     const futbinPrice = futbinPrices[priceId];
@@ -50,6 +50,7 @@ export class FutbinPriceProvider extends PriceProvider {
         }
         catch {
             notifyFailure("Error fetching futbin prices");
+            return [];
         }
     }
 }

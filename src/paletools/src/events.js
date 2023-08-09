@@ -2,8 +2,9 @@ import getWindow from "./services/window";
 import { getRealElement } from "./utils/dom";
 import { isIterable } from "./utils/iterable";
 
-export function on(target, eventName, callback) {
+export function off(target, eventName, callback, options) {
     if(typeof target === "string"){
+        options = callback;
         callback = eventName;
         eventName = target;
         target = getWindow();
@@ -17,11 +18,35 @@ export function on(target, eventName, callback) {
 
     if(isIterable(getRealElement(target))){
         for(let t of getRealElement(target)){
-            t.addEventListener(eventName, callback);
+            t.removeEventListener(eventName, callback, options);
         }
     }
     else {
-        getRealElement(target).addEventListener(eventName, callback);
+        getRealElement(target).removeEventListener(eventName, callback, options);
+    }
+}
+
+export function on(target, eventName, callback, options) {
+    if(typeof target === "string"){
+        options = callback;
+        callback = eventName;
+        eventName = target;
+        target = getWindow();
+    }
+
+    eventName = getEventName(eventName);
+
+    if(eventName === "click" && isPhone()) {
+        eventName = "pointerdown";
+    }
+
+    if(isIterable(getRealElement(target))){
+        for(let t of getRealElement(target)){
+            t.addEventListener(eventName, callback, options);
+        }
+    }
+    else {
+        getRealElement(target).addEventListener(eventName, callback, options);
     }
 }
 
@@ -37,13 +62,15 @@ export function listenToWebAppEvents(){
 }
 
 function getEventName(eventName){
-    return EVENTS.hasOwnProperty(eventName) 
-        ? `paletools:${eventName}`
-        : MOBILE_EVENTS.hasOwnProperty(eventName)
-        ? `paletools-mobile:${eventName}`
-        : eventName;
-}
+    if(Object.values(EVENTS).indexOf(eventName) > -1){
+        return `paletools:${eventName}`;
+    }
+    else if(Object.values(MOBILE_EVENTS).indexOf(eventName) > -1) {
+        return `paletools-mobile:${eventName}`;
+    }
 
+    return eventName;
+}
 
 export const EVENTS = {
     APP_ENABLED: "appEnabled",

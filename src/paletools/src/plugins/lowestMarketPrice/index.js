@@ -7,7 +7,7 @@ import { addLabelWithToggle } from "../../controls";
 import { EVENTS, on } from "../../events";
 import localize, { localizeNumber } from "../../localization";
 import settings, { saveConfiguration } from "../../settings";
-import { addClass, append, attr, css, isHidden, remove, select } from "../../utils/dom";
+import { addClass, append, attr, css, isHidden, isVisible, remove, select } from "../../utils/dom";
 import { hide, show } from "../../utils/visibility";
 import { findLowestMarketPrice, getItemSellValue } from "../../services/market";
 import { addLoadingProgress, removeLoadingProgress } from "../../utils/loader";
@@ -15,27 +15,20 @@ import { Price } from "../../controls/Price";
 import delay from "../../utils/delay";
 import { notifyFailure } from "../../utils/notifications";
 import { addStyle, removeStyle } from "../../utils/styles";
-import styles from "./styles.css";
 
 const cfg = settings.plugins.lowestMarketPrice;
 
-function addStyles() {
-    addStyle("lowest-market-price", styles);
-}
-
-function removeStyles() {
-    removeStyle("lowest-market-price");
-}
-
-function addLowestMarketPriceButton(listRows, buttonContainer) {
+function addLowestMarketPriceButton(listRows, buttonContainer, styles) {
 
     if (buttonContainer.findLowestMarketPriceButton) {
         buttonContainer.findLowestMarketPriceButton.setInteractionState(listRows.length > 0);
-        return;
+        remove(buttonContainer.findLowestMarketPriceButton);
     }
 
     const button = new UTStandardButtonControl();
-    css(button, { marginLeft: "8px" });
+    if (styles) {
+        css(button, styles);
+    }
     addClass(button, "find-lowest-market-price", "section-header-btn", "mini", "call-to-action");
 
     button.init();
@@ -74,14 +67,9 @@ function addLowestMarketPriceButton(listRows, buttonContainer) {
                 const minPrice = await findLowestMarketPrice(definitionId, group[definitionId][0].data.type, 1);
 
                 for (let itemCell of group[definitionId]) {
-                    let priceElem = select(".price-container", itemCell);
-
-                    if(priceElem) {
-                        remove(priceElem);
-                    }
-
-                    priceElem = new Price(minPrice ? localizeNumber(minPrice.value) : localize("extinct"), localize("market"));
-                    append(itemCell, priceElem);
+                    
+                    itemCell.__lowestMarketPrice.setValue(minPrice.value);
+                    show(itemCell.__lowestMarketPrice);
                     removeLoadingProgress(itemCell);
                 }
 
@@ -106,25 +94,29 @@ function populateSellValue(cells) {
     for (let itemCell of cells) {
         const sellValue = getItemSellValue(itemCell.data.definitionId);
 
-        if(!sellValue) continue;
+        if (!sellValue) continue;
 
-        let priceElem = select(".price-container", itemCell);
-
-        if(priceElem) 
-        { 
-            remove(priceElem);
-        }
-
-        priceElem = new Price(localizeNumber(sellValue.value), localize("market"));
-        append(itemCell, priceElem);
+        itemCell.__lowestMarketPrice.setValue(sellValue.value);
+        show(itemCell.__lowestMarketPrice);
         removeLoadingProgress(itemCell);
     }
 }
 
 function run() {
-    if(!settings.enabled || !cfg.enabled) return;
+    if (!settings.enabled || !cfg.enabled) return;
 
-    addStyles();
+    const UTItemTableCellView_generate = UTItemTableCellView.prototype._generate;
+    UTItemTableCellView.prototype._generate = function _generate() {
+        UTItemTableCellView_generate.call(this);
+
+        if (!settings.enabled || !cfg.enabled) return;
+
+        this.__lowestMarketPrice = this.addPrice(localize("market"), "lowest-market-price-container");
+        hide(this.__lowestMarketPrice);
+
+        on(EVENTS.APP_DISABLED, () => hide(this.__lowestMarketPrice));
+        on(EVENTS.APP_ENABLED, () => show(this.__lowestMarketPrice));
+    }
 
     const UTTransferListView_renderSection = UTTransferListView.prototype.renderSection;
     UTTransferListView.prototype.renderSection = function (t, e, i) {
@@ -146,6 +138,14 @@ function run() {
 
         addLowestMarketPriceButton(this._list.listRows, this.header);
         populateSellValue(this._list.listRows);
+    }
+
+    const UTStoreRevealModalListView_setupFooter = UTStoreRevealModalListView.prototype.setupFooter;
+    UTStoreRevealModalListView.prototype.setupFooter = function (...args) {
+        UTStoreRevealModalListView_setupFooter.call(this, ...args);
+
+        addLowestMarketPriceButton(this.listRows, this.__actionContainer);
+        populateSellValue(this.listRows);
     }
 }
 
