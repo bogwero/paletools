@@ -1,5 +1,5 @@
 import { notifyFailure } from "../../../utils/notifications";
-import http from "../../http";
+import http, { isExternalRequestSupported } from "../../http";
 import ItemPrice from "./ItemPrice";
 import { PriceProvider } from "./PriceProvider";
 
@@ -7,6 +7,7 @@ import { PriceProvider } from "./PriceProvider";
 export class FutbinPriceProvider extends PriceProvider {
 
     async getItemPrices(items, gamePlatform) {
+        if(!await isExternalRequestSupported()) return [];
 
         const playerIds = [];
         for (const item of items) {

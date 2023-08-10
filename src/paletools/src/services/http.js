@@ -23,14 +23,23 @@ export default async function http(url, method, body, options = null) {
     }
 }
 
+let _isExternalRequestSupported = undefined;
+
 export async function isExternalRequestSupported() {
-    if (typeof GM_xmlhttpRequest !== "undefined") return true;
+    if (typeof _isExternalRequestSupported !== "undefined") return _isExternalRequestSupported;
+
+    if (typeof GM_xmlhttpRequest !== "undefined") {
+        _isExternalRequestSupported = true;
+        return true;
+    }
 
     try {
         await fetch("https://www.google.com", { method: "HEAD" });
+        _isExternalRequestSupported = true;
         return true;
     }
     catch {
+        _isExternalRequestSupported = false;
         return false;
     }
 

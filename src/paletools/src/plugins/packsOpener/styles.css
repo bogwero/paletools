@@ -33,3 +33,20 @@
 .pack-opener-dialog label:first-child {
     margin-top: 0;
 }
+
+.pack-opener-result ul {
+    display: table;
+    width: 100%;
+}
+
+.pack-opener-result li span {
+    text-align: right;
+}
+
+.pack-opener-result li b, ul.pack-opener-result li span {
+    display: table-cell;
+    padding: 2px;
+}
+.pack-opener-result li {
+    display: table-row;
+}

@@ -12,6 +12,7 @@ import executeSlotActionPanelViewOverrides from "./UTSlotActionPanelViewOverride
 import executeTransferListViewControllerOverrides from "./UTTransferListViewControllerOverrides";
 import executeWatchListViewControllerOverrides from "./UTWatchListViewControllerOverrides";
 import executePackAnimationShineViewOverrides from "./UTPackAnimationShineViewOverrides";
+import executeSquadSlotViewOverrides from "./UTSquadSlotViewOverrides";
 
 export default function runOverrides(){
     executeMarketSearchFiltersViewControllerOverrides();
@@ -28,4 +29,5 @@ export default function runOverrides(){
     executeServicesOverrides();
     executeQuickListPanelViewControllerOverrides();
     executePackAnimationShineViewOverrides();
+    executeSquadSlotViewOverrides();
 }

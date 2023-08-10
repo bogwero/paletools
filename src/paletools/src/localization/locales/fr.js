@@ -1,17 +1,17 @@
 export default {
-    "enabled": "Enabled",
-    "valid": "valid",
-    "invalid": "invalid",
-    "ui.loadingPlayers": "Loading club players: {count} loaded",
-    "plugins.dangerous": "WARNING: Enabling this plugin could eventually lead to a potential BAN from EA, are you sure you want to continue?",
-    "page.restart": "Please reload the page and re-execute Paletools for the changes to take effect",
-    "market.itemBuy.success": "Item bought succesfully! - {COINS}",
-    "confirm": "Are you sure you want to proceed?",
-    "loading": "Loading",
-    "from": "From",
-    "to": "To",
-    "extinct": "Extinct",
-    "market": "Market",
+    "enabled": "Activé",
+    "valid": "valide",
+    "invalid": "invalide",
+    "ui.loadingPlayers": "Chargement des joueurs du club : {count} chargés",
+    "plugins.dangerous": "ATTENTION : Activer ce plugin pourrait éventuellement entraîner un BAN potentiel d'EA, êtes-vous sûr de vouloir continuer ?",
+    "page.restart": "Veuillez recharger la page et réexécuter Paletools pour que les modifications prennent effet",
+    "market.itemBuy.success": "Article acheté avec succès ! - {COINS}",
+    "confirm": "Êtes-vous sûr de vouloir continuer ?",
+    "loading": "Chargement",
+    "from": "De",
+    "to": "À",
+    "extinct": "Éteint",
+    "market": "Marché",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Grid Mode",
@@ -289,16 +289,16 @@ export default {
     /// #endif
 
     /// #if process.env.IMPORTANT_LEAGUES
-    "plugins.importantLeagues.settings.title": "Important Leagues",
+    'plugins.importantLeagues.settings.title': "Important Leagues",
     /// #endif
 
     /// #if process.env.REFRESH_COINS
-    "plugins.refreshCoins.settings.title": "Refresh Coins",
+    'plugins.refreshCoins.settings.title': "Refresh Coins",
     /// #endif
 
     /// #if process.env.EXPERIMENTAL
-    "plugins.experimental.settings.title": "Experimental Stuff - Use at your own risk",
-    "plugins.experimental.settings.fastClubSearch": "Fast club search",
+    'plugins.experimental.settings.title': "Experimental Stuff - Use at your own risk",
+    'plugins.experimental.settings.fastClubSearch': 'Fast club search',
     /// #endif
 
     /// #if process.env.SBC_RATING_CALCULATOR

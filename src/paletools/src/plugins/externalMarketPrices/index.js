@@ -19,10 +19,10 @@ function run() {
 
     if (!isExternalRequestSupported()) return;
 
-    function populateExternalMarketPrices(listRows) {
-        getExternalMarketPrices(listRows.map(x => x.data)).then(prices => {
-            for (let row of listRows) {
-                const price = prices[row.data.definitionId];
+    function populateExternalMarketPrices(itemsFunc, itemDataFunc) {
+        getExternalMarketPrices(itemsFunc().map(x => itemDataFunc(x))).then(prices => {
+            for (let row of itemsFunc()) {
+                const price = prices[itemDataFunc(row).definitionId];
                 if (price) {
                     row.__externalPrice.setValue(price);
                     show(row.__externalPrice);
@@ -44,22 +44,43 @@ function run() {
         on(EVENTS.APP_ENABLED, () => show(this.__externalPrice));
     }
 
+    const UTSquadSlotView_generate = UTSquadSlotView.prototype._generate;
+    UTSquadSlotView.prototype._generate = function(...args) {
+        UTSquadSlotView_generate.call(this,...args);
+        if (settings.enabled && cfg.enabled) {
+            this.__externalPrice = this.addPrice(settings.externalServices.prices.provider, "external-market-price");
+            hide(this.__externalPrice);
+
+            on(EVENTS.APP_ENABLED, () => show(this.__externalPrice));
+            on(EVENTS.APP_DISABLED, () => hide(this.__externalPrice));
+        }
+    }
+
+    const UTSquadOverviewView_setSquad = UTSquadOverviewView.prototype.setSquad;
+    UTSquadOverviewView.prototype.setSquad = function(...args) {
+        UTSquadOverviewView_setSquad.call(this, ...args);
+        populateExternalMarketPrices(() => this.slotViews.filter(slot => !slot._isManager), slot => 
+        {
+            return args[0].getPlayers()[slot.getIndex()].getItem();
+        });
+    }
+
     const UTPaginatedItemListView__renderItems = UTPaginatedItemListView.prototype._renderItems;
     UTPaginatedItemListView.prototype._renderItems = function (r) {
         UTPaginatedItemListView__renderItems.call(this, r);
-        populateExternalMarketPrices(this.listRows);
+        populateExternalMarketPrices(() => this.listRows, row => row.data);
     }
 
     const UTSectionedItemListView_render = UTSectionedItemListView.prototype.render;
     UTSectionedItemListView.prototype.render = function () {
         UTSectionedItemListView_render.call(this);
-        populateExternalMarketPrices(this.listRows);
+        populateExternalMarketPrices(() => this.listRows, row => row.data);
     }
 
     const UTStoreRevealModalListView_addItems = UTStoreRevealModalListView.prototype.addItems;
     UTStoreRevealModalListView.prototype.addItems = function(...args) {
         const returnValue = UTStoreRevealModalListView_addItems.call(this, ...args);
-        populateExternalMarketPrices(this.listRows);
+        populateExternalMarketPrices(() => this.listRows, row => row.data);
         return returnValue;
     }
 

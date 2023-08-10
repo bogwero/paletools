@@ -157,17 +157,17 @@ function run() {
         const coinsToSpendLabel = select("#coins-to-spend");
         hide(coinsToSpendLabel);
         on(select("#pack-opener-purchase-count"), "change", ev => {
-            if(currencySelect.value != GameCurrency.COINS) return;
+            if (currencySelect.value != GameCurrency.COINS) return;
 
             const value = parseInt(ev.target.value);
-            if(value > 0) {
+            if (value > 0) {
                 show(coinsToSpendLabel);
                 coinsToSpendLabel.textContent = `${localize("currency.coins")}: ${packCoinsValue * value}`;
             }
             else {
                 hide(coinsToSpendLabel);
             }
-            
+
 
         });
 
@@ -192,9 +192,9 @@ function run() {
         this._btnOpenPacks.setText(localize("plugins.packsOpener.button.text"));
         this._btnOpenPacks.setSubText(localize("plugins.packsOpener.button.subtext"));
         this._btnOpenPacks.addClass("call-to-action pack-opener");
-        this._btnOpenPacks.addTarget(this, function() {
+        this._btnOpenPacks.addTarget(this, function () {
             autoOpenPacks.call(this, params[0]);
-        } , EventType.TAP);
+        }, EventType.TAP);
         this.appendActionButton(this._btnOpenPacks);
     }
 
@@ -209,6 +209,28 @@ function run() {
         transferListFullPurchaseAction,
         purchaseCount,
         currency) {
+
+        const state = {
+            coinsSpent: 0,
+            coinsEarned: 0,
+            pointsSpent: 0,
+            packsOpened: 0,
+            players: 0,
+            playersToClub: 0,
+            playersToTransferList: 0,
+            playersDiscarded: 0,
+            duplicatedPlayers: 0,
+            managers: 0,
+            duplicatedManagers: 0,
+            managersToClub: 0,
+            managersToTransferList: 0,
+            managersDiscarded: 0,
+            items: 0,
+            duplicatedItems: 0,
+            itemsToClub: 0,
+            itemsToTransferList: 0,
+            itemsDiscarded: 0
+        };
 
         cfg.purchaseActions = cfg.purchaseActions || {};
         cfg.speedMultiplier = speedMultiplier;
@@ -233,7 +255,8 @@ function run() {
                 itemsPurchaseAction,
                 duplicatedItemsPurchaseAction,
                 transferListFullPurchaseAction,
-                currency);
+                currency,
+                state);
             if (buyPackResult !== BuyPackResult.SUCCESS) {
                 hideLoader();
 
@@ -262,51 +285,131 @@ function run() {
             }
         }
         hideLoader();
+        showOpenPackResult(state);
     };
 
-    function handleNonDuplicatePlayers(items, action, transferListFullPurchaseAction) {
+    function showOpenPackResult(state) {
+        openDialog(
+            [
+                { labelEnum: enums.UIDialogOptions.OK }, ,
+            ],
+            localize("plugins.packsOpener.packResult.title"),
+            `<div class="pack-opener-result">${localize("plugins.packsOpener.packResult.html")
+                .replace("#PACKS#", state.packsOpened)
+                .replace("#PLAYERS#", state.players)
+                .replace("#PLAYERS_TO_CLUB#", state.playersToClub)
+                .replace("#PLAYERS_TO_TRANSFER#", state.playersToTransferList)
+                .replace("#PLAYERS_DISCARDED#", state.playersDiscarded)
+                .replace("#DUP_PLAYERS#", state.duplicatedPlayers)
+                .replace("#MANAGERS#", state.managers)
+                .replace("#MANAGERS_TO_CLUB#", state.managersToClub)
+                .replace("#MANAGERS_TO_TRANSFER#", state.managersToTransferList)
+                .replace("#MANAGERS_DISCARDED#", state.managersDiscarded)
+                .replace("#DUP_MANAGERS#", state.duplicatedManagers)
+                .replace("#ITEMS#", state.items)
+                .replace("#ITEMS_TO_CLUB#", state.itemsToClub)
+                .replace("#ITEMS_TO_TRANSFER#", state.itemsToTransferList)
+                .replace("#ITEMS_DISCARDED#", state.itemsDiscarded)
+                .replace("#DUP_ITEMS#", state.duplicatedItems)}</div>`
+        );
+    }
+
+    function handleNonDuplicatePlayers(items, action, transferListFullPurchaseAction, state) {
         const nonDuplicatePlayers = items.filter(item => !item.isDuplicate() && item.isPlayer());
         //notifyNeutral(localize("plugins.packsOpener.handlingNonDuplicatePlayers"));
-        return handleItems(nonDuplicatePlayers, action, transferListFullPurchaseAction);
+
+        state.players += nonDuplicatePlayers.length;
+
+        return handleItems(nonDuplicatePlayers, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.playersDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.playersToTransferList += count,
+                moveToClub: count => state.playersToClub += count
+            });
     };
 
-    function handleNonDuplicateManagers(items, action, transferListFullPurchaseAction) {
+    function handleNonDuplicateManagers(items, action, transferListFullPurchaseAction, state) {
         const nonDuplicateManagers = items.filter(item => !item.isDuplicate() && item.isManager());
         //notifyNeutral(localize("plugins.packsOpener.handlingNonDuplicateManagers"));
-        return handleItems(nonDuplicateManagers, action, transferListFullPurchaseAction);
+
+        state.managers += nonDuplicateManagers.length;
+
+        return handleItems(nonDuplicateManagers, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.managersDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.managersToTransferList += count,
+                moveToClub: count => state.managersToClub += count
+            });
     };
 
-    function handleNonDuplicateItems(items, action, transferListFullPurchaseAction) {
+    function handleNonDuplicateItems(items, action, transferListFullPurchaseAction, state) {
         const nonDuplicateItems = items.filter(item => !item.isDuplicate() && !item.isPlayer() && !item.isManager() && !item.isMiscItem());
         //notifyNeutral(localize("plugins.packsOpener.handlingNonDuplicateItems"));
-        return handleItems(nonDuplicateItems, action, transferListFullPurchaseAction);
+
+        state.items += nonDuplicateItems.length;
+
+        return handleItems(nonDuplicateItems, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.itemsDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.itemsToTransferList += count,
+                moveToClub: count => state.itemsToClub += count
+            });
     };
 
-    function handleDuplicatedPlayers(items, action, transferListFullPurchaseAction) {
+    function handleDuplicatedPlayers(items, action, transferListFullPurchaseAction, state) {
         const duplicatePlayers = items.filter((item) => item.isDuplicate() && item.isPlayer());
         //notifyNeutral(localize("plugins.packsOpener.handlingDuplicatePlayers"));
-        return handleItems(duplicatePlayers, action, transferListFullPurchaseAction);
+
+        state.players += duplicatePlayers.length;
+        state.duplicatedPlayers += duplicatePlayers.length;
+
+        return handleItems(duplicatePlayers, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.playersDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.playersToTransferList += count,
+                moveToClub: count => state.playersToClub += count
+            });
     };
 
-    function handleDuplicatedManagers(items, action, transferListFullPurchaseAction) {
+    function handleDuplicatedManagers(items, action, transferListFullPurchaseAction, state) {
         const duplicateManagers = items.filter((item) => item.isDuplicate() && item.isManager());
         //notifyNeutral(localize("plugins.packsOpener.handlingDuplicateManagers"));
-        return handleItems(duplicateManagers, action, transferListFullPurchaseAction);
+
+        state.managers += duplicateManagers.length;
+        state.duplicatedManagers += duplicateManagers.length;
+
+        return handleItems(duplicateManagers, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.managersDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.managersToTransferList += count,
+                moveToClub: count => state.managersToClub += count
+            });
     };
 
-    function handleDuplicatedItems(items, action, transferListFullPurchaseAction) {
+    function handleDuplicatedItems(items, action, transferListFullPurchaseAction, state) {
         const duplicateItems = items.filter((item) => item.isDuplicate() && !item.isPlayer() && !item.isManager() && !item.isMiscItem());
         //notifyNeutral(localize("plugins.packsOpener.handlingDuplicateItems"));
-        return handleItems(duplicateItems, action, transferListFullPurchaseAction);
+
+        state.items += duplicateItems.length;
+        state.duplicatedItems += duplicateItems.length;
+
+        return handleItems(duplicateItems, action, transferListFullPurchaseAction,
+            {
+                discard: (count, value) => { state.itemsDiscarded += count; state.coinsEarned += value; },
+                moveToTransferList: count => state.itemsToTransferList += count,
+                moveToClub: count => state.itemsToClub += count
+            });
     };
 
-    async function handleMiscItems(items) {
+    async function handleMiscItems(items, action, state) {
         const miscItems = items.filter((item) => item.isMiscItem());
         if (miscItems.length === 0) return HandleItemResult.SUCCESS;
         //notifyNeutral(localize("plugins.packsOpener.handlingCredits"));
         try {
             await Promise.all(
                 miscItems.map(async (credit) => {
+                    console.log(`Credit redeem: ${credit}`);
+                    //                    state.coinsEarned += credit;
                     services.Item.redeem(credit);
                     await delay(389, 675);
                 })
@@ -320,8 +423,16 @@ function run() {
     };
 
 
-    async function handleItems(items, action, transferListFullPurchaseAction) {
+    async function handleItems(items, action, transferListFullPurchaseAction, stateActions) {
         if (items.length === 0) return HandleItemResult.SUCCESS;
+
+        function getDiscardValue(items) {
+            const discardValue = items.reduce((accumulator, currentItem) => {
+                return accumulator + currentItem.discardValue;
+            }, 0);
+
+            return discardValue;
+        }
 
         let result;
         switch (action) {
@@ -332,15 +443,21 @@ function run() {
                     }
                     else {
                         result = await discardItems(items);
+                        if (result.success) {
+                            stateActions.discard(items.length, getDiscardValue(items));
+                        }
                     }
                 }
                 result = await moveItemsToTransferList(items);
+                if (result.success) stateActions.moveToTransferList(items.length);
                 break;
             case PURCHASE_ACTION.MOVE_TO_CLUB:
                 result = await moveItemsToClub(items);
+                if (result.success) stateActions.moveToClub(items.length);
                 break;
             case PURCHASE_ACTION.QUICK_SELL:
                 result = await discardItems(items);
+                if (result.success) stateActions.discard(items.length, getDiscardValue(items));
                 break;
         }
 
@@ -360,7 +477,8 @@ function run() {
         itemsPurchaseAction,
         duplicatedItemsPurchaseAction,
         transferListFullPurchaseAction,
-        currency) {
+        currency,
+        state) {
 
         if (repositories.Item.numItemsInCache(ItemPile.PURCHASED)) {
             return BuyPackResult.UNASSIGNED_ITEMS;
@@ -370,14 +488,23 @@ function run() {
             return BuyPackResult.NOT_ENOUGH_CREDITS;
         }
 
+        if (currency == GameCurrency.COINS) {
+            state.coinsSpent += pack.prices._collection[currency].amount;
+        }
+        else {
+            state.pointsSpent += pack.prices._collection[currency].amount;
+        }
+
         const purchaseResponse = await toPromise(pack.purchase(currency));
 
         if (!purchaseResponse.success) return BuyPackResult.ERROR;
 
+        state.packsOpened++;
+
         const unassignedItems = await getUnassignedItems()
 
         const handle = async (action, purchaseAction) => {
-            let result = await action(unassignedItems, purchaseAction || transferListFullPurchaseAction, transferListFullPurchaseAction);
+            let result = await action(unassignedItems, purchaseAction || transferListFullPurchaseAction, transferListFullPurchaseAction, state);
             if (result != HandleItemResult.SUCCESS) {
                 return result;
             }

@@ -48,6 +48,7 @@ import limbo from "./limbo";
 import claimObjectives from "./claimObjectives";
 import decimalRating from "./decimalRating";
 import lowestMarketPrice from "./lowestMarketPrice";
+import repeatSbc from "./repeatSbc";
 
 const plugins = [
     minMaxPrices,
@@ -96,6 +97,7 @@ const plugins = [
     claimObjectives,
     decimalRating,
     lowestMarketPrice,
+    repeatSbc,
     limbo,
     snipe,
     keyListener,

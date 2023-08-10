@@ -247,6 +247,9 @@ let settings = {
         },
         lowestMarketPrice: {
             enabled: false
+        },
+        repeatSbc: {
+            enabled: true
         }
     }
 };

@@ -72,55 +72,6 @@ input[type="number"] {
     }
 }
 
-.prices-container {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
-    opacity: 0.9;
-    display: flex;
-    background: #2b3540;
-    justify-content: end;
-}
-
-.ut-transfer-list-view .prices-container {
-    flex-direction: column;
-}
-
-.ut-transfer-list-view .prices-container .price {
-    flex-direction: column;
-}
-
-.ut-transfer-list-view .prices-container .price .label {
-    width: 100%;
-}
-
-.price-container .price {
-    flex-direction: row;
-    display: flex;
-    align-items: center;
-}
-
-.price-container .price .label {
-    color: #a4a9b4;
-    display: block;
-    font-size: .875rem;
-    text-transform: uppercase;
-    margin-right: 4px;
-    margin-left: 4px;
-}
-
-.price-container .price .label::after {
-    content: ':';
-}
-
-.price-container .price .value {
-    display: block;
-    font-family: UltimateTeamCondensed, sans-serif;
-    font-size: 1em;
-    margin-right: 4px;
-}
-
 .loading-progress {
     background-color: #333333;
     position: absolute;
@@ -134,6 +85,18 @@ input[type="number"] {
 
 .ut-transfer-list-view .player-definition-id {
     display: none;
+}
+
+.SquadPanel.SBCSquadPanel .ut-pack-graphic-view {
+    display: none;
+}
+
+.SquadPanel.SBCSquadPanel .ut-sbc-rewards-carousel.rewards-container {
+    padding-top: 0;
+}
+
+.SquadPanel.SBCSquadPanel .ut-sbc-rewards-carousel.rewards-container .title {
+    font-size: 1rem;
 }
 
 @keyframes loading-progress {

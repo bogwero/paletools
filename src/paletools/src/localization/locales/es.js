@@ -345,6 +345,8 @@ export default {
     "plugins.packsOpener.labels.speed": "Velocidad de Apertura",
     "plugins.packsOpener.speed.slow": "Lenta",
     "plugins.packsOpener.speed.fast": "Rápida",
+    "plugins.packsOpener.packResult.title": "Resultado del Abridor de sobres",
+    "plugins.packsOpener.packResult.html": "<ul><li><b>Packs Abiertos:</b><span>#PACKS#</span><li><b>Jugadores Totales:</b><span>#PLAYERS#</span></li><li><b>Jugadores al club:</b><span>#PLAYERS_TO_CLUB#</span></li><li><b>Jugadores a la lista de transferencia:</b><span>#PLAYERS_TO_TRANSFER#</span></li><li><b>Jugadores descartados:</b><span>#PLAYERS_DISCARDED#</span></li><li><b>Jugadores duplicados:</b><span>#DUP_PLAYERS#</span></li><li><b>Managers:</b><span>#MANAGERS#</span></li><li><b>Managers al club:</b><span>#MANAGERS_TO_CLUB#</span></li><li><b>Managers a la lista de transferencias:</b><span>#MANAGERS_TO_TRANSFER#</span></li><li><b>Managers descartados:</b><span>#MANAGERS_DISCARDED#</span></li><li><b>Managers duplicados:</b><span>#DUP_MANAGERS#</span></li><li><b>Items:</b><span>#ITEMS#</span></li><li><b>Items al club:</b><span>#ITEMS_TO_CLUB#</span></li><li><b>Items a la lista de transferencias:</b><span>#ITEMS_TO_TRANSFER#</span></li><li><b>Items descartados:</b><span>#ITEMS_DISCARDED#</span></li><li><b>Items duplicados:</b><span>#DUP_ITEMS#</span></li></ul>",
     /// #endif
 
     /// #if process.env.DECIMAL_RATING
@@ -355,7 +357,12 @@ export default {
     "plugins.lowestMarketPrice.button.text": "Buscar Precio en el Mercado",
     "plugins.lowestMarketPrice.settings.title": "Precio Mas Barato en el Mercado",
     /// #endif
-    
+
+    /// #if process.env.REPEAT_SBC
+    "plugins.repeatSbc.button.text": "Repeat Búsqueda",
+    "plugins.repeatSbc.settings.title": "Repeat Búsqueda en SBC",
+    /// #endif
+
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
     "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas aceptando que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
 
