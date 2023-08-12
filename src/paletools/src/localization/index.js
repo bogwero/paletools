@@ -1,10 +1,18 @@
 import localeEn from './locales/en';
 import localeEs from "./locales/es";
+import localeIt from "./locales/it";
+import localePt from "./locales/pt";
+import localeDe from "./locales/de";
+import localeFr from "./locales/fr";
 import getWindow from "../services/window";
 
 const dictionary = {
-    'en': localeEn,
-    'es': localeEs
+    "en": localeEn,
+    "es": localeEs,
+    "it": localeIt,
+    "pt": localePt,
+    "de": localeDe,
+    "fr": localeFr
 };
 
 export default function localize(key) {

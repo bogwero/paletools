@@ -238,8 +238,8 @@ export default {
     "plugins.sellMultiple.button.quickSellText": "Vendi rapidi multipli",
     "plugins.sellMultiple.label.ignoredCards": "La carta verrà ignorata se la fascia di prezzo non diminuisce nei valori forniti",
     "plugins.sellMultiple.warning": "Questa è una funzione di automazione, il tuo account potrebbe essere potenzialmente vietato se ne stai abusando, sei sicuro di voler abilitarlo?",
-    "plugins.sellMultiple.notifications.maxPlayersReached": "Hai raggiunto il limite di {giocatori} giocatori che puoi elencareº",
-    "plugins.sellMultiple.notifications.wait": "Si prega di attendere {secondi} secondi prima di eseguire un altro elenco",
+    "plugins.sellMultiple.notifications.maxPlayersReached": "Hai raggiunto il limite di {players} giocatori che puoi elencareº",
+    "plugins.sellMultiple.notifications.wait": "Si prega di attendere {seconds} secondi prima di eseguire un altro elenco",
     /// #endif
 
     /// #if process.env.INCREASE_ALLOWED_AUCTIONS
@@ -349,7 +349,7 @@ export default {
     "plugins.packsOpener.speed.slow": "Lento",
     "plugins.packsOpener.speed.fast": "Veloce",
     "plugins.packsOpener.packResult.title": "Risultato di apertura del pacchetto",
-    "plugins.packsOpener.packResult.html": "<ul> <li> <b> pacchetti aperti: <nan>",
+    "plugins.packsOpener.packResult.html": "<ul><li><b>Pacchetti aperti:<span>{packs}</span></li><li><b>Giocatori totali:</b><span>{players}</span>< /li><li><b>Giocatori inviati al club:</b><span>{playersToClub}</span></li><li><b>Giocatori inviati alla lista trasferimenti:</b><span >{playersToTransfer}</span></li><li><b>Giocatori scartati:</b><span>{playersDiscarded}</span></li><li><b>Giocatori duplicati:</ b><span>{duplicatedPlayers}</span></li><li><b>Totale allenatori:</b><span>{managers}</span></li><li><b>Allenatori inviato al club:</b><span>{managersToClub}</span></li><li><b>Allenatori inviati alla lista trasferimenti:</b><span>{managersToTransfer}</span></ li><li><b>Allenatori scartati:</b><span>{managersDiscarded}</span></li><li><b>Allenatori duplicati:</b><span>{duplicatedManagers}</b><span> span></li><li><b>Articoli totali:</b><span>{items}</span></li><li><b>Articoli inviati al Club:</b><span >{itemsToClub}</span></li><li><b>Articoli inviati all'elenco di trasferimento:</b><span>{itemsToTransfer}</span></li><li><b>Articoli scartati :</b><span>{itemsDiscarded}</span></li><li><b>Articoli duplicati:</b><span>{duplicatedItems}</span></li><li><b>Coins spesi:</b><span>{coinsSpent}</span></li><li><b>Coins guadagnati:</b><span>{coinsEarned}</span></li></ul>",
 
     /// #if process.env.DECIMAL_RATING
     "plugins.decimalRating.settings.title": "Valutazione decimale",

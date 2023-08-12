@@ -69,7 +69,7 @@ function addSellMultiple(output) {
             if (ev.target.checked && output.selectedCardsCount === SELL_MULTIPLE_MAX_PLAYERS) {
                 ev.target.checked = false;
                 ev.stopPropagation();
-                notifyFailure(localize("plugins.sellMultiple.notifications.maxPlayersReached").replace("{PLAYERS}", SELL_MULTIPLE_MAX_PLAYERS));
+                notifyFailure(localize("plugins.sellMultiple.notifications.maxPlayersReached").replace("{players}", SELL_MULTIPLE_MAX_PLAYERS));
                 return false;
             }
 
@@ -118,7 +118,7 @@ function addSellMultiple(output) {
         if (lastListDate) {
             let dateDiff = new Date() - lastListDate;
             if (dateDiff < SELL_MULTIPLE_DELAY) {
-                notifyFailure(localize("plugins.sellMultiple.notifications.wait").replace("{SECONDS}", Math.round((SELL_MULTIPLE_DELAY - dateDiff) / 1000)));
+                notifyFailure(localize("plugins.sellMultiple.notifications.wait").replace("{seconds}", Math.round((SELL_MULTIPLE_DELAY - dateDiff) / 1000)));
                 return;
             }
         }

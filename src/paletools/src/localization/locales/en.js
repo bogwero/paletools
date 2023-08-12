@@ -5,7 +5,7 @@ export default {
     "ui.loadingPlayers": "Loading club players: {count} loaded",
     "plugins.dangerous": "WARNING: Enabling this plugin could eventually lead to a potential BAN from EA, are you sure you want to continue?",
     "page.restart": "Please reload the page and re-execute Paletools for the changes to take effect",
-    "market.itemBuy.success": "Item bought succesfully! - {COINS}",
+    "market.itemBuy.success": "Item bought succesfully! - {coins}",
     "confirm": "Are you sure you want to proceed?",
     "loading": "Loading",
     "from": "From",
@@ -238,8 +238,8 @@ export default {
     "plugins.sellMultiple.button.quickSellText": "Quick Sell Multiple",
     "plugins.sellMultiple.label.ignoredCards": "Card will be ignored if teh price range does not fall in the provided values",
     "plugins.sellMultiple.warning": "This is an automation feature, your account could potentially be banned if you are abusing of it, are you sure you want to enable it?",
-    "plugins.sellMultiple.notifications.maxPlayersReached": "You have reached the limit of {PLAYERS} players you can listº",
-    "plugins.sellMultiple.notifications.wait": "Please wait {SECONDS} seconds before performing another list",
+    "plugins.sellMultiple.notifications.maxPlayersReached": "You have reached the limit of {players} players you can listº",
+    "plugins.sellMultiple.notifications.wait": "Please wait {seconds} seconds before performing another list",
     /// #endif
 
     /// #if process.env.INCREASE_ALLOWED_AUCTIONS
@@ -349,7 +349,7 @@ export default {
     "plugins.packsOpener.speed.slow": "Slow",
     "plugins.packsOpener.speed.fast": "Fast",
     "plugins.packsOpener.packResult.title": "Pack Opener Result",
-    "plugins.packsOpener.packResult.html": "<ul><li><b>Opened Packs:<span>#PACKS#</span></li><li><b>Total Players:</b><span>#PLAYERS#</span></li><li><b>Players sent to Club:</b><span>#PLAYERS_TO_CLUB#</span></li><li><b>Players sent to Transfer list:</b><span>#PLAYERS_TO_TRANSFER#</span></li><li><b>Discarded Players:</b><span>#PLAYERS_DISCARDED#</span></li><li><b>Duplicated Players:</b><span>#DUP_PLAYERS#</span></li><li><b>Total Managers:</b><span>#MANAGERS#</span></li><li><b>Managers sent to Club:</b><span>#MANAGERS_TO_CLUB#</span></li><li><b>Managers sent to Transfer List:</b><span>#MANAGERS_TO_TRANSFER#</span></li><li><b>Discarded Managers:</b><span>#MANAGERS_DISCARDED#</span></li><li><b>Duplicated Managers:</b><span>#DUP_MANAGERS#</span></li><li><b>Total Items:</b><span>#ITEMS#</span></li><li><b>Items sent to Club:</b><span>#ITEMS_TO_CLUB#</span></li><li><b>Items sent to Transfer List:</b><span>#ITEMS_TO_TRANSFER#</span></li><li><b>Discarded Items:</b><span>#ITEMS_DISCARDED#</span></li><li><b>Duplicated Items:</b><span>#DUP_ITEMS#</span></li></ul>",
+    "plugins.packsOpener.packResult.html": "<ul><li><b>Opened Packs:<span>{packs}</span></li><li><b>Total Players:</b><span>{players}</span></li><li><b>Players sent to Club:</b><span>{playersToClub}</span></li><li><b>Players sent to Transfer list:</b><span>{playersToTransfer}</span></li><li><b>Discarded Players:</b><span>{playersDiscarded}</span></li><li><b>Duplicated Players:</b><span>{duplicatedPlayers}</span></li><li><b>Total Managers:</b><span>{managers}</span></li><li><b>Managers sent to Club:</b><span>{managersToClub}</span></li><li><b>Managers sent to Transfer List:</b><span>{managersToTransfer}</span></li><li><b>Discarded Managers:</b><span>{managersDiscarded}</span></li><li><b>Duplicated Managers:</b><span>{duplicatedManagers}</span></li><li><b>Total Items:</b><span>{items}</span></li><li><b>Items sent to Club:</b><span>{itemsToClub}</span></li><li><b>Items sent to Transfer List:</b><span>{itemsToTransfer}</span></li><li><b>Discarded Items:</b><span>{itemsDiscarded}</span></li><li><b>Duplicated Items:</b><span>{duplicatedItems}</span></li><li><b>Coins Spent:</b><span>{coinsSpent}</span></li><li><b>Coins Earned:</b><span>{coinsEarned}</span></li></ul>",
 
     /// #if process.env.DECIMAL_RATING
     "plugins.decimalRating.settings.title": "Decimal Rating",

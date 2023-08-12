@@ -75,7 +75,7 @@ export function enableMarketSnipe() {
                     getUnassignedItems();
 
                     triggerEvent(EVENTS.SNIPE_SUCCESS, response.item);
-                    notifySuccess(localize("market.itemBuy.success").replace("{COINS}", localizeNumber(response.item._auction.buyNowPrice)));
+                    notifySuccess(localize("market.itemBuy.success").replace("{coins}", localizeNumber(response.item._auction.buyNowPrice)));
                 }
                 else {
                     try {

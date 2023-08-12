@@ -295,22 +295,25 @@ function run() {
             ],
             localize("plugins.packsOpener.packResult.title"),
             `<div class="pack-opener-result">${localize("plugins.packsOpener.packResult.html")
-                .replace("#PACKS#", state.packsOpened)
-                .replace("#PLAYERS#", state.players)
-                .replace("#PLAYERS_TO_CLUB#", state.playersToClub)
-                .replace("#PLAYERS_TO_TRANSFER#", state.playersToTransferList)
-                .replace("#PLAYERS_DISCARDED#", state.playersDiscarded)
-                .replace("#DUP_PLAYERS#", state.duplicatedPlayers)
-                .replace("#MANAGERS#", state.managers)
-                .replace("#MANAGERS_TO_CLUB#", state.managersToClub)
-                .replace("#MANAGERS_TO_TRANSFER#", state.managersToTransferList)
-                .replace("#MANAGERS_DISCARDED#", state.managersDiscarded)
-                .replace("#DUP_MANAGERS#", state.duplicatedManagers)
-                .replace("#ITEMS#", state.items)
-                .replace("#ITEMS_TO_CLUB#", state.itemsToClub)
-                .replace("#ITEMS_TO_TRANSFER#", state.itemsToTransferList)
-                .replace("#ITEMS_DISCARDED#", state.itemsDiscarded)
-                .replace("#DUP_ITEMS#", state.duplicatedItems)}</div>`
+                .replace("{packs}", state.packsOpened)
+                .replace("{players}", state.players)
+                .replace("{playersToClub}", state.playersToClub)
+                .replace("{playersToTransfer}", state.playersToTransferList)
+                .replace("{playersDiscarded}", state.playersDiscarded)
+                .replace("{duplicatedPlayers}", state.duplicatedPlayers)
+                .replace("{managers}", state.managers)
+                .replace("{managersToClub}", state.managersToClub)
+                .replace("{managersToTransfer}", state.managersToTransferList)
+                .replace("{managersDiscarded}", state.managersDiscarded)
+                .replace("{duplicatedManagers}", state.duplicatedManagers)
+                .replace("{items}", state.items)
+                .replace("{itemsToClub}", state.itemsToClub)
+                .replace("{itemsToTransfer}", state.itemsToTransferList)
+                .replace("{itemsDiscarded}", state.itemsDiscarded)
+                .replace("{duplicatedItems}", state.duplicatedItems)
+                .replace("{coinsSpent}", state.coinsSpent)
+                .replace("{coinsEarned}", state.coinsEarned)}
+                </div>`
         );
     }
 
@@ -330,7 +333,6 @@ function run() {
 
     function handleNonDuplicateManagers(items, action, transferListFullPurchaseAction, state) {
         const nonDuplicateManagers = items.filter(item => !item.isDuplicate() && item.isManager());
-        //notifyNeutral(localize("plugins.packsOpener.handlingNonDuplicateManagers"));
 
         state.managers += nonDuplicateManagers.length;
 
@@ -344,7 +346,6 @@ function run() {
 
     function handleNonDuplicateItems(items, action, transferListFullPurchaseAction, state) {
         const nonDuplicateItems = items.filter(item => !item.isDuplicate() && !item.isPlayer() && !item.isManager() && !item.isMiscItem());
-        //notifyNeutral(localize("plugins.packsOpener.handlingNonDuplicateItems"));
 
         state.items += nonDuplicateItems.length;
 
@@ -358,7 +359,6 @@ function run() {
 
     function handleDuplicatedPlayers(items, action, transferListFullPurchaseAction, state) {
         const duplicatePlayers = items.filter((item) => item.isDuplicate() && item.isPlayer());
-        //notifyNeutral(localize("plugins.packsOpener.handlingDuplicatePlayers"));
 
         state.players += duplicatePlayers.length;
         state.duplicatedPlayers += duplicatePlayers.length;
@@ -373,7 +373,6 @@ function run() {
 
     function handleDuplicatedManagers(items, action, transferListFullPurchaseAction, state) {
         const duplicateManagers = items.filter((item) => item.isDuplicate() && item.isManager());
-        //notifyNeutral(localize("plugins.packsOpener.handlingDuplicateManagers"));
 
         state.managers += duplicateManagers.length;
         state.duplicatedManagers += duplicateManagers.length;
@@ -388,7 +387,6 @@ function run() {
 
     function handleDuplicatedItems(items, action, transferListFullPurchaseAction, state) {
         const duplicateItems = items.filter((item) => item.isDuplicate() && !item.isPlayer() && !item.isManager() && !item.isMiscItem());
-        //notifyNeutral(localize("plugins.packsOpener.handlingDuplicateItems"));
 
         state.items += duplicateItems.length;
         state.duplicatedItems += duplicateItems.length;
@@ -409,7 +407,9 @@ function run() {
             await Promise.all(
                 miscItems.map(async (credit) => {
                     console.log(`Credit redeem: ${credit}`);
-                    //                    state.coinsEarned += credit;
+                    if(credit.amount){
+                        state.coinsEarned += credit;
+                    }
                     services.Item.redeem(credit);
                     await delay(389, 675);
                 })

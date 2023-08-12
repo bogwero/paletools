@@ -5,7 +5,7 @@ export default {
     "ui.loadingPlayers": "Cargando club: {count} jugadores cargados",
     "plugins.dangerous": "CUIDADO: Habilitar este plugin puede llevar eventualmente a un BAN por parte de EA de tu cuenta, ¿ESTAS SEGURO DE QUERER CONTINUAR?",
     "page.restart": "Por favor recarga la página y re ejecuta Paletools para que los cambios tomen efecto",
-    "market.itemBuy.success": "¡Compra realizada correctamente! - {COINS}",
+    "market.itemBuy.success": "¡Compra realizada correctamente! - {coins}",
     "confirm": "¿Estas seguro de querer continuar?",
     "loading": "Cargando",
     "from": "Desde",
@@ -235,8 +235,8 @@ export default {
     "plugins.sellMultiple.button.quickSellText": "Venta Rápida Masiva",
     "plugins.sellMultiple.label.ignoredCards": "Las cartas serán ignoradas si el rango de valores no se encuentra entre los valores provistos",
     "plugins.sellMultiple.warning": "Esto es una función de automatización, tu cuenta puede ser banneada si haces abuso de la misma, ¿estas seguro que quieres habilitarla?",
-    "plugins.sellMultiple.notifications.maxPlayersReached": "Has alcanzado el límite de {PLAYERS} jugadores que puedes listar",
-    "plugins.sellMultiple.notifications.wait": "Por favor espera {SECONDS} segundos antes de realizar otro listado",
+    "plugins.sellMultiple.notifications.maxPlayersReached": "Has alcanzado el límite de {players} jugadores que puedes listar",
+    "plugins.sellMultiple.notifications.wait": "Por favor espera {seconds} segundos antes de realizar otro listado",
     /// #endif
 
     /// #if process.env.INCREASE_ALLOWED_AUCTIONS
@@ -346,7 +346,7 @@ export default {
     "plugins.packsOpener.speed.slow": "Lenta",
     "plugins.packsOpener.speed.fast": "Rápida",
     "plugins.packsOpener.packResult.title": "Resultado del Abridor de sobres",
-    "plugins.packsOpener.packResult.html": "<ul><li><b>Packs Abiertos:</b><span>#PACKS#</span><li><b>Jugadores Totales:</b><span>#PLAYERS#</span></li><li><b>Jugadores al club:</b><span>#PLAYERS_TO_CLUB#</span></li><li><b>Jugadores a la lista de transferencia:</b><span>#PLAYERS_TO_TRANSFER#</span></li><li><b>Jugadores descartados:</b><span>#PLAYERS_DISCARDED#</span></li><li><b>Jugadores duplicados:</b><span>#DUP_PLAYERS#</span></li><li><b>Managers:</b><span>#MANAGERS#</span></li><li><b>Managers al club:</b><span>#MANAGERS_TO_CLUB#</span></li><li><b>Managers a la lista de transferencias:</b><span>#MANAGERS_TO_TRANSFER#</span></li><li><b>Managers descartados:</b><span>#MANAGERS_DISCARDED#</span></li><li><b>Managers duplicados:</b><span>#DUP_MANAGERS#</span></li><li><b>Items:</b><span>#ITEMS#</span></li><li><b>Items al club:</b><span>#ITEMS_TO_CLUB#</span></li><li><b>Items a la lista de transferencias:</b><span>#ITEMS_TO_TRANSFER#</span></li><li><b>Items descartados:</b><span>#ITEMS_DISCARDED#</span></li><li><b>Items duplicados:</b><span>#DUP_ITEMS#</span></li></ul>",
+    "plugins.packsOpener.packResult.html": "<ul><li><b>Packs Abiertos:</b><span>{packs}</span></li><li><b>Jugadores Totales:</b><span>{players}</span></li><li><b>Jugadores al club:</b><span>{playersToClub}</span></li><li><b>Jugadores a la lista de transferencia:</b><span>{playersToTransfer}</span></li><li><b>Jugadores descartados:</b><span>{playersDiscarded}</span></li><li><b>Jugadores duplicados:</b><span>{duplicatedPlayers}</span></li><li><b>Managers:</b><span>{managers}</span></li><li><b>Managers al club:</b><span>{managersToClub}</span></li><li><b>Managers a la lista de transferencias:</b><span>{managersToTransfer}</span></li><li><b>Managers descartados:</b><span>{managersDiscarded}</span></li><li><b>Managers duplicados:</b><span>{duplicatedManagers}</span></li><li><b>Items:</b><span>{items}</span></li><li><b>Items al club:</b><span>{itemsToClub}</span></li><li><b>Items a la lista de transferencias:</b><span>{itemsToTransfer}</span></li><li><b>Items descartados:</b><span>{itemsDiscarded}</span></li><li><b>Items duplicados:</b><span>{duplicatedItems}</span></li><li><b>Monedas gastadas:</b><span>{coinsSpent}</span></li><li><b>Monedas ganadas:</b><span>{coinsEarned}</span></li></ul>",
     /// #endif
 
     /// #if process.env.DECIMAL_RATING

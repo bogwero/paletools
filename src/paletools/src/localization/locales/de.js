@@ -238,8 +238,8 @@ export default {
     "plugins.sellMultiple.button.quickSellText": "Schnell verkaufen mehrere",
     "plugins.sellMultiple.label.ignoredCards": "Die Karte wird ignoriert, wenn die Preisspanne nicht in die bereitgestellten Werte fällt",
     "plugins.sellMultiple.warning": "Dies ist eine Automatisierungsfunktion. Ihr Konto könnte möglicherweise verboten werden, wenn Sie dies missbrauchen. Sind Sie sicher, dass Sie es aktivieren möchten?",
-    "plugins.sellMultiple.notifications.maxPlayersReached": "Sie haben die Grenze von {Spielern} Spielern erreicht, die Sie auflisten können",
-    "plugins.sellMultiple.notifications.wait": "Bitte warten Sie {Sekunden} Sekunden vor der Ausführung einer anderen Liste",
+    "plugins.sellMultiple.notifications.maxPlayersReached": "Sie haben die Grenze von {players} Spielern erreicht, die Sie auflisten können",
+    "plugins.sellMultiple.notifications.wait": "Bitte warten Sie {seconds} Sekunden vor der Ausführung einer anderen Liste",
     /// #endif
 
     /// #if process.env.INCREASE_ALLOWED_AUCTIONS
@@ -349,7 +349,7 @@ export default {
     "plugins.packsOpener.speed.slow": "Langsam",
     "plugins.packsOpener.speed.fast": "Schnell",
     "plugins.packsOpener.packResult.title": "Packöffnerergebnis",
-    "plugins.packsOpener.packResult.html": "<ul> <li> <b> Öffnete Packungen: <Pan>",
+    "plugins.packsOpener.packResult.html": "<ul><li><b>Geöffnete Packs:<span>{packs}</span></li><li><b>Spieler insgesamt:</b><span>{players}</span>< /li><li><b>Spieler, die an den Verein gesendet wurden:</b><span>{playersToClub}</span></li><li><b>Spieler, die an die Transferliste gesendet wurden:</b><span >{playersToTransfer}</span></li><li><b>Verworfene Spieler:</b><span>{playersDiscarded}</span></li><li><b>Duplizierte Spieler:</ b><span>{duplicatedPlayers}</span></li><li><b>Manager insgesamt:</b><span>{managers}</span></li><li><b>Manager an den Club gesendet:</b><span>{managersToClub}</span></li><li><b>Manager an die Transferliste gesendet:</b><span>{managersToTransfer}</span></ li><li><b>Verworfene Manager:</b><span>{managersDiscarded}</span></li><li><b>Duplizierte Manager:</b><span>{duplicatedManagers}</ span></li><li><b>Gesamtzahl der Artikel:</b><span>{items}</span></li><li><b>An den Club gesendete Artikel:</b><span >{itemsToClub}</span></li><li><b>An die Übertragungsliste gesendete Elemente:</b><span>{itemsToTransfer}span></li><li><b>Verworfene Elemente :</b><span>{itemsDiscarded}</span></li><li><b>Duplizierte Elemente:</b><span>{duplicatedItems}</span></li><li><b>Ausgegebene Münzen:</b><span>{coinsSpent}</span></li><li><b>Verdiente Münzen:</b><span>{coinsEarned}</span></li></ul>",
 
     /// #if process.env.DECIMAL_RATING
     "plugins.decimalRating.settings.title": "Dezimalzahl",
