@@ -399,15 +399,20 @@ function run() {
             });
     };
 
-    async function handleMiscItems(items, action, state) {
+    async function handleMiscItems(items, action1, action2, state) {
         const miscItems = items.filter((item) => item.isMiscItem());
         if (miscItems.length === 0) return HandleItemResult.SUCCESS;
         //notifyNeutral(localize("plugins.packsOpener.handlingCredits"));
         try {
             await Promise.all(
                 miscItems.map(async (credit) => {
-                    if(credit.amount){
-                        state.coinsEarned += credit.amount;
+                    try {
+                        if(credit.amount){
+                            state.coinsEarned += credit.amount;
+                        }
+                    }
+                    catch(ex){
+                        console.log(ex);
                     }
                     services.Item.redeem(credit);
                     await delay(389, 675);
