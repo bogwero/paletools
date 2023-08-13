@@ -406,9 +406,8 @@ function run() {
         try {
             await Promise.all(
                 miscItems.map(async (credit) => {
-                    console.log(`Credit redeem: ${credit}`);
                     if(credit.amount){
-                        state.coinsEarned += credit;
+                        state.coinsEarned += credit.amount;
                     }
                     services.Item.redeem(credit);
                     await delay(389, 675);

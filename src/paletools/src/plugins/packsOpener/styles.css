@@ -41,6 +41,7 @@
 
 .pack-opener-result li span {
     text-align: right;
+    display: table-cell;
 }
 
 .pack-opener-result li b, ul.pack-opener-result li span {
