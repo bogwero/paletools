@@ -7,8 +7,7 @@ module.exports = (env) => {
         ...(process.env || {}),
         ...plugins,
         ...env,
-        TAMPERMONKEY: true,
-        EXTERNAL_MARKET_PRICES: false
+        TAMPERMONKEY: true
     };
 
     return [
