@@ -50,5 +50,8 @@ module.exports = {
     CLAIM_OBJECTIVES: true,
     DECIMAL_RATING: true,
     LOWEST_MARKET_PRICE: true,
-    REPEAT_SBC: true
+    REPEAT_SBC: true,
+    GO_TO_PACK_STORE: true,
+    BENCH_MANAGEMENT: true,
+    UNASSIGNED_DUPLICATES: true
 };

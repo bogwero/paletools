@@ -365,6 +365,10 @@ export default {
     "plugins.repeatSbc.settings.title": "Ripeti la ricerca SBC",
     /// #endif
 
+    /// #if process.env.GO_TO_PACK_STORE
+    "plugins.goToPackStore.settings.title": "Vai al negozio di pacchi",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Avviso di utilizzo",
     "plugins.warningScreen.disclaimer": "<p> Caro utente, poiché Paletools ti consente di eseguire azioni che non sono state progettate da EA e ti consente di essere molto più veloce nell'uso di WebApp, sei a un potenziale rischio di divieto da EA </p> <p> < Br/> </p> <p> Pertanto lo userai a tua discrezione e dovresti essere molto cauto </p> <p> <br /> </p> <p> Se esegui troppi cecchini in Una riga che potresti ottenere un divieto di mercato morbido o anche il peggior divieto permanente dal mercato dei trasferimenti </b> </p> <p> <br /> </p> <p> Per favore <b> usa questo Strumento a tuo rischio </b> </p> <p> <br /> </p> <p> Grazie A Buona giornata! </p>",
 

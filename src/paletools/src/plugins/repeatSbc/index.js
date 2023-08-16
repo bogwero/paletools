@@ -70,6 +70,8 @@ function run() {
     
         UTSquadBuilderViewController_onClubSearchComplete.call(this, ...args);
 
+        if(!this.challenge) return;
+        
         searchCache[this.challenge.id] = this.viewModel;
     }
 }

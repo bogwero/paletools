@@ -365,6 +365,10 @@ export default {
     "plugins.repeatSbc.settings.title": "Repita a pesquisa da SBC",
     /// #endif
 
+    /// #if process.env.GO_TO_PACK_STORE
+    "plugins.goToPackStore.settings.title": "Ir para a loja de embalagens",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Aviso de uso",
     "plugins.warningScreen.disclaimer": "<p> Caro usuário, já que o PaleTools permite que você execute ações que não fossem design da EA e permitem que você seja muito mais rápido no uso do webpApp, você está em risco potencial de proibição de ea </p> <p> < BR/> </p> <p> Portanto, você deve usá -lo a seu próprio critério e deve ser muito cauteloso </p> <p> <br /> </p> <p> Se você executar muitos atiradores em Uma fila Você pode obter uma proibição de mercado suave ou até a pior proibição permanente do mercado de transferências </b> </p> <p> <br /> </p> <p> por favor <b> Use isso Ferramenta por sua conta e risco </b> </p> <p> <br /> </p> <p> Obrigado a ter um bom dia! </p>",
 

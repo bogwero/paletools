@@ -75,7 +75,7 @@ export function remove(elem) {
 }
 
 export function attr(elem, name, value) {
-    if(!value) {
+    if (!value) {
         return getRealElement(elem).getAttribute(name);
     }
     else {
@@ -92,8 +92,8 @@ export function createElem(tag, attrs, html) {
 
     if (attrs) {
         for (let attr of Object.keys(attrs)) {
-            if(!attrs[attr]) continue;
-            
+            if (!attrs[attr]) continue;
+
             elem.setAttribute(attr === "className" ? "class" : attr, attrs[attr]);
         }
     }
@@ -166,8 +166,9 @@ export function css(elem, css) {
     if (isIterable(elem)) {
         for (let el of elem) {
             if (!el) continue;
-
-            getRealElement(el).style[key] = css[key];
+            for (let key of Object.keys(css)) {
+                getRealElement(el).style[key] = css[key];
+            }
         }
     }
     else {

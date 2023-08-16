@@ -30,7 +30,6 @@ function addSellMultiple(output) {
     const sellMultipleButton = new UTStandardButtonControl();
     const sellMultipleButtonEl = sellMultipleButton.getRootElement();
     
-    css(sellMultipleButtonEl, { marginLeft: "8px" });
     addClass(sellMultipleButtonEl, "sell-multiple", "section-header-btn", "mini", "call-to-action");
 
     sellMultipleButton.init();

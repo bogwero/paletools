@@ -24,6 +24,9 @@ input[type="number"] {
     background-color: #394754 !important;
 }
 
+.ut-section-header-view {
+    gap: 10px;
+}
 
 
 .ut-transfer-list-view .sectioned-item-list .itemList {

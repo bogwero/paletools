@@ -250,6 +250,15 @@ let settings = {
         },
         repeatSbc: {
             enabled: true
+        },
+        goToPackStore: {
+            enabled: false
+        },
+        benchManagement: {
+            enabled: true
+        },
+        unassignedDuplicates: {
+            enabled: true
         }
     }
 };

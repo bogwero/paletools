@@ -49,6 +49,9 @@ import claimObjectives from "./claimObjectives";
 import decimalRating from "./decimalRating";
 import lowestMarketPrice from "./lowestMarketPrice";
 import repeatSbc from "./repeatSbc";
+import goToPackStore from "./goToPackStore";
+import benchManagament  from "./benchManagement";
+import unassignedDuplicates from "./unassignedDuplicates";
 
 const plugins = [
     minMaxPrices,
@@ -98,6 +101,9 @@ const plugins = [
     decimalRating,
     lowestMarketPrice,
     repeatSbc,
+    goToPackStore,
+    benchManagament,
+    unassignedDuplicates,
     limbo,
     snipe,
     keyListener,
