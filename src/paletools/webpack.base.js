@@ -29,7 +29,7 @@ module.exports = {
     XML_HTTP_REQUESTS: true,
     INCREASE_ALLOWED_AUCTIONS: true,
     SELL_MULTIPLE: true,
-    DEBUG_MODE: true,
+    DEBUG_MODE: false,
     SELL_PROFIT: true,
     TRACK_TRANSACTIONS: true,
     TRANSACTIONS_HISTORY: true,

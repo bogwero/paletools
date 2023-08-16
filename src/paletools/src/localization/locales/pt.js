@@ -369,6 +369,18 @@ export default {
     "plugins.goToPackStore.settings.title": "Ir para a loja de embalagens",
     /// #endif
 
+    /// #if process.env.BENCH_MANAGEMENT
+    "plugins.benchManagement.settings.title": "Gestão de Suplentes",
+    "plugins.benchManagement.buttons.sendToField": "Enviar para o campo",
+    "plugins.benchManagement.buttons.sendToFieldKeepPos": "Enviar para o campo para a posição",
+    "plugins.benchManagement.buttons.sendToClub": "Enviar ao clube",
+    /// #endif
+
+    /// #if process.env.UNASSIGNED_DUPLICATES
+    "plugins.unassignedDuplicates.settings.title": "Duplicatas não atribuídas",
+    "plugins.unassignedDuplicates.buttons.switchUntradeables": "Alternar não negociáveis",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Aviso de uso",
     "plugins.warningScreen.disclaimer": "<p> Caro usuário, já que o PaleTools permite que você execute ações que não fossem design da EA e permitem que você seja muito mais rápido no uso do webpApp, você está em risco potencial de proibição de ea </p> <p> < BR/> </p> <p> Portanto, você deve usá -lo a seu próprio critério e deve ser muito cauteloso </p> <p> <br /> </p> <p> Se você executar muitos atiradores em Uma fila Você pode obter uma proibição de mercado suave ou até a pior proibição permanente do mercado de transferências </b> </p> <p> <br /> </p> <p> por favor <b> Use isso Ferramenta por sua conta e risco </b> </p> <p> <br /> </p> <p> Obrigado a ter um bom dia! </p>",
 

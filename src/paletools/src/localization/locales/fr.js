@@ -369,6 +369,18 @@ export default {
     "plugins.goToPackStore.settings.title": "Aller au magasin de pack",
     /// #endif
 
+    /// #if process.env.BENCH_MANAGEMENT
+    "plugins.benchManagement.settings.title": "Gestion des remplaçants",
+    "plugins.benchManagement.buttons.sendToField": "Envoyer au champ",
+    "plugins.benchManagement.buttons.sendToFieldKeepPos": "Envoyer au champ à la position",
+    "plugins.benchManagement.buttons.sendToClub": "Envoyer au club",
+    /// #endif
+
+    /// #if process.env.UNASSIGNED_DUPLICATES
+    "plugins.unassignedDuplicates.settings.title": "Doublons non attribués",
+    "plugins.unassignedDuplicates.buttons.switchUntradeables": "Changer les objets non échangeables",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Avertissement d'utilisation",
     "plugins.warningScreen.disclaimer": "<p> Cher utilisateur, puisque Paletools vous permet d'effectuer des actions qui n'étaient pas conçues par EA et vous permet d'être beaucoup plus rapide dans l'utilisation de la webapp que vous êtes à un risque potentiel d'interdiction d'EA </p> <p> < br /> </p> <p> Par conséquent, vous devez l'utiliser à votre discrétion et vous devriez être très prudent </p> <p> <br /> </p> <p> si vous effectuez trop de snipes Une ligne, vous pourriez obtenir une interdiction de marché en douce Outil à vos risques et périls </b> </p> <p> <br /> </p> <p> Merci une bonne journée! </p>",
 

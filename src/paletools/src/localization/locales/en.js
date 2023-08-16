@@ -370,7 +370,7 @@ export default {
     /// #endif
 
     /// #if process.env.BENCH_MANAGEMENT
-    "plugins.benchManagement.settings.title": "Bench Management",
+    "plugins.benchManagement.settings.title": "Subs Management",
     "plugins.benchManagement.buttons.sendToField": "Send To Field",
     "plugins.benchManagement.buttons.sendToFieldKeepPos": "Send to Field to Position",
     "plugins.benchManagement.buttons.sendToClub": "Send to Club",

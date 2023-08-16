@@ -367,6 +367,18 @@ export default {
     "plugins.goToPackStore.settings.title": "Ir a la Tienda de Packs",
     /// #endif
 
+    /// #if process.env.BENCH_MANAGEMENT
+    "plugins.benchManagement.settings.title": "Administración de Suplentes",
+    "plugins.benchManagement.buttons.sendToField": "Enviar a Titulares",
+    "plugins.benchManagement.buttons.sendToFieldKeepPos": "Enviar a Titulares x Posición",
+    "plugins.benchManagement.buttons.sendToClub": "Enviar al Club",
+    /// #endif
+
+    /// #if process.env.UNASSIGNED_DUPLICATES
+    "plugins.unassignedDuplicates.settings.title": "Duplicados sin Asignar",
+    "plugins.unassignedDuplicates.buttons.switchUntradeables": "Intercambiar Intransferibles",
+    /// #endif
+
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
     "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas aceptando que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
 

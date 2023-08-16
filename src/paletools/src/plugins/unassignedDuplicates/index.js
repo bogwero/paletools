@@ -5,7 +5,10 @@ let plugin;
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
 import settings, { saveConfiguration } from "../../settings";
+import delay from "../../utils/delay";
 import { addClass, append } from "../../utils/dom";
+import { displayLoader, hideLoader } from "../../utils/loader";
+import { toPromise } from "../../utils/observable";
 const cfg = settings.plugins.unassignedDuplicates;
 
 function run() {
@@ -29,8 +32,15 @@ function run() {
         switchButton.init();
         switchButton.setText(localize("plugins.unassignedDuplicates.buttons.switchUntradeables"));
         addClass(switchButton, "section-header-btn", "mini", "call-to-action");
-        switchButton.addTarget(this, () => {
-            services.Item.move(untradeableDuplicates, ItemPile.CLUB).observe(this, this._onMoveToClubComplete);
+        switchButton.addTarget(this, async () => {
+
+            displayLoader();
+            for(let duplicated of untradeableDuplicates) {
+                await toPromise(services.Item.move(duplicated, ItemPile.CLUB));
+                await delay(100, 300);
+            }
+            hideLoader();
+            this._getUnassignedItems();
         }, EventType.TAP);
         append(header, switchButton);
     }

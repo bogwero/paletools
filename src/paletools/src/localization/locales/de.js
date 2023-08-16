@@ -369,6 +369,18 @@ export default {
     "plugins.goToPackStore.settings.title": "Geh zum Packladen",
     /// #endif
 
+    /// #if process.env.BENCH_MANAGEMENT
+    "plugins.benchManagement.settings.title": "Vertretungsmanagement",
+    "plugins.benchManagement.buttons.sendToField": "An Feld senden",
+    "plugins.benchManagement.buttons.sendToFieldKeepPos": "An Feld zur Position senden",
+    "plugins.benchManagement.buttons.sendToClub": "An den Verein senden",
+    /// #endif
+
+    /// #if process.env.UNASSIGNED_DUPLICATES
+    "plugins.unassignedDuplicates.settings.title": "Nicht zugewiesene Duplikate",
+    "plugins.unassignedDuplicates.buttons.switchUntradeables": "Wechseln Sie nicht handelbare Güter",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Nutzungswarnung",
     "plugins.warningScreen.disclaimer": "<p> Sehr geehrter Benutzer, da Sie in Paletools Aktionen ausführen können, die von EA nicht gestaltet wurden, und Sie in der Verwendung des WebApps viel schneller einhalten können, haben Sie ein potenzielles Risiko eines Verbots von EA </p> <p> < BR/> </p> <p> Sie werden es daher nach eigenem Ermessen verwenden und sollten sehr vorsichtig sein </p> <p> <br /> </p> <p> Wenn Sie zu viele Snipes in ausführen Eine Reihe, die Sie möglicherweise ein weiches Marktverbot oder sogar das schlechteste ein dauerhaftes Verbot des Transfermarktes erhalten </b> </p> <p> <br /> </p> <p> Bitte <B> Verwenden Sie dies Tool auf eigenes Risiko </b> </p> <p> <br /> </p> <p> Danke, einen schönen Tag! </P>",
 

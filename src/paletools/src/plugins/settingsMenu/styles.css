@@ -74,7 +74,37 @@
     float: right;
 }
 
+.paletools-settings-wrapper>select {
+    border: 1px solid #4ee6eb;
+    font-size: 14px;
+    padding: 18px;
+    margin-left: 8px;
+    margin-right: 16px;
+    background-color: #262c38;
+    color: #4ee6eb;
+    font-weight: bold;
+}
 
+.paletools-settings-wrapper .tileHeader a {
+    text-decoration: none;
+}
+
+.paletools-settings-wrapper .go-to-top {
+    float: right;
+    font-family: UltimateTeam-Icons, sans-serif;
+    font-size: 1rem;
+    color: #f2f2f2;
+    padding: 2px;
+    text-decoration: none;
+}
+
+.paletools-settings-wrapper .go-to-top:hover {
+    color: #f2f2f2;
+}
+
+.paletools-settings-wrapper .go-to-top:before {
+    content: "\E045";
+}
 
 @media screen and (min-width: 800px) {
     #paletools-settings-important-leagues-container>div {

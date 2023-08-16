@@ -369,6 +369,18 @@ export default {
     "plugins.goToPackStore.settings.title": "Vai al negozio di pacchi",
     /// #endif
 
+    /// #if process.env.BENCH_MANAGEMENT
+    "plugins.benchManagement.settings.title": "Gestione sottomarini",
+    "plugins.benchManagement.buttons.sendToField": "Invia al campo",
+    "plugins.benchManagement.buttons.sendToFieldKeepPos": "Invia al campo alla posizione",
+    "plugins.benchManagement.buttons.sendToClub": "Invia al Club",
+    /// #endif
+
+    /// #if process.env.UNASSIGNED_DUPLICATES
+    "plugins.unassignedDuplicates.settings.title": "Duplicati non assegnati",
+    "plugins.unassignedDuplicates.buttons.switchUntradeables": "Scambia non scambiabili",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Avviso di utilizzo",
     "plugins.warningScreen.disclaimer": "<p> Caro utente, poiché Paletools ti consente di eseguire azioni che non sono state progettate da EA e ti consente di essere molto più veloce nell'uso di WebApp, sei a un potenziale rischio di divieto da EA </p> <p> < Br/> </p> <p> Pertanto lo userai a tua discrezione e dovresti essere molto cauto </p> <p> <br /> </p> <p> Se esegui troppi cecchini in Una riga che potresti ottenere un divieto di mercato morbido o anche il peggior divieto permanente dal mercato dei trasferimenti </b> </p> <p> <br /> </p> <p> Per favore <b> usa questo Strumento a tuo rischio </b> </p> <p> <br /> </p> <p> Grazie A Buona giornata! </p>",
 
