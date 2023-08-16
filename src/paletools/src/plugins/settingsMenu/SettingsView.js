@@ -35,7 +35,7 @@ SettingsView.prototype._generate = function _generate() {
         function createPluginsMenues(){
             const jumpMenu = new UTNativeDropDownControl();
             const sortedMenuItems = Object.keys(self._menus).map(x => self._menus[x]);
-            sortedMenuItems.sort((a,b) => a.name.localeCompare(b.name));
+            sortedMenuItems.sort((a,b) => localize(a.title).localeCompare(localize(b.title)));
 
             for(let menu of sortedMenuItems){
                 jumpMenu.addOption(localize(menu.title), `plugin-title-${menu.name}`);
