@@ -219,6 +219,7 @@ export default {
 
     /// #if process.env.CLUB_SEARCH_ENHACER
     "plugins.clubSearchEnhacer.settings.title": "Clubsuche Enhacer",
+    /// #endif
 
     /// #if process.env.SBC_SMART_BUILDER
     "plugins.sbcSmartBuilder.button.text": "Smart Builder",
@@ -379,6 +380,14 @@ export default {
     /// #if process.env.UNASSIGNED_DUPLICATES
     "plugins.unassignedDuplicates.settings.title": "Nicht zugewiesene Duplikate",
     "plugins.unassignedDuplicates.buttons.switchUntradeables": "Wechseln Sie nicht handelbare Güter",
+    /// #endif
+
+    /// #if process.env.LOCK_PLAYERS
+    "plugins.lockPlayers.settings.title": "Spieler sperren",
+    "plugins.lockPlayers.button.massLock": "Spieler sperren / freischalten",
+    "plugins.lockPlayers.messages.sbcWarning": "SBC Abgebildet - Sie haben Spieler in Ihrem Kader gesperrt",
+    "plugins.lockPlayers.playerAction.lock": "Spieler sperren",
+    "plugins.lockPlayers.playerAction.unlock": "Spieler freischalten",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Nutzungswarnung",

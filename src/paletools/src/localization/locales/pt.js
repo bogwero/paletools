@@ -219,6 +219,7 @@ export default {
 
     /// #if process.env.CLUB_SEARCH_ENHACER
     "plugins.clubSearchEnhacer.settings.title": "Pesquisa de clube ENCACER",
+    /// #endif
 
     /// #if process.env.SBC_SMART_BUILDER
     "plugins.sbcSmartBuilder.button.text": "Construtor inteligente",
@@ -379,6 +380,14 @@ export default {
     /// #if process.env.UNASSIGNED_DUPLICATES
     "plugins.unassignedDuplicates.settings.title": "Duplicatas não atribuídas",
     "plugins.unassignedDuplicates.buttons.switchUntradeables": "Alternar não negociáveis",
+    /// #endif
+
+    /// #if process.env.LOCK_PLAYERS
+    "plugins.lockPlayers.settings.title": "Bloquear jogadores",
+    "plugins.lockPlayers.button.massLock": "Bloquear / desbloquear jogadores",
+    "plugins.lockPlayers.messages.sbcWarning": "SBC abortado - você bloqueou jogadores em sua equipe",
+    "plugins.lockPlayers.playerAction.lock": "Jogador Bloqueado",
+    "plugins.lockPlayers.playerAction.unlock": "Desbloqueie o jogador",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Aviso de uso",

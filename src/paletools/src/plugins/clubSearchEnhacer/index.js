@@ -70,7 +70,7 @@ function run() {
     }
 
     const UTClubSearchFiltersViewController_init = UTClubSearchFiltersViewController.prototype.init;
-    
+
     UTClubSearchFiltersViewController.prototype.init = function () {
         UTClubSearchFiltersViewController_init.call(this);
 

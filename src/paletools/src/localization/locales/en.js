@@ -219,6 +219,7 @@ export default {
 
     /// #if process.env.CLUB_SEARCH_ENHACER
     "plugins.clubSearchEnhacer.settings.title": "Club Search Enhacer",
+    /// #endif
 
     /// #if process.env.SBC_SMART_BUILDER
     "plugins.sbcSmartBuilder.button.text": "Smart Builder",
