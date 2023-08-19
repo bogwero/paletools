@@ -149,3 +149,11 @@
     top: -128px;
     left: 60px;
 }
+
+.player.locked::before {
+    font-family: 'UltimateTeam-Icons';
+    position: absolute;
+    content: '\E06F';
+    left: 8px;
+    top: 2px;
+}

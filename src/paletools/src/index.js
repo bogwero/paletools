@@ -13,7 +13,7 @@ import { hide } from "./utils/visibility";
 import VERSION from "./version";
 
 function setupPhoneView() {
-    if (isPhone && isPhone()) {
+    if (isPhone()) {
         const body = select("body");
         if (!hasClass("phone")) {
             addClass(
@@ -46,6 +46,8 @@ function resetConsole() {
 let initialized = false;
 let isAppLoaded = false;
 async function init() {
+    removeOrientationWarning();
+
     const login = select(".ut-login");
     if (login || (
         !services
@@ -58,7 +60,7 @@ async function init() {
 
     resetConsole();
     setupPhoneView();
-    removeOrientationWarning();
+    
 
     // detect if the script was already run
     const app = getAppMain();

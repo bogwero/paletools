@@ -10,10 +10,11 @@ import listForProfitAction from "./listForProfitAction";
 import styles from "./styles.css";
 import { addStyle } from "../../utils/styles";
 import alwaysDisplayApplyConsumableAction from "./alwaysDisplayApplyConsumableAction";
+import lockPlayer from "./lockPlayerAction";
 
 const cfg = settings.plugins.playerActions;
 
-let actions = [copyPlayerIdAction, futbinSearchAction, findLowestPriceAction, listForProfitAction, alwaysDisplayApplyConsumableAction];
+let actions = [copyPlayerIdAction, futbinSearchAction, findLowestPriceAction, listForProfitAction, alwaysDisplayApplyConsumableAction, lockPlayer];
 
 function forEachAction(canRun, execute) {
     for(const action of actions){
@@ -54,12 +55,14 @@ function run() {
     addActionsToActionPanel(UTDefaultActionPanelView, instance => instance.__itemActions);
     addActionsToActionPanel(UTAuctionActionPanelView, instance => instance.getRootElement().querySelector(".ut-button-group"));
     addActionsToActionPanel(UTQuickListPanelView, instance => instance.__panelActions);
+    addActionsToActionPanel(UTSlotActionPanelView, instance => instance.__itemActions);
 
     const ItemDetails__getPanelViewInstanceFromData = controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData;
     controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData = function _getPanelViewInstanceFromData(e, t) {
         ItemDetails__getPanelViewInstanceFromData.call(this, e, t);
         if (this._panel instanceof UTDefaultActionPanelView
-            || this._panel instanceof UTAuctionActionPanelView) {
+            || this._panel instanceof UTAuctionActionPanelView
+            || this._panel instanceof UTSlotActionPanelView) {
             forEachAction(action => action.attachEvent, action => action.attachEvent(this));
         }
     }

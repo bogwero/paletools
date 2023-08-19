@@ -379,6 +379,14 @@ export default {
     "plugins.unassignedDuplicates.buttons.switchUntradeables": "Intercambiar Intransferibles",
     /// #endif
 
+    /// #if process.env.LOCK_PLAYERS
+    "plugins.lockPlayers.settings.title": "Bloquear Jugadores",
+    "plugins.lockPlayers.button.massLock": "Bloquear / Desbloquear Jugadores",
+    "plugins.lockPlayers.messages.sbcWarning": "DCP Abortado - Tiene jugadors bloqueados en tu escuadra",
+    "plugins.lockPlayers.playerAction.lock": "Bloquear Jugador",
+    "plugins.lockPlayers.playerAction.unlock": "Desbloquear Jugador",
+    /// #endif
+
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
     "plugins.warningScreen.disclaimer": "<p>Querido usuario, ya que Paletools es una herramienta que te permite realizar acciones no pensadas por EA y te permite ser mucho mas r&aacute;pido en el uso de la WebApp tu estas aceptando que puedes estar en riesgo de un posible BAN por parte de EA</p><p><br /></p><p>Tu aceptas utilizar la herramienta bajo tu responsabilidad y aceptas que vas a ser muy cuidadoso y cauteloso con su uso.</p><p><br /></p><p>Si realizas muchos snipes seguidos puedes recibir un SOFT BAN del mercado o incluso peor un <b>BAN permanente</b></p><p><br /></p><p>Por favor <b>USA ESTA HERRAMIENTA RESPONSABLEMENTE</b></p><p><br /></p><p>&iexcl;Gracias y que tengas un gran d&iacute;a!</p>",
 

@@ -52,6 +52,7 @@ import repeatSbc from "./repeatSbc";
 import goToPackStore from "./goToPackStore";
 import benchManagament  from "./benchManagement";
 import unassignedDuplicates from "./unassignedDuplicates";
+import lockPlayers from "./lockPlayers";
 
 const plugins = [
     minMaxPrices,
@@ -104,6 +105,7 @@ const plugins = [
     goToPackStore,
     benchManagament,
     unassignedDuplicates,
+    lockPlayers,
     limbo,
     snipe,
     keyListener,

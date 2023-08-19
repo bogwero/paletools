@@ -381,6 +381,13 @@ export default {
     "plugins.unassignedDuplicates.buttons.switchUntradeables": "Switch Untradeables",
     /// #endif
 
+    /// #if process.env.LOCK_PLAYERS
+    "plugins.lockPlayers.settings.title": "Lock Players",
+    "plugins.lockPlayers.button.massLock": "Lock / Unlock Players",
+    "plugins.lockPlayers.messages.sbcWarning": "SBC Aborted - You have locked players in your squad",
+    "plugins.lockPlayers.playerAction.lock": "Lock Player",
+    "plugins.lockPlayers.playerAction.unlock": "Unlock Player",
+    /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - USAGE WARNING",
     "plugins.warningScreen.disclaimer": "<p>Dear user, since Paletools allows you to perform actions that were not design by EA and allows you to be much quicker in the usage of the WebApp you are at a potential risk of ban from EA</p><p><br /></p><p>Therefore you shall use it at your own discretion and you should be very cautious</p><p><br /></p><p>If you perform too many snipes in a row you might get a soft market ban or even worst a <b>permanent ban from the transfer market</b></p><p><br /></p><p>Please <b>USE THIS TOOL AT YOUR OWN RISK</b></p><p><br /></p><p>Thanks a have a nice day!</p>",

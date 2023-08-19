@@ -56,7 +56,8 @@
 }
 
 .reset-settings {
-    margin-right: 0;
+    margin-right: 0.75rem;
+    margin-top:0.75rem;
     margin-left: auto;
     background-color: red;
     color: white;
@@ -83,6 +84,12 @@
     background-color: #262c38;
     color: #4ee6eb;
     font-weight: bold;
+}
+
+.phone .paletools-settings-wrapper>select {
+    flex-basis: calc(100% - 0.5rem);
+    max-width: calc(100% - 0.5rem);
+    margin: 0.25rem;
 }
 
 .paletools-settings-wrapper .tileHeader a {

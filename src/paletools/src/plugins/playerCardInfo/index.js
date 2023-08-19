@@ -1,16 +1,15 @@
 let plugin;
 /// #if process.env.PLAYER_CARD_INFO
-import styles from "./styles.css";
 import { addLabelWithToggle } from "../../controls";
 import { EVENTS, on } from "../../events";
+import localize, { getLeagueAbbr5, localizePosition } from "../../localization";
+import { getImportantLeagueIds } from "../../services/league";
 import settings, { saveConfiguration } from "../../settings";
-import { addClass, append, createElem, remove, select } from "../../utils/dom";
-import { hide, show } from "../../utils/visibility";
+import { addClass, append, createElem, remove, removeClass, select } from "../../utils/dom";
 import { addStyle, removeStyle } from "../../utils/styles";
-import localize, { localizePosition, getLeagueAbbr5 } from "../../localization";
-import { getImportantLeagueIds, getUnimportantLeagueIds } from "../../services/league";
+import styles from "./styles.css";
 
-const cfg = settings.plugins.playerCardInfo;
+const cfg = settings.plugins.lockPlayers;
 
 function addStyles() {
     addStyle('paletools-player-card-info', styles);
@@ -49,11 +48,25 @@ function run() {
         setupImportantLeaguesCss();
     }
 
+    const UTPlayerItemView_resetRender = UTPlayerItemView.prototype.resetRender;
+    UTPlayerItemView.prototype.resetRender = function (...args) {
+        UTPlayerItemView_resetRender.call(this, ...args);
+
+        if (settings.enabled && cfg.enabled) {
+            removeClass(this, "pristine-player");
+            remove(select(".stars", this.__mainViewDiv));
+            remove(select(".league", this.__mainViewDiv));
+            remove(select(".untradeable", this.__mainViewDiv));
+            remove(select(".alternative-positions"), this.__mainViewDiv);
+        }
+    }
 
     const UTPlayerItemView_renderItem = UTPlayerItemView.prototype.renderItem;
-    UTPlayerItemView.prototype.renderItem = function (player, t) {
-        const result = UTPlayerItemView_renderItem.call(this, player, t);
-        if (settings.enabled && cfg.enabled) {
+    UTPlayerItemView.prototype.renderItem = function (...args) {
+        const player = args[0];
+        const t = args[1];
+        const result = UTPlayerItemView_renderItem.call(this, ...args);
+        if (settings.enabled && cfg.enabled && player.definitionId > 0) {
             const starsContainer = createElem("div", { className: "stars" });
             const leagueContainer = createElem("div", { className: "league" });
 
@@ -80,7 +93,7 @@ function run() {
             }
 
             if (cfg.pristine && player.contract === 7 && player.owners === 1 && player.loans === -1) {
-                addClass(this.getRootElement(), "pristine-player");
+                addClass(this, "pristine-player");
             }
 
             if (cfg.contracts && player.loans === -1 && this.__loanInfoTab) {
@@ -105,9 +118,6 @@ function run() {
 
                 append(this.__mainViewDiv, altPosContainer);
             }
-
-            on(EVENTS.APP_ENABLED, () => { show(altPosContainer); show(starsContainer); show(untradeableContainer); show(leagueContainer); addStyles(); });
-            on(EVENTS.APP_DISABLED, () => { hide(altPosContainer); hide(starsContainer); hide(untradeableContainer); hide(leagueContainer); removeStyles(); });
         }
 
         return result;

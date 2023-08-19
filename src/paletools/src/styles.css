@@ -102,6 +102,10 @@ input[type="number"] {
     font-size: 1rem;
 }
 
+.ut-list-header {
+    gap: 4px;
+}
+
 @keyframes loading-progress {
     0% {
         opacity: 1;

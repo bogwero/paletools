@@ -84,7 +84,8 @@ let settings = {
             findLowestPrice: true,
             listForProfit: true,
             listForProfitAutoPublish: false,
-            displayApplyConsumable: true
+            displayApplyConsumable: true,
+            lockPlayer: true
         },
         snipeMobile: {
             enabled: true,
@@ -258,6 +259,9 @@ let settings = {
             enabled: true
         },
         unassignedDuplicates: {
+            enabled: true
+        }, 
+        lockPlayers: {
             enabled: true
         }
     }

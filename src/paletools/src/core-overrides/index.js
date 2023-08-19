@@ -13,6 +13,7 @@ import executeTransferListViewControllerOverrides from "./UTTransferListViewCont
 import executeWatchListViewControllerOverrides from "./UTWatchListViewControllerOverrides";
 import executePackAnimationShineViewOverrides from "./UTPackAnimationShineViewOverrides";
 import executeSquadSlotViewOverrides from "./UTSquadSlotViewOverrides";
+import executeSquadBuilderViewControllerOverrides from "./UTSquadBuilderViewControllerOverrides";
 
 export default function runOverrides(){
     executeMarketSearchFiltersViewControllerOverrides();
@@ -30,4 +31,5 @@ export default function runOverrides(){
     executeQuickListPanelViewControllerOverrides();
     executePackAnimationShineViewOverrides();
     executeSquadSlotViewOverrides();
+    executeSquadBuilderViewControllerOverrides();
 }

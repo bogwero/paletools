@@ -29,7 +29,7 @@ SettingsView.prototype._generate = function _generate() {
             createPluginsMenues();
         }, EventType.TAP)
 
-        prepend(contentContainer, addClass(resetSettingsButton, "reset-settings"));
+        prepend(contentContainer, addClass(resetSettingsButton, "reset-settings", "mini"));
 
         const self = this;
         function createPluginsMenues(){

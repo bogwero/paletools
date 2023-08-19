@@ -83,6 +83,10 @@ export function attr(elem, name, value) {
     }
 }
 
+export function removeAttr(elem, name) {
+    getRealElement(elem).removeAttribute(name);
+}
+
 export function createElem(tag, attrs, html) {
     let elem = document.createElement(tag);
     if (typeof attrs === "string") {
