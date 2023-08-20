@@ -16,30 +16,34 @@ function run() {
     UTUnassignedItemsViewController.prototype._updateDuplicateSectionOptions = function _updateDuplicateSectionOptions(...args) {
         UTUnassignedItemsViewController_updateDuplicateSectionOptions.call(this, ...args);
 
-        if(!cfg.enabled || !settings.enabled) return;
+        if (!cfg.enabled || !settings.enabled) return;
 
         const duplicateSection = this._viewmodel.getDuplicateSection();
 
-        if(!duplicateSection) return;
+        if (!duplicateSection) return;
 
         const untradeableDuplicates = duplicateSection.filter(x => x.untradeable);
 
-        if(!untradeableDuplicates || untradeableDuplicates.length === 0) return;
+        if (!untradeableDuplicates || untradeableDuplicates.length === 0) return;
 
         const header = this.getView().getSection(UTUnassignedItemsViewModel.SECTION.DUPLICATES)._header;
-        
+
         const switchButton = new UTStandardButtonControl();
         switchButton.init();
         switchButton.setText(localize("plugins.unassignedDuplicates.buttons.switchUntradeables"));
         addClass(switchButton, "section-header-btn", "mini", "call-to-action");
         switchButton.addTarget(this, async () => {
-
-            displayLoader();
-            for(let duplicated of untradeableDuplicates) {
-                await toPromise(services.Item.move(duplicated, ItemPile.CLUB));
-                await delay(100, 300);
+            try {
+                await toPromise(services.Item.move(untradeableDuplicates, ItemPile.CLUB));
             }
-            hideLoader();
+            catch {
+
+            }
+
+            // for (let duplicated of untradeableDuplicates) {
+            //     await toPromise(services.Item.move(duplicated, ItemPile.CLUB));
+            //     await delay(100, 300);
+            // }
             this._getUnassignedItems();
         }, EventType.TAP);
         append(header, switchButton);

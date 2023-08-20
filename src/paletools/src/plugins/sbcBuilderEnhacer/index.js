@@ -6,7 +6,9 @@ import TableLayout from "../../controls/TableLayout";
 import UTLabelWithTextInputControl from "../../controls/UTLabelWithTextInputControl";
 import { EVENTS, on } from "../../events";
 import localize from "../../localization";
+import { getAllClubPlayers, searchClub } from "../../services/club";
 import { getImportantLeagueIds } from "../../services/league";
+import { getLockedItems } from "../../services/lockedItems";
 import storage from "../../services/storage";
 import settings, { saveConfiguration } from "../../settings";
 import { findControllerByType } from "../../utils/controller";
@@ -212,7 +214,7 @@ function run() {
                     this.getView().getSearchToggles().toggleById("important-leagues-only");
                 }
 
-                if(searchSettings.unimportantLeaguesOnly) {
+                if (searchSettings.unimportantLeaguesOnly) {
                     this.getView().getSearchToggles().toggleById("unimportant-leagues-only");
                 }
 
@@ -297,98 +299,159 @@ function run() {
         }, EventType.CHANGE);
     }
 
-    const UTSquadBuilderViewController_onClubSearchComplete = UTSquadBuilderViewController.prototype.onClubSearchComplete;
-    UTSquadBuilderViewController.prototype.onClubSearchComplete = function onClubSearchComplete(t, e) {
-        if (cfg.enabled) {
-            const playersByClub = {};
+    UTSquadBuilderViewController.prototype.updateCustomSearchSettings = function () {
+        this.viewModel.searchSettings = this.viewModel.searchSettings || {};
+        this.viewModel.searchSettings.minRating = this.getView().getMinRating();
+        this.viewModel.searchSettings.maxRating = this.getView().getMaxRating();
+        this.viewModel.searchSettings.maxPlayers = this.getView().getMaxPlayers();
+        this.viewModel.searchSettings.playersFromSameClub = this.getView().getPlayersFromSameClub();
+        this.viewModel.searchSettings.importantLeaguesOnly = this.getView().getSearchToggleState("important-leagues-only");
+        this.viewModel.searchSettings.unimportantLeaguesOnly = this.getView().getSearchToggleState("unimportant-leagues-only");
+    }
 
-            for (let slot of this.squad.getPlayers()) {
-                const player = slot.getItem();
-                if (!playersByClub[player.teamId]) {
-                    playersByClub[player.teamId] = 1;
+    UTSquadBuilderViewController.prototype.getPlayersByClub = function () {
+        const playersByClub = {};
+
+        for (let slot of this.squad.getPlayers()) {
+            const player = slot.getItem();
+            if (!playersByClub[player.teamId]) {
+                playersByClub[player.teamId] = 1;
+            }
+            else {
+                playersByClub[player.teamId]++;
+            }
+        }
+
+        return playersByClub;
+    }
+
+    UTSquadBuilderViewController.prototype.saveSbcSettings = function () {
+        if (this.challenge && this.challenge.id) {
+            const storageKey = `sbc:${this.challenge.id}:searchSettings`;
+            let searchSettings = storage.get(storageKey) || {};
+            Object.assign(searchSettings, {
+                ...this.viewModel.searchSettings,
+                searchCriteria: this.viewModel.searchCriteria
+            });
+            storage.set(storageKey, searchSettings);
+        }
+    }
+
+    UTSquadBuilderViewController.prototype.filterAndSortPlayers = function (players, importantLeagueIds, playersByClub) {
+        const lockedItems = getLockedItems();
+
+        players = players.filter(x => {
+            if (settings.plugins.lockPlayers.enabled && lockedItems.indexOf(x.definitionId) > -1) return false;
+            if (this.viewModel.searchSettings.minRating && x.rating < this.viewModel.searchSettings.minRating) return false;
+            if (this.viewModel.searchSettings.maxRating && x.rating > this.viewModel.searchSettings.maxRating) return false;
+            if (this.viewModel.searchSettings.importantLeaguesOnly && importantLeagueIds.length > 0 && importantLeagueIds.indexOf(x.leagueId) === -1) return false;
+            if (this.viewModel.searchSettings.unimportantLeaguesOnly && importantLeagueIds.length > 0 && importantLeagueIds.indexOf(x.leagueId) > -1) return false;
+            if (x.isLoaned()) return false;
+            if (UTItemEntity.isStoryMode(x.id)) return false;
+            if (this.viewModel.searchSettings.playersFromSameClub) {
+                if (!playersByClub[x.teamId]) {
+                    playersByClub[x.teamId] = 1;
                 }
                 else {
-                    playersByClub[player.teamId]++;
+                    playersByClub[x.teamId]++;
+                }
+
+                if (playersByClub[x.teamId] > this.viewModel.searchSettings.playersFromSameClub) {
+                    return false;
                 }
             }
 
-            const importantLeagueIds = getImportantLeagueIds();
+            return true;
+        });
 
-            this.viewModel.searchSettings = this.viewModel.searchSettings || {};
-            this.viewModel.searchSettings.minRating = this.getView().getMinRating();
-            this.viewModel.searchSettings.maxRating = this.getView().getMaxRating();
-            this.viewModel.searchSettings.maxPlayers = this.getView().getMaxPlayers();
-            this.viewModel.searchSettings.playersFromSameClub = this.getView().getPlayersFromSameClub();
-            this.viewModel.searchSettings.importantLeaguesOnly = this.getView().getSearchToggleState("important-leagues-only");
-            this.viewModel.searchSettings.unimportantLeaguesOnly = this.getView().getSearchToggleState("unimportant-leagues-only");
-
-            if (this.viewModel.searchCriteria.sortBy === SearchSortType.RATING) {
-                e.response.items.sort((a, b) => {
+        switch (this.viewModel.searchCriteria.sortBy) {
+            case SearchSortType.RATING:
+                players.sort((a, b) => {
                     if (this.viewModel.searchCriteria.sort === "asc") {
                         return a.rating - b.rating;
                     } else {
                         return b.rating - a.rating;
                     }
                 });
-            }
-
-            e.response.items = e.response.items.filter(x => {
-                if (this.viewModel.searchSettings.minRating && x.rating < this.viewModel.searchSettings.minRating) {
-                    return false;
-                }
-
-                if (this.viewModel.searchSettings.maxRating && x.rating > this.viewModel.searchSettings.maxRating) {
-                    return false;
-                }
-
-                if (this.viewModel.searchSettings.importantLeaguesOnly && importantLeagueIds.length > 0 && importantLeagueIds.indexOf(x.leagueId) === -1) {
-                    return false;
-                }
-
-                if (this.viewModel.searchSettings.unimportantLeaguesOnly && importantLeagueIds.length > 0 && importantLeagueIds.indexOf(x.leagueId) > -1) {
-                    return false;
-                }
-
-                if (x.isLoaned()) {
-                    return false;
-                }
-
-                if (UTItemEntity.isStoryMode(x.id)) {
-                    return false;
-                }
-
-                if (this.viewModel.searchSettings.playersFromSameClub) {
-                    if (!playersByClub[x.teamId]) {
-                        playersByClub[x.teamId] = 1;
+                break;
+            case SearchSortType.RECENCY:
+                players.sort((a, b) => {
+                    if (this.viewModel.searchCriteria.sort === "asc") {
+                        return a.timestamp - b.timestamp;
                     }
                     else {
-                        playersByClub[x.teamId]++;
+                        return b.timestamp - a.timestamp;
                     }
-
-                    if (playersByClub[x.teamId] > this.viewModel.searchSettings.playersFromSameClub) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-
-            if (this.viewModel.searchSettings.maxPlayers && e.response.items.length > this.viewModel.searchSettings.maxPlayers) {
-                e.response.items = e.response.items.slice(0, this.viewModel.searchSettings.maxPlayers);
-            }
-
-            if (this.challenge && this.challenge.id) {
-                const storageKey = `sbc:${this.challenge.id}:searchSettings`;
-                let searchSettings = storage.get(storageKey) || {};
-                Object.assign(searchSettings, {
-                    ...this.viewModel.searchSettings,
-                    searchCriteria: this.viewModel.searchCriteria
                 });
-                storage.set(storageKey, searchSettings);
-            }
+                break;
+            case SearchSortType.VALUE:
+                players.sort((a, b) => {
+                    if (this.viewModel.searchCriteria.sort === "asc") {
+                        return a.discardValue - b.discardValue;
+                    }
+                    else {
+                        return b.discardValue - a.discardValue;
+                    }
+                });
+                break;
         }
 
-        UTSquadBuilderViewController_onClubSearchComplete.call(this, t, e);
+        if (this.viewModel.searchSettings.maxPlayers && players.length > this.viewModel.searchSettings.maxPlayers) {
+            players = players.slice(0, this.viewModel.searchSettings.maxPlayers);
+        }
+
+        return players;
+    }
+
+    const UTSquadBuilderViewController_eBuildSelected = UTSquadBuilderViewController.prototype.eBuildSelected;
+    UTSquadBuilderViewController.prototype.eBuildSelected = function (...args) {
+        if (!cfg.enabled || !settings.enabled || this.useConceptPlayers) {
+            UTSquadBuilderViewController_eBuildSelected.call(this, ...args);
+            return;
+        }
+
+        const requiredPlayersCount = this.squad.getSBCSlots().length;
+        let foundPlayers = [];
+
+        const playersByClub = this.getPlayersByClub();
+        this.updateCustomSearchSettings();
+        const importantLeagueIds = getImportantLeagueIds();
+        this.formation = this.getView().getFormationFilter().value;
+
+        this.viewModel.searchCriteria.offset = 0;
+
+        searchClub(true, null, (currentCount, players) => {
+            if (foundPlayers.length >= requiredPlayersCount) {
+                return false;
+            }
+
+            for (let player of this.filterAndSortPlayers(players, importantLeagueIds, playersByClub)) {
+                foundPlayers.push(player);
+            }
+
+            if (foundPlayers.length >= requiredPlayersCount) {
+                foundPlayers = foundPlayers.slice(0, requiredPlayersCount);
+                return false;
+            }
+
+            return true;
+        }, this.viewModel.searchCriteria).then(() => {
+            this.saveSbcSettings();
+
+            if (foundPlayers.length === 0) {
+                utils.PopupManager.showAlert(utils.PopupManager.Alerts.SQUAD_BUILDER_NO_RESULTS);
+                return;
+            }
+
+            this.onClubSearchComplete({
+                unobserve: () => { },
+            }, {
+                success: true,
+                response: {
+                    items: foundPlayers
+                }
+            });
+        });
     }
 
     const UTSquadBuilderViewModel_generatePlayerCollection = UTSquadBuilderViewModel.prototype.generatePlayerCollection;

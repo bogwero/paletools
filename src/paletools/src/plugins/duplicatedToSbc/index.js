@@ -19,33 +19,29 @@ function run() {
     UTSBCSquadDetailPanelView.prototype._generate = function _generate() {
         UTSBCSquadDetailPanelView_generate.call(this);
         if (!settings.enabled || !cfg.enabled) return;
-        if (!this._unnasignedToSbcCalled) {
-            this._useUnnasignedPlayersButton = new UTStandardButtonControl();
-            this._useUnnasignedPlayersButton.getRootElement().classList.add("call-to-action");
-            this._useUnnasignedPlayersButton.init();
-            this._useUnnasignedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.text'));
-            this._useUnnasignedPlayersButton.addTarget(this, async () => {
+        if (!this._duplicatedToSbcCalled) {
+            this._useDuplicatedPlayersButton = new UTStandardButtonControl();
+            this._useDuplicatedPlayersButton.getRootElement().classList.add("call-to-action");
+            this._useDuplicatedPlayersButton.init();
+            this._useDuplicatedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.text'));
+            this._useDuplicatedPlayersButton.addTarget(this, async () => {
                 try {
                     await fillSbc(getSbcChallengeFromController(), await getUnassignedItems(), count => {
-                        this._useUnnasignedPlayersButton.setInteractionState(false);
-                        this._useUnnasignedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.textLoading').replace("{count}", count));
+                        this._useDuplicatedPlayersButton.setInteractionState(false);
+                        this._useDuplicatedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.textLoading').replace("{count}", count));
                     });
                 }
                 finally {
-                    this._useUnnasignedPlayersButton.setInteractionState(true);
-                    this._useUnnasignedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.text'));
+                    this._useDuplicatedPlayersButton.setInteractionState(true);
+                    this._useDuplicatedPlayersButton.setText(localize('plugins.duplicatedToSbc.button.text'));
 
                     if (isPhone()) {
                         navigateBack(getCurrentController());
                     }
                 }
             }, EventType.TAP);
-            this.__content.appendChild(this._useUnnasignedPlayersButton.getRootElement());
-
-            on(EVENTS.APP_ENABLED, () => show(this._useUnnasignedPlayersButton));
-            on(EVENTS.APP_DISABLED, () => hide(this._useUnnasignedPlayersButton));
-
-            this._unnasignedToSbcCalled = true;
+            this.__content.appendChild(this._useDuplicatedPlayersButton.getRootElement());
+            this._duplicatedToSbcCalled = true;
         }
     }
 
@@ -53,8 +49,8 @@ function run() {
     UTSBCSquadDetailPanelView.prototype.destroyGeneratedElements = function destroyGeneratedElements() {
         UTSBCSquadDetailPanelView_destroyGeneratedElements.call(this);
 
-        if (this._useUnnasignedPlayersButton) {
-            this._useUnnasignedPlayersButton.destroy();
+        if (this._useDuplicatedPlayersButton) {
+            this._useDuplicatedPlayersButton.destroy();
         }
     }
 }

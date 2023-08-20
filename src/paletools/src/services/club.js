@@ -70,14 +70,14 @@ export function getAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback)
         if (getAllClubPlayersExecutingPromise) {
             promiseState(getAllClubPlayersExecutingPromise, state => {
                 if (state !== "pending") {
-                    getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+                    getAllClubPlayersExecutingPromise = searchClub(filterLoaned, playerId, onBatchLoadedCallback);
                 }
 
                 getAllClubPlayersExecutingPromise.then(resolve);
             });
         }
         else {
-            getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+            getAllClubPlayersExecutingPromise = searchClub(filterLoaned, playerId, onBatchLoadedCallback);
             getAllClubPlayersExecutingPromise.then(resolve);
         }
     });
@@ -100,9 +100,9 @@ export function quickRefreshClub() {
     });
 }
 
-function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback) {
+export function searchClub(filterLoaned, playerId, onBatchLoadedCallback, searchCriteria) {
     return new Promise((resolve, reject) => {
-        const searchCriteria = new UTItemSearchViewModel().searchCriteria;
+        searchCriteria = searchCriteria || new UTItemSearchViewModel().searchCriteria;
         if (playerId) {
             searchCriteria.defId = [parseInt(playerId)];
         }
@@ -121,7 +121,10 @@ function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback
                     if (response.status !== 400 && !response.response.retrievedAll) {
                         searchCriteria.offset += searchCriteria.count;
                         if (onBatchLoadedCallback) {
-                            (onBatchLoadedCallback)(searchCriteria.offset);
+                            let result = (onBatchLoadedCallback)(searchCriteria.offset, gatheredSquad);
+                            if(result === false) {
+                                resolve(gatheredSquad);
+                            }
                         }
                         delay(100 + (Math.random() * 100)).then(() => getAllSquadMembers());
                     } else {

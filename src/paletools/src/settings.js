@@ -263,6 +263,9 @@ let settings = {
         }, 
         lockPlayers: {
             enabled: true
+        },
+        unassignedToSbc: {
+            enabled: true
         }
     }
 };

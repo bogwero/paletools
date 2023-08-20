@@ -6,6 +6,7 @@ import { addLabelWithToggle } from "../../controls";
 import { addMarketSearchComplete, addMarketSearchPreRender } from "../../core-overrides/UTMarketSearchResultsViewControllerOverrides";
 import { EVENTS, on } from "../../events";
 import { isFastClubSearchEnabled } from "../../services/experimental";
+import { getUnassignedItems } from "../../services/item";
 import { findPlayersInClub, loadClubPlayers, toPlayersDictionary } from "../../services/ui/club";
 import settings, { saveConfiguration } from "../../settings";
 import getCurrentController from "../../utils/controller";
@@ -37,6 +38,32 @@ function run() {
             loadClubPlayers();
         }
     });
+
+    const UTSBCSquadOverviewView_setSquad = UTSBCSquadOverviewView.prototype.setSquad;
+    UTSBCSquadOverviewView.prototype.setSquad = function(...args) {
+        UTSBCSquadOverviewView_setSquad.call(this, ...args);
+
+        const squad = args[0];
+
+        getUnassignedItems().then(items => {
+            const duplicatedIds = [];
+            for(let item of items) {
+                if(item.duplicateId === 0) continue;
+
+                duplicatedIds.push(item.duplicateId);
+            }
+
+            for(let slotEntity of squad.getPlayers()){
+                const item = slotEntity.getItem();
+                if(item.id > 0 && duplicatedIds.indexOf(item.id) > -1) {
+                    const slotView = this.slotViews.find(x => x.getIndex() === slotEntity.index);
+                    addClass(slotView.getItemView(), "club-duplicated");
+                }
+            }
+        });
+
+
+    }
 
     const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
     UTItemTableCellView.prototype.render = function (e) {

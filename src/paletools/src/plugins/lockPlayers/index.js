@@ -5,10 +5,13 @@ let plugin;
 /// #if process.env.LOCK_PLAYERS
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
-import { isItemLocked, lockItem, unlockItem } from "../../services/lockedItems";
+import { getLockedItems, isItemLocked, lockItem, unlockItem } from "../../services/lockedItems";
 import settings, { saveConfiguration } from "../../settings";
+import getCurrentController from "../../utils/controller";
 import { addClass, append, attr, css, remove, removeAttr, removeClass, select, selectAll } from "../../utils/dom";
 import { notifyFailure } from "../../utils/notifications";
+import { addStyle, removeStyle } from "../../utils/styles";
+import styles from "./styles.css";
 
 const cfg = settings.plugins.lockPlayers;
 
@@ -55,12 +58,36 @@ function run() {
     const UTClubHubView_generate = UTClubHubView.prototype._generate;
     UTClubHubView.prototype._generate = function _generate(...args) {
         UTClubHubView_generate.call(this, ...args);
-        if (!this._paletoolsGenerated) {
+        removeStyle("locked-players");
+
+        if(!settings.enabled || !cfg.enabled) return;
+
+        if (!this._lockPlayersGenerated) {
+                addStyle("locked-players", styles);
                 this._lockedPlayersTile = new UTTileView();
                 this._lockedPlayersTile.init();
+                this._lockedPlayersTile.setTitle("Locked Players");
+
+                const itemsCount = getLockedItems().length;
+
+                const label = new UTLabelView();
+                label.setAngle(UTLabelView.Angle.BOTTOM_RIGHT);
+                label.setLabel(localize(itemsCount === 1 ? "tile.label.itemCount" : "tile.label.itemsCount", [itemsCount]));
+                this._lockedPlayersTile.setContent(label);
+                this._lockedPlayersTile.addTarget(this, () => {
+                    const navController = getCurrentController().getNavigationController();
+                    if(!navController) return;
+
+                    const searchResultsController = isPhone() ? new UTClubSearchResultsViewController : new controllers.club.ClubSearchResultsLandscape;
+                    const searchCriteria = new UTSearchCriteriaDTO();
+                    searchCriteria.defId = getLockedItems();
+                    searchCriteria.type = SearchType.PLAYER;
+                    searchResultsController.initWithSearchCriteria(searchCriteria);
+                    navController.pushViewController(searchResultsController);
+                }, EventType.TAP)
                 addClass(this._lockedPlayersTile, "col-1-3-md", "col-1-2", "locked-players-tile");
-                append(select(".grid", this), this._lockPlayersTile);
-                this._paletoolsGenerated = true;
+                append(select(".grid", this), this._lockedPlayersTile);
+                this._lockPlayersGenerated = true;
         }
     }
 
@@ -88,8 +115,7 @@ function run() {
                 }
             }
 
-        },
-            EventType.TAP);
+        }, EventType.TAP);
 
         append(select(".ut-button-group", this), this._lockPlayersBtn);
     }

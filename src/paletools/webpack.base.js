@@ -54,5 +54,6 @@ module.exports = {
     GO_TO_PACK_STORE: true,
     BENCH_MANAGEMENT: true,
     UNASSIGNED_DUPLICATES: true,
-    LOCK_PLAYERS: true
+    LOCK_PLAYERS: true,
+    UNASSIGNED_TO_SBC: true
 };

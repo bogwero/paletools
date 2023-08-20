@@ -3,7 +3,17 @@ import { getPlayerAlternativePositions, getPlayerSecondaryAlternativePositions }
 import { findPlayersInClub } from "./ui/club";
 
 export async function fillSbc(sbcChallenge, playersToUse, onClubBatchLoadedCallback) {
-    const club = (await findPlayersInClub(playersToUse, onClubBatchLoadedCallback, false, true)).slice(0, 23);
+    let club = (await findPlayersInClub(playersToUse, onClubBatchLoadedCallback, false, true))
+    
+    let cleanClub = [];
+
+    for(let player of club) {
+        if(!playersToUse.find(x => x.definitionId === player.definitionId)) continue;
+
+        cleanClub.push(player);
+    }
+    
+    club = cleanClub.slice(0, 23);
     const squad = sbcChallenge.squad;
     const positionIndexes = squad.getSBCSlots().reduce((acc, curr) => {
         if (!curr.position) return acc;

@@ -15,7 +15,7 @@ const dictionary = {
     "fr": localeFr
 };
 
-export default function localize(key) {
+export default function localize(key, params) {
     const lang = services.Localization.locale.language;
 
     const dict = dictionary[lang] || dictionary['en'];
@@ -24,7 +24,7 @@ export default function localize(key) {
         return dict[key];
     }
 
-    const localized = services.Localization.localize(key);
+    const localized = services.Localization.localize(key, params);
     if(localized.length > 1 && localized.charAt(0) === "*"){
         return localized.substring(1);
     }

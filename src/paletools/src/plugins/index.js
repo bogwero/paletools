@@ -53,6 +53,7 @@ import goToPackStore from "./goToPackStore";
 import benchManagament  from "./benchManagement";
 import unassignedDuplicates from "./unassignedDuplicates";
 import lockPlayers from "./lockPlayers";
+import unassignedToSbc from "./unassignedToSbc";
 
 const plugins = [
     minMaxPrices,
@@ -64,6 +65,8 @@ const plugins = [
     gridMode,
     wideMode,
     duplicatedToSbc,
+    unassignedToSbc,
+    transferListToSbc,
     selectCheapest,
     fillSbcFromFutbin,
     improvedPlayerSearch,
@@ -74,7 +77,6 @@ const plugins = [
     showConsoleOutput,
     countMyPacks,
     transferListSendAllToClub,
-    transferListToSbc,
     sbcBuilderEnhacer,
     eaBugFixer,
     snipeMobile,
@@ -106,6 +108,7 @@ const plugins = [
     benchManagament,
     unassignedDuplicates,
     lockPlayers,
+    
     limbo,
     snipe,
     keyListener,

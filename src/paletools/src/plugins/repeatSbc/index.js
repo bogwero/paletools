@@ -5,6 +5,7 @@ import { addLabelWithToggle } from "../../controls";
 import { EVENTS, on } from "../../events";
 import localize from "../../localization";
 import settings from "../../settings";
+import { displayLoader, hideLoader } from "../../utils/loader";
 import { hide, show } from "../../utils/visibility";
 
 const cfg = settings.plugins.repeatSbc;
@@ -26,11 +27,13 @@ function run() {
     UTSBCSquadDetailPanelViewController.prototype._eRepeatSbcSelected = function(...args) {
         if(!searchCache[this._challenge.id]) return;
 
+        displayLoader();
         const controller = new UTSquadBuilderViewController();
         this._challenge ? controller.initWithChallenge(this._challenge) : controller.init();
         this.getNavigationController().pushViewController(controller, !0);
         controller.viewModel = searchCache[this._challenge.id];
         controller.eBuildSelected(...args);
+        hideLoader();
     }
 
     const UTSBCSquadDetailPanelView_generate = UTSBCSquadDetailPanelView.prototype._generate;

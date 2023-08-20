@@ -1,0 +1,3 @@
+.ut-club-hub-view .tile.locked-players-tile .tileContent:before {
+    content: "\E06F";
+}
