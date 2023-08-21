@@ -388,6 +388,7 @@ export default {
     "plugins.lockPlayers.messages.sbcWarning": "SBC Aborted - Hai bloccato i giocatori nella tua squadra",
     "plugins.lockPlayers.playerAction.lock": "Giocatore bloccato",
     "plugins.lockPlayers.playerAction.unlock": "Sblocca il giocatore",
+    "plugins.lockPlayers.clubHub.tile": "Giocatori bloccati",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Avviso di utilizzo",

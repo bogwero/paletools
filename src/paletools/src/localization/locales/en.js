@@ -388,6 +388,7 @@ export default {
     "plugins.lockPlayers.messages.sbcWarning": "SBC Aborted - You have locked players in your squad",
     "plugins.lockPlayers.playerAction.lock": "Lock Player",
     "plugins.lockPlayers.playerAction.unlock": "Unlock Player",
+    "plugins.lockPlayers.clubHub.tile": "Locked Players",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

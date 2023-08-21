@@ -17,7 +17,7 @@ function run() {
         UTUnassignedItemsViewController_updateDuplicateSectionOptions.call(this, ...args);
 
         if (!cfg.enabled || !settings.enabled) return;
-
+        
         const duplicateSection = this._viewmodel.getDuplicateSection();
 
         if (!duplicateSection) return;

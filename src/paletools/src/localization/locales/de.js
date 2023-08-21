@@ -388,6 +388,7 @@ export default {
     "plugins.lockPlayers.messages.sbcWarning": "SBC Abgebildet - Sie haben Spieler in Ihrem Kader gesperrt",
     "plugins.lockPlayers.playerAction.lock": "Spieler sperren",
     "plugins.lockPlayers.playerAction.unlock": "Spieler freischalten",
+    "plugins.lockPlayers.clubHub.tile": "Gesperrte Spieler",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Nutzungswarnung",

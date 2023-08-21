@@ -66,7 +66,7 @@ function run() {
                 addStyle("locked-players", styles);
                 this._lockedPlayersTile = new UTTileView();
                 this._lockedPlayersTile.init();
-                this._lockedPlayersTile.setTitle("Locked Players");
+                this._lockedPlayersTile.setTitle(localize("plugins.lockPlayers.clubHub.tile"));
 
                 const itemsCount = getLockedItems().length;
 

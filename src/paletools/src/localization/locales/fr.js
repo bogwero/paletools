@@ -388,6 +388,7 @@ export default {
     "plugins.lockPlayers.messages.sbcWarning": "SBC abandonné - vous avez verrouillé les joueurs dans votre équipe",
     "plugins.lockPlayers.playerAction.lock": "Joueur de verrouillage",
     "plugins.lockPlayers.playerAction.unlock": "Déverrouiller le joueur",
+    "plugins.lockPlayers.clubHub.tile": "Joueurs verrouillés",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Avertissement d'utilisation",

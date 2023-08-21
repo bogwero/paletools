@@ -435,8 +435,16 @@ function run() {
             }
 
             return true;
-        }, this.viewModel.searchCriteria).then(() => {
+        }, this.viewModel.searchCriteria).then(players => {
             this.saveSbcSettings();
+
+            if (foundPlayers.length < requiredPlayersCount) {
+                foundPlayers = [];
+                for (let player of this.filterAndSortPlayers(players, importantLeagueIds, playersByClub)) {
+                    foundPlayers.push(player);
+                    if(foundPlayers.length >= requiredPlayersCount) break;
+                }
+            }
 
             if (foundPlayers.length === 0) {
                 utils.PopupManager.showAlert(utils.PopupManager.Alerts.SQUAD_BUILDER_NO_RESULTS);

@@ -385,6 +385,7 @@ export default {
     "plugins.lockPlayers.messages.sbcWarning": "DCP Abortado - Tiene jugadors bloqueados en tu escuadra",
     "plugins.lockPlayers.playerAction.lock": "Bloquear Jugador",
     "plugins.lockPlayers.playerAction.unlock": "Desbloquear Jugador",
+    "plugins.lockPlayers.clubHub.tile": "Jugadores Bloqueados",
     /// #endif
 
     "plugins.warningScreen.title": "PALETOOLS - ADVERTENCIA DE USO",
