@@ -391,6 +391,12 @@ export default {
     "plugins.lockPlayers.clubHub.tile": "Joueurs verrouillés",
     /// #endif
 
+    // #if process.env.UNASSIGNED_TO_SBC
+    "plugins.unassignedToSbc.button.text": "Utiliser des joueurs non assignés",
+    "plugins.unassignedToSbc.settings.title": "CNon attribué à SBC",
+    "plugins.unassignedToSbc.button.textLoading": "Chargement des joueurs du club",
+    /// #endif
+
     "plugins.warningScreen.title": "Paletools - Avertissement d'utilisation",
     "plugins.warningScreen.disclaimer": "<p> Cher utilisateur, puisque Paletools vous permet d'effectuer des actions qui n'étaient pas conçues par EA et vous permet d'être beaucoup plus rapide dans l'utilisation de la webapp que vous êtes à un risque potentiel d'interdiction d'EA </p> <p> < br /> </p> <p> Par conséquent, vous devez l'utiliser à votre discrétion et vous devriez être très prudent </p> <p> <br /> </p> <p> si vous effectuez trop de snipes Une ligne, vous pourriez obtenir une interdiction de marché en douce Outil à vos risques et périls </b> </p> <p> <br /> </p> <p> Merci une bonne journée! </p>",
 

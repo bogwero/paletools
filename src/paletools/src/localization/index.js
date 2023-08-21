@@ -18,11 +18,9 @@ const dictionary = {
 export default function localize(key, params) {
     const lang = services.Localization.locale.language;
 
-    const dict = dictionary[lang] || dictionary['en'];
+    if(dictionary[lang] && dictionary[lang][key]) return dictionary[lang][key];
 
-    if (dict[key]) {
-        return dict[key];
-    }
+    if(dictionary['en'][key]) return dictionary['en'][key];
 
     const localized = services.Localization.localize(key, params);
     if(localized.length > 1 && localized.charAt(0) === "*"){

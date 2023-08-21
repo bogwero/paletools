@@ -33,17 +33,12 @@ function run() {
         switchButton.setText(localize("plugins.unassignedDuplicates.buttons.switchUntradeables"));
         addClass(switchButton, "section-header-btn", "mini", "call-to-action");
         switchButton.addTarget(this, async () => {
-            try {
-                await toPromise(services.Item.move(untradeableDuplicates, ItemPile.CLUB));
+            displayLoader();
+            for (let duplicated of untradeableDuplicates) {
+                await toPromise(services.Item.move(duplicated, ItemPile.CLUB));
+                await delay(100, 300);
             }
-            catch {
-
-            }
-
-            // for (let duplicated of untradeableDuplicates) {
-            //     await toPromise(services.Item.move(duplicated, ItemPile.CLUB));
-            //     await delay(100, 300);
-            // }
+            hideLoader();
             this._getUnassignedItems();
         }, EventType.TAP);
         append(header, switchButton);

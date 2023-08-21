@@ -43,10 +43,12 @@ function run() {
 
             this._minRating = new UTLabelWithTextInputControl();
             this._minRating.init();
+            this._minRating.setInputType("number");
             this._minRating.setLabel(localize("plugins.sbcBuilderEnhacer.filter.ratings.min.label"));
 
             this._maxRating = new UTLabelWithTextInputControl();
             this._maxRating.init();
+            this._maxRating.setInputType("number");
             this._maxRating.setLabel(localize("plugins.sbcBuilderEnhacer.filter.ratings.max.label"));
 
             const ratingContainer = document.createElement("div");
@@ -65,10 +67,12 @@ function run() {
             const searchOptionsLayout = new TableLayout(this.__sortContainer, { className: "sbc-settings" });
             this._maxPlayers = new UTLabelWithTextInputControl();
             this._maxPlayers.init();
+            this._maxPlayers.setInputType("number");
             this._maxPlayers.setLabel(localize("plugins.sbcBuilderEnhacer.filter.settings.maxPlayers.label"));
             append(searchOptionsLayout.addRow().addColumn(), this._maxPlayers);
             this._playersFromSameClub = new UTLabelWithTextInputControl();
             this._playersFromSameClub.init();
+            this._playersFromSameClub.setInputType("number");
             this._playersFromSameClub.setLabel(localize("plugins.sbcBuilderEnhacer.filter.settings.playersFromSameClub.label"));
             append(searchOptionsLayout.addRow().addColumn(), this._playersFromSameClub);
             this._searchToggles = new UTToggleControlGroupView();
@@ -413,7 +417,7 @@ function run() {
         const requiredPlayersCount = this.squad.getSBCSlots().length;
         let foundPlayers = [];
 
-        const playersByClub = this.getPlayersByClub();
+        let playersByClub = this.getPlayersByClub();
         this.updateCustomSearchSettings();
         const importantLeagueIds = getImportantLeagueIds();
         this.formation = this.getView().getFormationFilter().value;
@@ -440,6 +444,7 @@ function run() {
 
             if (foundPlayers.length < requiredPlayersCount) {
                 foundPlayers = [];
+                playersByClub = this.getPlayersByClub();
                 for (let player of this.filterAndSortPlayers(players, importantLeagueIds, playersByClub)) {
                     foundPlayers.push(player);
                     if(foundPlayers.length >= requiredPlayersCount) break;

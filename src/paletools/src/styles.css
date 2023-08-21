@@ -72,6 +72,15 @@ input[type="number"] {
     flex-basis: 100%;
 }
 
+input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 @media screen and (min-width: 800px) {
     .column {
         flex: 1

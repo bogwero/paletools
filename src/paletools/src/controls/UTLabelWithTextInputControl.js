@@ -45,6 +45,10 @@ UTLabelWithTextInputControl.prototype.setLabel = function (text) {
     this._label.setText(text);
 }
 
+UTLabelWithTextInputControl.prototype.setInputType = function (type) {
+    this._input.setType(type);
+}
+
 
 UTLabelWithTextInputControl.prototype.setInputValue = function (value) {
     this._input.setValue(value);
