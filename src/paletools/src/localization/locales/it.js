@@ -12,6 +12,8 @@ export default {
     "to": "A",
     "extinct": "Estinto",
     "market": "Mercato",
+    "import": "Importare",
+    "export": "Esportare",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modalità griglia",
@@ -389,6 +391,7 @@ export default {
     "plugins.lockPlayers.playerAction.lock": "Giocatore bloccato",
     "plugins.lockPlayers.playerAction.unlock": "Sblocca il giocatore",
     "plugins.lockPlayers.clubHub.tile": "Giocatori bloccati",
+    "plugins.lockPlayers.import.dialogTitle": "Importa giocatori bloccati",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

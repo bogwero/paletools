@@ -12,6 +12,9 @@ export default {
     "to": "Zu",
     "extinct": "Ausgestorben",
     "market": "Markt",
+    "import": "Importieren",
+    "export": "Export",
+
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Netzmodus",
@@ -391,6 +394,7 @@ export default {
     "plugins.lockPlayers.clubHub.tile": "Gesperrte Spieler",
     "plugins.lockPlayers.duplicated.dialogTitle": "Doppelte Spieler gesperrt",
     "plugins.lockPlayers.duplicated.dialogText": "Möchten Sie gesperrte, duplizierte Player senden?",
+    "plugins.lockPlayers.import.dialogTitle": "Gesperrte Spieler importieren",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

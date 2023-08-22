@@ -1,3 +1,26 @@
 .ut-club-hub-view .tile.locked-players-tile .tileContent:before {
     content: "\E06F";
 }
+
+.tile.locked-players-tile .ut-label-view{
+    bottom: auto !important;
+    left: auto !important;
+    top: 0;
+    right: 0;
+}
+
+.tile.locked-players-tile .commands {
+    display: flex;
+    gap: 1px;
+}
+
+.tile.locked-players-tile .commands > button {
+    flex: 1;
+}
+input[type="file"].import-locked-players {
+    border: 1px solid #4ee6eb;
+    background-color: #262c38;
+    width: 100%;
+    font-size: 18px;
+    padding: 10px;
+}

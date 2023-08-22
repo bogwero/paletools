@@ -12,6 +12,8 @@ export default {
     "to": "À",
     "extinct": "Éteint",
     "market": "Marché",
+    "import": "Importer",
+    "export": "Exporter",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Mode grille",
@@ -391,6 +393,7 @@ export default {
     "plugins.lockPlayers.clubHub.tile": "Joueurs verrouillés",
     "plugins.lockPlayers.duplicated.dialogTitle": "Joueurs en double verrouillés",
     "plugins.lockPlayers.duplicated.dialogText": "Voulez-vous envoyer des joueurs en double verrouillés ?",
+    "plugins.lockPlayers.import.dialogTitle": "Importer des joueurs verrouillés",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

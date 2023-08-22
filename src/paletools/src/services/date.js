@@ -54,3 +54,23 @@ export function intToDate(date) {
     
     return new Date(year, month - 1, day, hh, mm, sec);
 }
+
+export function dateToString(date) {
+    // Ensure the input is a date object
+    if (!(date instanceof Date)) {
+        throw new Error("Input must be a Date object");
+    }
+
+    const pad = (number, length = 2) => {
+        return number.toString().padStart(length, '0');
+    };
+
+    const yyyy = date.getFullYear();
+    const MM = pad(date.getMonth() + 1); // Note: Months are 0-based, so +1
+    const dd = pad(date.getDate());
+    const HH = pad(date.getHours());
+    const mm = pad(date.getMinutes());
+    const ss = pad(date.getSeconds());
+
+    return `${yyyy}${MM}${dd}_${HH}${mm}${ss}`;
+}

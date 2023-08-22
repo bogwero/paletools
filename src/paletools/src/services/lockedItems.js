@@ -1,4 +1,5 @@
 import settings from "../settings";
+import { notifyFailure } from "../utils/notifications";
 import storage from "./storage";
 
 const LOCKED_ITEMS_KEY = "lockedItems";
@@ -9,6 +10,25 @@ function save(items) {
 
 export function getLockedItems() {
     return settings.plugins.lockPlayers.enabled ? storage.get(LOCKED_ITEMS_KEY) || [] : [];
+}
+
+export function importLockedItems(csv) {
+    try {
+        const ids = getLockedItems();
+        for(let id of csv.split(',')) {
+            const definitionId = parseInt(id);
+            if(isNaN(definitionId)) continue;
+
+            if(ids.indexOf(definitionId) > -1) continue;
+
+            ids.push(definitionId);
+        }
+
+        save(ids);
+    }
+    catch(ex) {
+        notifyFailure(ex);
+    }
 }
 
 export function lockItem(item) {

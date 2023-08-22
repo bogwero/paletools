@@ -12,6 +12,8 @@ export default {
     "to": "Para",
     "extinct": "Extinto",
     "market": "Mercado",
+    "import": "Importar",
+    "export": "Exportar",
 
     /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Modo de grade",
@@ -391,6 +393,7 @@ export default {
     "plugins.lockPlayers.clubHub.tile": "Jogadores bloqueados",
     "plugins.lockPlayers.duplicated.dialogTitle": "Jogadores duplicados bloqueados",
     "plugins.lockPlayers.duplicated.dialogText": "Deseja enviar jogadores duplicados bloqueados?",
+    "plugins.lockPlayers.import.dialogTitle": "Importar jogadores bloqueados",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC
