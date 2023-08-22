@@ -389,6 +389,8 @@ export default {
     "plugins.lockPlayers.playerAction.lock": "Spieler sperren",
     "plugins.lockPlayers.playerAction.unlock": "Spieler freischalten",
     "plugins.lockPlayers.clubHub.tile": "Gesperrte Spieler",
+    "plugins.lockPlayers.duplicated.dialogTitle": "Doppelte Spieler gesperrt",
+    "plugins.lockPlayers.duplicated.dialogText": "Möchten Sie gesperrte, duplizierte Player senden?",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

@@ -81,6 +81,11 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+.objective-reward-label {
+	text-overflow: inherit !important;
+	white-space: normal !important;
+}
+
 @media screen and (min-width: 800px) {
     .column {
         flex: 1

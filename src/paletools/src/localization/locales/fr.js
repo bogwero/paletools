@@ -389,6 +389,8 @@ export default {
     "plugins.lockPlayers.playerAction.lock": "Joueur de verrouillage",
     "plugins.lockPlayers.playerAction.unlock": "Déverrouiller le joueur",
     "plugins.lockPlayers.clubHub.tile": "Joueurs verrouillés",
+    "plugins.lockPlayers.duplicated.dialogTitle": "Joueurs en double verrouillés",
+    "plugins.lockPlayers.duplicated.dialogText": "Voulez-vous envoyer des joueurs en double verrouillés ?",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC

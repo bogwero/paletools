@@ -395,6 +395,8 @@ export default {
     "plugins.unassignedToSbc.button.text": "Usa giocatori non assegnati",
     "plugins.unassignedToSbc.settings.title": "Non assegnato a SBC",
     "plugins.unassignedToSbc.button.textLoading": "Caricamento giocatori dal club",
+    "plugins.lockPlayers.duplicated.dialogTitle": "Giocatori duplicati bloccati",
+    "plugins.lockPlayers.duplicated.dialogText": "Vuoi inviare giocatori duplicati bloccati?",
     /// #endif
 
     "plugins.warningScreen.title": "Paletools - Avviso di utilizzo",

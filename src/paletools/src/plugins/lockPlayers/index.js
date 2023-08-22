@@ -5,11 +5,14 @@ let plugin;
 /// #if process.env.LOCK_PLAYERS
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
+import { openDialog } from "../../services/dialog";
+import { getUnassignedItems } from "../../services/item";
 import { getLockedItems, isItemLocked, lockItem, unlockItem } from "../../services/lockedItems";
 import settings, { saveConfiguration } from "../../settings";
 import getCurrentController from "../../utils/controller";
 import { addClass, append, attr, css, remove, removeAttr, removeClass, select, selectAll } from "../../utils/dom";
 import { notifyFailure } from "../../utils/notifications";
+import { toPromise } from "../../utils/observable";
 import { addStyle, removeStyle } from "../../utils/styles";
 import styles from "./styles.css";
 
@@ -140,21 +143,72 @@ function run() {
     const UTSBCService_submitChallenge = UTSBCService.prototype.submitChallenge;
     UTSBCService.prototype.submitChallenge = function (...args) {
         if (settings.enabled && cfg.enabled) {
+            const observable = new EAObservable();
+            
             const challenge = args[0];
-            for (let player of challenge.squad.getFieldPlayers()) {
-                if (isItemLocked(player.item)) {
-                    const observable = new EAObservable();
+
+            function getFieldLockedPlayers() {
+                return challenge.squad.getFieldPlayers().map(x => x.item).filter(x => isItemLocked(x));
+            }
+
+            const lockedPlayers = getFieldLockedPlayers();
+
+            if(lockedPlayers.length === 0)
+            {
+                return UTSBCService_submitChallenge.call(this, ...args);
+            }
+
+            getUnassignedItems().then(async items => {
+                for(let item of items) {
+                    if(!item.isPlayer()) continue;
+
+                    const index = lockedPlayers.findIndex(x => x.definitionId === item.definitionId);
+
+                    if(index === -1) continue;
+
+                    lockedPlayers.splice(index, 1);
+                }
+
+                if(lockedPlayers.length === 0) {
+                    let html = localize("plugins.lockPlayers.duplicated.dialogText") + "<br /><br /><ul>";
+                    for(let player of getFieldLockedPlayers()) { 
+                        html += `<li>${player.getStaticData().name}</li>`;
+                    }
+                    html += "</ul>";
+
+                    openDialog(
+                        [
+                            { labelEnum: enums.UIDialogOptions.OK },
+                            { labelEnum: enums.UIDialogOptions.CANCEL },
+                        ],
+                        localize("plugins.lockPlayers.duplicated.dialogTitle"),
+                        html,
+                        async (text) => {
+                            if (text == enums.UIDialogOptions.OK) {
+                                observable.notify(await toPromise(UTSBCService_submitChallenge.call(this, ...args)));
+                            }
+                        });
+                }
+                else {
                     var response = new UTServiceResponseDTO();
                     response.status = HttpStatusCode.BAD_REQUEST;
                     response.success = false;
                     observable.notify(response);
-                    notifyFailure(localize("plugins.lockPlayers.messages.sbcWarning"));
-                    return observable;
+                    let html = localize("plugins.lockPlayers.messages.sbcWarning");
+                    html += "<ul>";
+                    for(let player of lockedPlayers) { 
+                        html += `<li>${player.getStaticData().name}</li>`;
+                    }
+                    html += "</ul>";
+                    notifyFailure(html)
                 }
-            }
-        }
+            });
 
-        return UTSBCService_submitChallenge.call(this, ...args);
+            return observable;
+        }
+        else {
+            return UTSBCService_submitChallenge.call(this, ...args);
+        }        
     }
 
     const UTPlayerItemView_resetRender = UTPlayerItemView.prototype.resetRender;

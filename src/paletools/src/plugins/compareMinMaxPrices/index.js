@@ -13,7 +13,6 @@ import { setItemSellValue } from "../../services/market"
 const cfg = settings.plugins.compareMinMaxPrices;
 
 function run() {
-    const playerSellValues = {};
     const UTMarketSearchView__generate = UTMarketSearchView.prototype._generate;
     UTMarketSearchView.prototype._generate = function _generate() {
         UTMarketSearchView__generate.call(this);

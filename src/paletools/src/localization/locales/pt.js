@@ -389,6 +389,8 @@ export default {
     "plugins.lockPlayers.playerAction.lock": "Jogador Bloqueado",
     "plugins.lockPlayers.playerAction.unlock": "Desbloqueie o jogador",
     "plugins.lockPlayers.clubHub.tile": "Jogadores bloqueados",
+    "plugins.lockPlayers.duplicated.dialogTitle": "Jogadores duplicados bloqueados",
+    "plugins.lockPlayers.duplicated.dialogText": "Deseja enviar jogadores duplicados bloqueados?",
     /// #endif
 
     // #if process.env.UNASSIGNED_TO_SBC
