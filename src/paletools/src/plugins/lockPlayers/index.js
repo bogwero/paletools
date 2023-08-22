@@ -195,7 +195,7 @@ function run() {
                     response.success = false;
                     observable.notify(response);
                     let html = localize("plugins.lockPlayers.messages.sbcWarning");
-                    html += "<ul>";
+                    html += "<br /><br /><ul style=\"list-style-type:disc !important\">";
                     for(let player of lockedPlayers) { 
                         html += `<li>${player.getStaticData().name}</li>`;
                     }

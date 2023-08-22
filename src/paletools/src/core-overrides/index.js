@@ -15,6 +15,7 @@ import executePackAnimationShineViewOverrides from "./UTPackAnimationShineViewOv
 import executeSquadSlotViewOverrides from "./UTSquadSlotViewOverrides";
 import executeSquadBuilderViewControllerOverrides from "./UTSquadBuilderViewControllerOverrides";
 import executeUnassignedItemsViewControllerOverrides from "./UTUnnasignedItemsViewControllerOverrides";
+import executeNotificationViewOverrides from "./UTNotificationViewOverrides";
 
 export default function runOverrides(){
     executeMarketSearchFiltersViewControllerOverrides();
@@ -34,4 +35,5 @@ export default function runOverrides(){
     executeSquadSlotViewOverrides();
     executeSquadBuilderViewControllerOverrides();
     executeUnassignedItemsViewControllerOverrides();
+    executeNotificationViewOverrides();
 }
